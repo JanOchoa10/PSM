@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Blogee</string>
+    <string name="ex_mail_gmail_com">Ex: mail@gmail.com</string>
+    <string name="email">Email</string>
+    <string name="blogee_is_the_blog_of_the_moment">Blogee is the blog of the moment</string>
+    <string name="welcome">Welcome!</string>
+    <string name="password_hint" translatable="false">********</string>
+    <string name="log_in">Log in</string>
+    <string name="password">Password</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="already_have_an_account_login">Already have an account? Login</string>
+    <string name="create_account">Create account</string>
+    <string name="name">Name</string>
+    <string name="last_name">Last name</string>
+    <string name="write_your_name">Write your name</string>
+    <string name="write_your_last_name">Write your last name</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="avatar" translatable="false">Avatar</string>
+    <string name="save_changes">Save changes</string>
+    <string name="user_profile">User profile</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="write_a_title">Write a title</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="write_a_description">Write a description</string>
+    <string name="upload_images">Upload images</string>
+    <string name="post">Post</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="new_post">New post</string>
+    <string name="there_are_no_posts_to_show">There are no posts to show</string>
+    <string name="log_out">Log out</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="modo_oscuro" translatable="false">ModoOscuro</string>
+</resources>
