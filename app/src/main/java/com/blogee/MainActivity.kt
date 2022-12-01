@@ -1,27 +1,46 @@
 package com.blogee
 
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.RoundedBitmapDrawable
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import com.blogee.Models.Usuario
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    var imageUI: Icon? =  null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 
         val btnfavNewPost = findViewById<FloatingActionButton>(R.id.fab_new_post)
 
         btnfavNewPost.setOnClickListener{
             val cambiarActivity = Intent(this, EditarPost::class.java)
             startActivity(cambiarActivity)
+
         }
 
 
 
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -34,7 +53,10 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
+                val idUserLog = Bundle()
+                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
                 val cambiarActivity = Intent(this, VerPerfil::class.java)
+                cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 true
             }
