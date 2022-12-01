@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.blogee"
-        minSdk 21
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -41,4 +41,12 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    //Se agregar librerias para  manejo  consumir la web Api  y manejo de json
+    implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    //Esto para generar un interseptor que nos va a permitir desplegar la respuesta del  servicio en el logcat
+    implementation 'com.squareup.okhttp3:okhttp:4.6.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.6.0'
+    //Checar en el android manifest tener lo user permisos
 }
