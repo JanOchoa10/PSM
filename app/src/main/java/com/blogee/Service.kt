@@ -1,5 +1,6 @@
 package com.blogee
 
+import com.blogee.Models.Nota
 import com.blogee.Models.Usuario
 import retrofit2.Call
 import retrofit2.http.*
@@ -22,5 +23,17 @@ interface Service{
     @Headers("Content-Type: application/json")
     @POST("User/Save")
     fun saveUser(@Body userData: Usuario):Call<Int>
+
+    @Headers("Content-Type: application/json")
+    @POST("User/Update")
+    fun saveEditUser(@Body userData: Usuario):Call<Int>
+
+
+
+
+    //Notas
+    @Headers("Content-Type: application/json")
+    @POST("Nota/Save")
+    fun saveNota(@Body userData: Nota):Call<Int>
 
 }

@@ -42,6 +42,7 @@ class VerPerfil : AppCompatActivity() {
         //image.setImageResource(R.mipmap.ic_launcher)
 
         val btnEditarPerfil = findViewById<Button>(R.id.btn_editar_perfil)
+
         namePerfil = findViewById<TextView>(R.id.textView6)
         lastnamePerfil = findViewById<TextView>(R.id.textView7)
         emailPerfil = findViewById<TextView>(R.id.textView3)
@@ -51,6 +52,7 @@ class VerPerfil : AppCompatActivity() {
         //Buscar la info del usuario
 
         infoUser()
+
         /*var args = arrayOf(intent.getStringExtra("emailUserLog"))
         val db : SQLiteDatabase = usuarioDBHelper.readableDatabase
         val cursor = db.rawQuery("Select * From usuarios where emailUser = ?", args)
@@ -64,7 +66,10 @@ class VerPerfil : AppCompatActivity() {
         }*/
 
         btnEditarPerfil.setOnClickListener{
+            val idUserLog = Bundle()
+            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
             val cambiarActivity = Intent(this, EditarPerfil::class.java)
+            cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
         }
 
@@ -73,13 +78,12 @@ class VerPerfil : AppCompatActivity() {
     }
 
     private fun infoUser() {
-        var id_User = intent.getStringExtra("idUserLog")
-        if(id_User != null){
-
+        var id_UserVP = intent.getStringExtra("idUserLog")
+        if(id_UserVP != null){
             val service: Service =  RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<List<Usuario>> = service.getUser( id_User)
-            //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
-            result.enqueue(object: Callback<List<Usuario>> {
+            val result: Call<List<Usuario>> = service.getUser( id_UserVP)
+
+                result.enqueue(object: Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
                     Toast.makeText(this@VerPerfil,"Error",Toast.LENGTH_LONG).show()
                 }
@@ -90,6 +94,7 @@ class VerPerfil : AppCompatActivity() {
                         if(item.isEmpty()){
                             Toast.makeText(this@VerPerfil,"No tiene información",Toast.LENGTH_LONG).show()
                         }else{
+
                             var byteArray:ByteArray? = null
                             namePerfil!!.text = getString(R.string.name) + ": " +item[0].Name
                             lastnamePerfil!!.text = getString(R.string.last_name) + ": " +item[0].LastName

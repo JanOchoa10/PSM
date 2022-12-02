@@ -21,7 +21,6 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var imageUI: Icon? =  null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +31,10 @@ class MainActivity : AppCompatActivity() {
         val btnfavNewPost = findViewById<FloatingActionButton>(R.id.fab_new_post)
 
         btnfavNewPost.setOnClickListener{
-            val cambiarActivity = Intent(this, EditarPost::class.java)
+            val idUserLog = Bundle()
+            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+            val cambiarActivity = Intent(this, Post2::class.java)
+            cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
 
         }
