@@ -49,9 +49,11 @@ class EditarPost : AppCompatActivity() {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
+                val idUserLog = Bundle()
+                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
                 val cambiarActivity = Intent(this, VerPerfil::class.java)
+                cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
-                finish()
                 true
             }
             /**R.id.create_new -> {

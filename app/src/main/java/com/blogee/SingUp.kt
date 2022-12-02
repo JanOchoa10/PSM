@@ -4,12 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.blogee.Models.Usuario
 import retrofit2.Call
@@ -43,7 +41,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         lastNameUser = findViewById<TextView>(R.id.editTextTextLastName)
         emailUser = findViewById<TextView>(R.id.editTextTextEmailAddress)
         passUser = findViewById<TextView>(R.id.editTextTextPassword)
-        imageUI = findViewById<ImageView>(R.id.imageView)
+        imageUI = findViewById<ImageView>(R.id.imageView2)
 
 
 
@@ -120,8 +118,8 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         if(nameUser!!.text.isNotBlank() && lastNameUser!!.text.isNotBlank() && emailUser!!.text.isNotBlank() && passUser!!.text.isNotBlank()){
 
             val cambiarActivity = Intent(this, Login::class.java)
-            val encodedString:String =  Base64.getEncoder().encodeToString(this.imgArray)
 
+            val encodedString:String =  Base64.getEncoder().encodeToString(this.imgArray)
             val strEncodeImage:String = "data:image/png;base64," + encodedString
 
 
