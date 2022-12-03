@@ -34,129 +34,62 @@ class PostsAdapter(
 
         val nota = listaPosts[position]
 
-//        var listaUsuario: MutableList<Usuario> = mutableListOf()
-//        val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-//        val result: Call<List<Nota>> = service.getNotas()
-//
-//        result.enqueue(object : Callback<List<Nota>> {
-//            override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-//                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
-//            }
-//
-//            override fun onResponse(
-//                call: Call<List<Nota>>,
-//                response: Response<List<Nota>>
-//            ) {
-//                val arrayPosts = response.body()
-//                if (arrayPosts != null) {
-//                    if (arrayPosts.isEmpty()) {
-//                        Toast.makeText(
-//                            this@MainActivity,
-//                            "No tiene notas",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    } else {
-//                        //      Visibilidad del texto cuando no hay publicaciones
-//                        val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
-//                        textoInicial.visibility = View.GONE
-//
-//                        for (item in arrayPosts) {
-//                            listaPosts.add(
-//                                Nota(
-//                                    item.id_Nota,
-//                                    item.Title,
-//                                    item.Description,
-//                                    item.id_User,
-//                                    item.Image
-//                                )
-//                            )
-////                            getUnUsuario(item.id_User)
-//                        }
-//
-//                        val adaptador = PostsAdapter(this@MainActivity, listaPosts)
-//
-//                        // Elementos dentro del listview
-//                        val lvPost = findViewById<ListView>(R.id.lvPosts)
-//
-//                        lvPost.adapter = adaptador
-//
-//                        lvPost.setOnItemClickListener { parent, view, position, id ->
-//
-//                            val notaActual: Nota =
-//                                parent.getItemAtPosition(position) as Nota
-//
-//                            Toast.makeText(
-//                                applicationContext,
-//                                notaActual.Title + "\n\n" + notaActual.Description,
-//                                Toast.LENGTH_SHORT
-//                            )
-//                                .show()
-//                        }
-//
-//                    }
-//                } else {
-//                    Toast.makeText(this@MainActivity, "No hay notas", Toast.LENGTH_LONG).show()
-//                }
-//            }
-//        })
-
-
 //        val id_UserVP = intent.getStringExtra("idUserLog")
 //        if (id_UserVP != null) {
-            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<List<Usuario>> = service.getUser(nota.id_User.toString())
+        val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+        val result: Call<List<Usuario>> = service.getUser(nota.id_User.toString())
 
-            result.enqueue(object : Callback<List<Usuario>> {
-                override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(mContext, "Error", Toast.LENGTH_LONG).show()
-                }
+        result.enqueue(object : Callback<List<Usuario>> {
+            override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
+                Toast.makeText(mContext, "Error", Toast.LENGTH_LONG).show()
+            }
 
-                override fun onResponse(
-                    call: Call<List<Usuario>>,
-                    response: Response<List<Usuario>>
-                ) {
-                    val item = response.body()
-                    if (item != null) {
-                        if (item.isEmpty()) {
-                            Toast.makeText(
-                                mContext,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
+            override fun onResponse(
+                call: Call<List<Usuario>>,
+                response: Response<List<Usuario>>
+            ) {
+                val item = response.body()
+                if (item != null) {
+                    if (item.isEmpty()) {
+                        Toast.makeText(
+                            mContext,
+                            "No tiene información",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
 
-                            var byteArray2: ByteArray? = null
+                        var byteArray2: ByteArray? = null
 //                            namePerfil!!.text = getString(R.string.name) + ": " + item[0].Name
 //                            lastnamePerfil!!.text =
 //                                getString(R.string.last_name) + ": " + item[0].LastName
 //                            emailPerfil!!.text = getString(R.string.email) + ": " + item[0].Email
 
-                            layout.nombre.text = item[0].Name
+                        layout.nombre.text = item[0].Name
 
-                            val strImage: String =
-                                item[0].Image!!.replace("data:image/png;base64,", "")
-                            byteArray2 = Base64.getDecoder().decode(strImage)
-                            if (byteArray2 != null) {
-                                //Bitmap redondo
-                                val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray2)
-                                val roundedBitmapWrapper: RoundedBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(
-                                        Resources.getSystem(),
-                                        bitmap
-                                    )
-                                roundedBitmapWrapper.setCircular(true)
+                        val strImage: String =
+                            item[0].Image!!.replace("data:image/png;base64,", "")
+                        byteArray2 = Base64.getDecoder().decode(strImage)
+                        if (byteArray2 != null) {
+                            //Bitmap redondo
+                            val bitmap: Bitmap =
+                                ImageUtilities.getBitMapFromByteArray(byteArray2)
+                            val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                    Resources.getSystem(),
+                                    bitmap
+                                )
+                            roundedBitmapWrapper.setCircular(true)
 //                                imageUI!!.setImageDrawable(roundedBitmapWrapper)
-                                layout.imgPerfil.setImageDrawable(roundedBitmapWrapper)
-                            }
+                            layout.imgPerfil.setImageDrawable(roundedBitmapWrapper)
                         }
-                    } else {
-                        Toast.makeText(mContext, "Incorrectas", Toast.LENGTH_LONG).show()
                     }
-
-
+                } else {
+                    Toast.makeText(mContext, "Incorrectas", Toast.LENGTH_LONG).show()
                 }
-            })
+
+
+            }
+        })
 //        } else {
 //            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
 //        }

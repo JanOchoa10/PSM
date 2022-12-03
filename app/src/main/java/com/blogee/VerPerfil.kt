@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -230,6 +231,15 @@ class VerPerfil : AppCompatActivity() {
 
             R.id.log_out -> {
                 // Acción al presionar el botón
+
+                val myPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                val myEditor = myPreferences.edit()
+//                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+                myEditor.putString("emailLogged", "")
+                myEditor.putString("passLogged", "")
+
+                myEditor.apply()
+
                 val cambiarActivity = Intent(this, Login::class.java)
                 startActivity(cambiarActivity)
                 true

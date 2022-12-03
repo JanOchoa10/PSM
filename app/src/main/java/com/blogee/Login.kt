@@ -38,6 +38,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
         usuarioDBHelper = miSQLiteHelper(this)
 
 
+
         //btnLogin.setOnClickListener{
             /* if(emailLogin.text.isNotBlank() && passLogin.text.isNotBlank() ){
                  val args = arrayOf(emailLogin.text.toString(),passLogin.text.toString())
@@ -79,6 +80,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
 
         val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+
         if (f == 0) {
             //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -87,6 +89,16 @@ class Login : AppCompatActivity(),View.OnClickListener {
                 // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             }
+        }
+
+
+        var email: String = myPreferences.getString("emailLogged", "").toString()
+        var pass: String = myPreferences.getString("passLogged", "").toString()
+
+        if(email != "" && pass != ""){
+            emailUser!!.text = email
+            passUser!!.text = pass
+            login()
         }
     }
 
@@ -122,8 +134,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
 
                 override fun onResponse(call: Call<List<Usuario>>, response: Response<List<Usuario>>) {
                     //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                    emailUser!!.text = ""
-                    passUser!!.text = ""
+
                     val item =  response.body()
                     if(item!=null){
                         if(item.isEmpty()){
@@ -133,6 +144,18 @@ class Login : AppCompatActivity(),View.OnClickListener {
                             val idUserLog = Bundle()
 
                             idUserLog.putString("idUserLog", item[0].id_User.toString())
+
+                            val myPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                            val myEditor = myPreferences.edit()
+//                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+                            myEditor.putString("emailLogged", emailUser!!.text.toString())
+                            myEditor.putString("passLogged", passUser!!.text.toString())
+
+                            myEditor.apply()
+
+
+                            emailUser!!.text = ""
+                            passUser!!.text = ""
 
                             cambiarActivity.putExtras(idUserLog)
                             startActivity(cambiarActivity)
