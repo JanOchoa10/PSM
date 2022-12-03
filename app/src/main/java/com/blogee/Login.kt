@@ -122,8 +122,8 @@ class Login : AppCompatActivity(),View.OnClickListener {
 
                 override fun onResponse(call: Call<List<Usuario>>, response: Response<List<Usuario>>) {
                     //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                    emailUser!!.text = ""
-                    passUser!!.text = ""
+                    //emailUser!!.text = ""
+                    //passUser!!.text = ""
                     val item =  response.body()
                     if(item!=null){
                         if(item.isEmpty()){
