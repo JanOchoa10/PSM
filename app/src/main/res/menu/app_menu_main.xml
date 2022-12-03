@@ -3,10 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/user_profile"
-        android:title="@string/user_profile"
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/user_profile"
         android:icon="@mipmap/ic_launcher"
-        app:showAsAction="always|withText"/>
+        android:title="@string/user_profile"
+        app:showAsAction="always|withText" />
 
 
     <!--item android:id="@+id/file"

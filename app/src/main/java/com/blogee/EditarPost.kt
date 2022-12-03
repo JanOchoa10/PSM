@@ -40,7 +40,7 @@ class EditarPost : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.app_menu, menu)
+        inflater.inflate(R.menu.app_menu_main, menu)
         return true
     }
 

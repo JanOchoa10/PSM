@@ -13,5 +13,9 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+<!--        <item name="colorAccent">@color/color_bar_light</item>-->
+    </style>
+    <style name="miNota">
+        <item name="android:backgroundTint">@color/color_bar_light</item>
     </style>
 </resources>

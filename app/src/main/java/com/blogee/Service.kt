@@ -36,4 +36,10 @@ interface Service{
     @POST("Nota/Save")
     fun saveNota(@Body userData: Nota):Call<Int>
 
+    //Servicios para consumir el Album
+    @GET("Nota/Notas")
+    fun getNotas():Call<List<Nota>>
+
+    @GET("Nota/Notas/{id}")
+    fun getNotaUser(@Path("id") id: String?): Call<List<Nota>>
 }
