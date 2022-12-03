@@ -14,5 +14,6 @@
     <color name="color_bar">#0575AD</color>
     <color name="color_gray_blogee">#425A66</color>
     <color name="color_bar_light">#43AFE6</color>
+    <color name="color_bar_dark">#8043AFE6</color>
     <color name="color_blue_dark">#022333</color>
 </resources>

@@ -60,7 +60,11 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         }*/
 
         btnCancel.setOnClickListener{
-            onBackPressed()
+            val idUserLog = Bundle()
+            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+            val cambiarActivity = Intent(this, VerPerfil::class.java)
+            cambiarActivity.putExtras(idUserLog)
+            startActivity(cambiarActivity)
         }
 
     }
@@ -218,14 +222,19 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+//                onBackPressed()
+        val idUserLog = Bundle()
+        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+        val cambiarActivity = Intent(this, VerPerfil::class.java)
+        cambiarActivity.putExtras(idUserLog)
+        startActivity(cambiarActivity)
         return false
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.app_menu_3, menu)
+        inflater.inflate(R.menu.app_menu_editar_perfil, menu)
 
         val item: MenuItem = menu.findItem(R.id.dark_mode)
 
