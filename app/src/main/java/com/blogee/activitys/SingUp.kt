@@ -1,4 +1,4 @@
-package com.blogee
+package com.blogee.activitys
 
 import android.app.Activity
 import android.content.Intent
@@ -9,7 +9,11 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.blogee.Models.Usuario
+import com.blogee.R
+import com.blogee.RestEngine
+import com.blogee.Service
+import com.blogee.miSQLiteHelper
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,7 +51,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
 
         // get reference to TextView
-        val textSignUp = findViewById<TextView>(R.id.textView5)
+        val textSignUp = findViewById<TextView>(R.id.tienesCuenta)
         // set on-click listener
         textSignUp.setOnClickListener {
             //Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
@@ -76,7 +80,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.btnCamera-> openCamera()
+            R.id.btnCamera -> openCamera()
             R.id.button -> saveUser()
         }
     }

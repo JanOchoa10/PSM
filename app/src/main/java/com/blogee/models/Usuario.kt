@@ -1,4 +1,4 @@
-package com.blogee.Models
+package com.blogee.models
 
 data class Usuario(
     var id_User: Int? = null,
@@ -7,4 +7,4 @@ data class Usuario(
     var Email: String? = null,
     var Password: String? = null,
     var Image: String? = null
-)
+) : java.io.Serializable

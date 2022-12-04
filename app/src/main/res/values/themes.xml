@@ -18,4 +18,13 @@
     <style name="miNota">
         <item name="android:backgroundTint">@color/color_bar_light</item>
     </style>
+    <style name="verNota">
+        <item name="android:background">@color/color_bar_light</item>
+    </style>
+    <style name="Theme.Blogee.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.Blogee.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.Blogee.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

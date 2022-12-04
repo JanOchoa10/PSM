@@ -1,4 +1,4 @@
-package com.blogee.Models
+package com.blogee.models
 
 data class Nota(
     var id_Nota: Int? = null,
@@ -6,4 +6,4 @@ data class Nota(
     var Description: String? = null,
     var id_User: Int? = null,
     var Image: String? = null
-)
+) : java.io.Serializable

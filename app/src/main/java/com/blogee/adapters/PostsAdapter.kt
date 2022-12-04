@@ -7,14 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.ImageUtilities
-import com.blogee.Models.Nota
-import com.blogee.Models.Usuario
+import com.blogee.models.Nota
+import com.blogee.models.Usuario
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
@@ -34,8 +32,6 @@ class PostsAdapter(
 
         val nota = listaPosts[position]
 
-//        val id_UserVP = intent.getStringExtra("idUserLog")
-//        if (id_UserVP != null) {
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
         val result: Call<List<Usuario>> = service.getUser(nota.id_User.toString())
 
@@ -79,7 +75,6 @@ class PostsAdapter(
                                     bitmap
                                 )
                             roundedBitmapWrapper.setCircular(true)
-//                                imageUI!!.setImageDrawable(roundedBitmapWrapper)
                             layout.imgPerfil.setImageDrawable(roundedBitmapWrapper)
                         }
                     }
@@ -90,9 +85,6 @@ class PostsAdapter(
 
             }
         })
-//        } else {
-//            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
-//        }
 
 
         if (nota.Image != "") {

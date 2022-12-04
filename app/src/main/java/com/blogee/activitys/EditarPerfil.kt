@@ -1,4 +1,4 @@
-package com.blogee
+package com.blogee.activitys
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -18,7 +18,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.Models.Usuario
+import com.blogee.ImageUtilities
+import com.blogee.R
+import com.blogee.RestEngine
+import com.blogee.Service
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -97,7 +101,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                             byteArray =  Base64.getDecoder().decode(strImage)
                             if(byteArray != null){
                                 //Bitmap redondo
-                                val bitmap:Bitmap =ImageUtilities.getBitMapFromByteArray(byteArray)
+                                val bitmap:Bitmap = ImageUtilities.getBitMapFromByteArray(byteArray)
                                 val roundedBitmapWrapper: RoundedBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(Resources.getSystem(), bitmap)
                                 roundedBitmapWrapper.setCircular(true)
@@ -132,8 +136,8 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.btn_guardar_cambios-> GuardarCambios()
-            R.id.btnCamera2-> openCamera()
+            R.id.btn_guardar_cambios -> GuardarCambios()
+            R.id.btnCamera2 -> openCamera()
         }
     }
 
@@ -228,6 +232,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         val cambiarActivity = Intent(this, VerPerfil::class.java)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
+        overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
     }
 

@@ -1,21 +1,22 @@
-package com.blogee
+package com.blogee.activitys
 
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.blogee.Models.Usuario
+import com.blogee.R
+import com.blogee.RestEngine
+import com.blogee.Service
+import com.blogee.miSQLiteHelper
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 
 class Login : AppCompatActivity(),View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper
@@ -69,7 +70,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
         //}
 
         // get reference to TextView
-        val textSignUp = findViewById<TextView>(R.id.textView5)
+        val textSignUp = findViewById<TextView>(R.id.tienesCuenta)
         // set on-click listener
         textSignUp.setOnClickListener {
             //Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
@@ -104,7 +105,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.btn_login-> login()
+            R.id.btn_login -> login()
 
         }
     }

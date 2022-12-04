@@ -1,4 +1,4 @@
-package com.blogee
+package com.blogee.activitys
 
 import android.content.Intent
 import android.content.res.Resources
@@ -13,8 +13,9 @@ import android.view.View
 import android.widget.*
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.Models.Nota
-import com.blogee.Models.Usuario
+import com.blogee.*
+import com.blogee.models.Nota
+import com.blogee.models.Usuario
 import com.blogee.adapters.PostsAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,9 +45,9 @@ class VerPerfil : AppCompatActivity() {
 
         val btnEditarPerfil = findViewById<Button>(R.id.btn_editar_perfil)
 
-        namePerfil = findViewById<TextView>(R.id.textView6)
-        lastnamePerfil = findViewById<TextView>(R.id.textView7)
-        emailPerfil = findViewById<TextView>(R.id.textView3)
+        namePerfil = findViewById<TextView>(R.id.lbName)
+        lastnamePerfil = findViewById<TextView>(R.id.lbLastName)
+        emailPerfil = findViewById<TextView>(R.id.lbEmail)
         imageUI = findViewById(R.id.imageView)
 
 
@@ -216,6 +217,7 @@ class VerPerfil : AppCompatActivity() {
         val cambiarActivity = Intent(this, MainActivity::class.java)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
+        overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
     }
 

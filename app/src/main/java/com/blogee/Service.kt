@@ -1,7 +1,7 @@
 package com.blogee
 
-import com.blogee.Models.Nota
-import com.blogee.Models.Usuario
+import com.blogee.models.Nota
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.http.*
 

@@ -5,7 +5,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:background="?attr/colorOnBackground"
-tools:context=".MainActivity">
+tools:context=".activitys.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_new_post"
@@ -13,14 +13,14 @@ tools:context=".MainActivity">
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@color/color_gray_blogee"
+        android:contentDescription="@string/new_post"
+        app:backgroundTint="@color/color_gray_blogee"
+        app:layout_constraintBottom_toBottomOf="@+id/lvPosts"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:maxImageSize="45dp"
-        android:backgroundTint="@color/color_gray_blogee"
-        app:backgroundTint="@color/color_gray_blogee"
-        app:srcCompat="@drawable/ic_round_add_24"
-        android:contentDescription="@string/new_post" />
+        app:srcCompat="@drawable/ic_round_add_24" />
 
     <TextView
         android:id="@+id/txtNoNotas"

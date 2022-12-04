@@ -18,4 +18,7 @@
     <style name="miNota">
         <item name="android:backgroundTint">@color/color_bar_dark</item>
     </style>
+    <style name="verNota">
+        <item name="android:background">@color/color_bar_dark</item>
+    </style>
 </resources>

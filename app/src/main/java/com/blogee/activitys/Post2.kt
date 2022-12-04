@@ -1,4 +1,4 @@
-package com.blogee
+package com.blogee.activitys
 
 import android.app.Activity
 import android.content.Intent
@@ -15,8 +15,12 @@ import android.view.View
 import android.widget.*
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.Models.Nota
-import com.blogee.Models.Usuario
+import com.blogee.ImageUtilities
+import com.blogee.R
+import com.blogee.RestEngine
+import com.blogee.Service
+import com.blogee.models.Nota
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,6 +67,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         val cambiarActivity = Intent(this, MainActivity::class.java)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
+        overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
     }
 
@@ -97,7 +102,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             byteArray =  Base64.getDecoder().decode(strImage)
                             if(byteArray != null){
                                 //Bitmap redondo
-                                val bitmap: Bitmap =ImageUtilities.getBitMapFromByteArray(byteArray)
+                                val bitmap: Bitmap =
+                                    ImageUtilities.getBitMapFromByteArray(byteArray)
                                 val roundedBitmapWrapper: RoundedBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(Resources.getSystem(), bitmap)
                                 roundedBitmapWrapper.setCircular(true)
@@ -169,8 +175,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.btn_PostPost-> post()
-            R.id.btn_PostUpImages-> openCamera()
+            R.id.btn_PostPost -> post()
+            R.id.btn_PostUpImages -> openCamera()
         }
     }
 
