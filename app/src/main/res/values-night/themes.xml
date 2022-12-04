@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Blogee" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimary">@color/color_bar_dark</item>
         <item name="colorPrimaryVariant">@color/color_noti_bar_dark</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorOnBackground">@color/color_blue_dark</item>

@@ -17,6 +17,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.ImageUtilities
 import com.blogee.R
 import com.blogee.RestEngine
@@ -38,11 +39,30 @@ class MainActivity : AppCompatActivity() {
     var animando = false
     var abajo = false
 
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
+//    lateinit var textView: TextView
+//    var number: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+//        textView.visibility = View.GONE
+
+//        title = "KotlinApp"
+        swipeRefreshLayout = findViewById(R.id.swipe)
+//        textView = findViewById(R.id.textView)
+        swipeRefreshLayout.setOnRefreshListener {
+            //Ejecutamos código
+//            number++
+//            textView.text = " Total number = $number"
+
+            traerNotas()
+
+            Handler().postDelayed(Runnable {
+                swipeRefreshLayout.isRefreshing = false
+            }, 200)
+        }
 
         val btnfavNewPost = findViewById<FloatingActionButton>(R.id.fab_new_post)
 
