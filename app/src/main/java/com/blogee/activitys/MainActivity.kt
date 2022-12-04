@@ -49,7 +49,10 @@ class MainActivity : AppCompatActivity() {
         btnfavNewPost.setOnClickListener {
             val idUserLog = Bundle()
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-            val cambiarActivity = Intent(this, Post2::class.java)
+            val cambiarActivity = Intent(
+                this,
+                Post2::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -116,7 +119,10 @@ class MainActivity : AppCompatActivity() {
                             val idUserLog = Bundle()
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
 
-                            val intent = Intent(applicationContext, DetallesNota::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            val intent = Intent(
+                                applicationContext,
+                                DetallesNota::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
 
 
@@ -309,7 +315,10 @@ class MainActivity : AppCompatActivity() {
                 // Acción al presionar el botón
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val cambiarActivity = Intent(this, VerPerfil::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                val cambiarActivity = Intent(
+                    this,
+                    VerPerfil::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

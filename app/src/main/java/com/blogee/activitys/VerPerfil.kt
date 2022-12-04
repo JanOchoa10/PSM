@@ -71,7 +71,10 @@ class VerPerfil : AppCompatActivity() {
         btnEditarPerfil.setOnClickListener {
             val idUserLog = Bundle()
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-            val cambiarActivity = Intent(this, EditarPerfil::class.java)
+            val cambiarActivity = Intent(
+                this,
+                EditarPerfil::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -215,7 +218,10 @@ class VerPerfil : AppCompatActivity() {
 //        onBackPressed()
         val idUserLog = Bundle()
         idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-        val cambiarActivity = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val cambiarActivity = Intent(
+            this,
+            MainActivity::class.java
+        ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
@@ -244,14 +250,12 @@ class VerPerfil : AppCompatActivity() {
 
                 myEditor.apply()
 
-                val cambiarActivity = Intent(this, Login::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                val cambiarActivity = Intent(
+                    this,
+                    Login::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.from_left, R.anim.to_right)
-//                startActivity(
-//                    Intent(baseContext, Login::class.java)
-//                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//                )
-//                finish()
 
                 true
             }

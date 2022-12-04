@@ -20,8 +20,10 @@ class ImagenCompleta : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // remove title
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
         supportActionBar?.hide()
         setContentView(R.layout.activity_imagen_completa)
 

@@ -6,39 +6,37 @@ import retrofit2.Call
 import retrofit2.http.*
 
 //Retrofi usa una interface para hacer la petición hacia el servidor
-interface Service{
+interface Service {
 
     //Servicios para consumir el Album
     @GET("User/Users")
-    fun getUsers():Call<List<Usuario>>
+    fun getUsers(): Call<List<Usuario>>
 
     @GET("User/Users/{id}")
     fun getUser(@Path("id") id: String?): Call<List<Usuario>>
 
     @Headers("Content-Type: application/json")
     @POST("User/Login")
-    fun getUserLogin(@Body userData: Usuario):Call<List<Usuario>>
+    fun getUserLogin(@Body userData: Usuario): Call<List<Usuario>>
 
 
     @Headers("Content-Type: application/json")
     @POST("User/Save")
-    fun saveUser(@Body userData: Usuario):Call<Int>
+    fun saveUser(@Body userData: Usuario): Call<Int>
 
     @Headers("Content-Type: application/json")
     @POST("User/Update")
-    fun saveEditUser(@Body userData: Usuario):Call<Int>
-
-
+    fun saveEditUser(@Body userData: Usuario): Call<Int>
 
 
     //Notas
     @Headers("Content-Type: application/json")
     @POST("Nota/Save")
-    fun saveNota(@Body userData: Nota):Call<Int>
+    fun saveNota(@Body userData: Nota): Call<Int>
 
     //Servicios para consumir el Album
     @GET("Nota/Notas")
-    fun getNotas():Call<List<Nota>>
+    fun getNotas(): Call<List<Nota>>
 
     @GET("Nota/Notas/{id}")
     fun getNotaUser(@Path("id") id: String?): Call<List<Nota>>

@@ -212,7 +212,7 @@ class DetallesNota : AppCompatActivity() {
 
         val nota = intent.getSerializableExtra("verNota") as Nota
 
-        if(id_User != nota.id_User.toString()) {
+        if (id_User != nota.id_User.toString()) {
             searchItem.isVisible = false
         }
 
@@ -222,7 +222,10 @@ class DetallesNota : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val idUserLog = Bundle()
         idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-        val cambiarActivity = Intent(this, MainActivity::class.java)
+        val cambiarActivity = Intent(
+            this,
+            MainActivity::class.java
+        ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
@@ -247,7 +250,10 @@ class DetallesNota : AppCompatActivity() {
                 // Acción al presionar el botón
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val cambiarActivity = Intent(this, VerPerfil::class.java)
+                val cambiarActivity = Intent(
+                    this,
+                    VerPerfil::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -256,7 +262,10 @@ class DetallesNota : AppCompatActivity() {
             R.id.app_bar_edit_note -> {
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val cambiarActivity = Intent(this, EditarPost::class.java)
+                val cambiarActivity = Intent(
+                    this,
+                    EditarPost::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

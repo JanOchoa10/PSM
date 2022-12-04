@@ -22,12 +22,12 @@ import java.util.*
 
 class SingUp : AppCompatActivity(), View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper
-    var nameUser:TextView? = null
-    var lastNameUser:TextView? = null
-    var emailUser:TextView? = null
-    var passUser:TextView? = null
-    var imageUI:ImageView? =  null
-    var imgArray:ByteArray? =  null
+    var nameUser: TextView? = null
+    var lastNameUser: TextView? = null
+    var emailUser: TextView? = null
+    var passUser: TextView? = null
+    var imageUI: ImageView? = null
+    var imgArray: ByteArray? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +48,15 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         imageUI = findViewById<ImageView>(R.id.imageView2)
 
 
-
-
         // get reference to TextView
         val textSignUp = findViewById<TextView>(R.id.tienesCuenta)
         // set on-click listener
         textSignUp.setOnClickListener {
             //Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
-            val cambiarActivity = Intent(this, Login::class.java)
+            val cambiarActivity = Intent(
+                this,
+                Login::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.from_left, R.anim.to_right)
             finish()
@@ -72,22 +73,24 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         //Lo importante es ser congruente en su uso
         //image pick code
         private val IMAGE_PICK_CODE = 1000;
+
         //Permission code
         private val PERMISSION_CODE = 1001;
+
         //camera code
         private val CAMERA_CODE = 1002;
     }
 
 
     override fun onClick(v: View?) {
-        when(v!!.id){
+        when (v!!.id) {
             R.id.btnCamera -> openCamera()
             R.id.button -> saveUser()
         }
     }
 
 
-    private fun openCamera(){
+    private fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_CODE)
     }
@@ -99,12 +102,12 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
             //RESPUESTA DE LA CÁMARA CON TIENE LA IMAGEN
             if (requestcode == CAMERA_CODE) {
 
-                val photo =  data?.extras?.get("data") as Bitmap
+                val photo = data?.extras?.get("data") as Bitmap
                 val stream = ByteArrayOutputStream()
                 //Bitmap.CompressFormat agregar el formato desado, estoy usando aqui jpeg
                 photo.compress(Bitmap.CompressFormat.JPEG, 80, stream)
                 //Agregamos al objecto album el arreglo de bytes
-                imgArray =  stream.toByteArray()
+                imgArray = stream.toByteArray()
                 //Mostramos la imagen en la vista
                 this.imageUI!!.setImageBitmap(photo)
 
@@ -115,60 +118,60 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
     }
 
 
-    private fun saveUser(){
+    private fun saveUser() {
 
-    if(this.imgArray == null){
-        Toast.makeText(this@SingUp,"Por favor ingresa una imagen",Toast.LENGTH_LONG).show()
-    }else{
-        if(nameUser!!.text.isNotBlank() && lastNameUser!!.text.isNotBlank() && emailUser!!.text.isNotBlank() && passUser!!.text.isNotBlank()){
+        if (this.imgArray == null) {
+            Toast.makeText(this@SingUp, "Por favor ingresa una imagen", Toast.LENGTH_LONG).show()
+        } else {
+            if (nameUser!!.text.isNotBlank() && lastNameUser!!.text.isNotBlank() && emailUser!!.text.isNotBlank() && passUser!!.text.isNotBlank()) {
 
-            val cambiarActivity = Intent(this, Login::class.java)
+                val cambiarActivity = Intent(
+                    this,
+                    Login::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-            val encodedString:String =  Base64.getEncoder().encodeToString(this.imgArray)
-            val strEncodeImage:String = "data:image/png;base64," + encodedString
+                val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
+                val strEncodeImage: String = "data:image/png;base64," + encodedString
 
 
-            //SE CONSTRUYE EL OBJECTO A ENVIAR,  ESTO DEPENDE DE COMO CONSTRUYAS EL SERVICIO
-            // SI TU SERVICIO POST REQUIERE DOS PARAMETROS HACER UN OBJECTO CON ESOS DOS PARAMETROS
-            val user =   Usuario(0,
-                nameUser!!.text.toString(),
-                lastNameUser!!.text.toString(),
-                emailUser!!.text.toString(),
-                passUser!!.text.toString(),
-                strEncodeImage)
-            val service: Service =  RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<Int> = service.saveUser(user)
+                //SE CONSTRUYE EL OBJECTO A ENVIAR,  ESTO DEPENDE DE COMO CONSTRUYAS EL SERVICIO
+                // SI TU SERVICIO POST REQUIERE DOS PARAMETROS HACER UN OBJECTO CON ESOS DOS PARAMETROS
+                val user = Usuario(
+                    0,
+                    nameUser!!.text.toString(),
+                    lastNameUser!!.text.toString(),
+                    emailUser!!.text.toString(),
+                    passUser!!.text.toString(),
+                    strEncodeImage
+                )
+                val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+                val result: Call<Int> = service.saveUser(user)
 
-            result.enqueue(object: Callback<Int>{
-                override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@SingUp,"Error",Toast.LENGTH_LONG).show()
-                }
+                result.enqueue(object : Callback<Int> {
+                    override fun onFailure(call: Call<Int>, t: Throwable) {
+                        Toast.makeText(this@SingUp, "Error", Toast.LENGTH_LONG).show()
+                    }
 
-                override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                    nameUser!!.text = ""
-                    lastNameUser!!.text = ""
-                    emailUser!!.text = ""
-                    passUser!!.text = ""
-                    Toast.makeText(this@SingUp,"Guardado",Toast.LENGTH_LONG).show()
-                    startActivity(cambiarActivity)
-                    overridePendingTransition(R.anim.from_left, R.anim.to_right)
-                    finish()
-                }
-            })
+                    override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+                        nameUser!!.text = ""
+                        lastNameUser!!.text = ""
+                        emailUser!!.text = ""
+                        passUser!!.text = ""
+                        Toast.makeText(this@SingUp, "Guardado", Toast.LENGTH_LONG).show()
+                        startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.from_left, R.anim.to_right)
+                        finish()
+                    }
+                })
+
+
+            } else {
+                Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+            }
 
 
         }
-        else{
-            Toast.makeText(this,"Ingresa todos los datos",Toast.LENGTH_SHORT).show()
-        }
-
-
-    }
-
-
-
-
 
 
     }
