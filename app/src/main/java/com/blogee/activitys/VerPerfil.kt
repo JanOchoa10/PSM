@@ -3,7 +3,6 @@ package com.blogee.activitys
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.Menu
@@ -11,12 +10,13 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.adapters.PostsAdapter
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
-import com.blogee.adapters.PostsAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,6 +74,7 @@ class VerPerfil : AppCompatActivity() {
             val cambiarActivity = Intent(this, EditarPerfil::class.java)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
         //Toast.makeText(this,args[0], Toast.LENGTH_SHORT).show()
@@ -214,7 +215,7 @@ class VerPerfil : AppCompatActivity() {
 //        onBackPressed()
         val idUserLog = Bundle()
         idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-        val cambiarActivity = Intent(this, MainActivity::class.java)
+        val cambiarActivity = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
@@ -234,7 +235,8 @@ class VerPerfil : AppCompatActivity() {
             R.id.log_out -> {
                 // Acción al presionar el botón
 
-                val myPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                val myPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 val myEditor = myPreferences.edit()
 //                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
                 myEditor.putString("emailLogged", "")
@@ -242,8 +244,15 @@ class VerPerfil : AppCompatActivity() {
 
                 myEditor.apply()
 
-                val cambiarActivity = Intent(this, Login::class.java)
+                val cambiarActivity = Intent(this, Login::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.from_left, R.anim.to_right)
+//                startActivity(
+//                    Intent(baseContext, Login::class.java)
+//                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//                )
+//                finish()
+
                 true
             }
             /**R.id.create_new -> {

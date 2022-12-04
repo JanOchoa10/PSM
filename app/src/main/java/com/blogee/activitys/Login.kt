@@ -76,6 +76,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
             //Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
             val cambiarActivity = Intent(this, SingUp::class.java)
             startActivity(cambiarActivity)
+            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
             finish()
         }
 
@@ -160,6 +161,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
 
                             cambiarActivity.putExtras(idUserLog)
                             startActivity(cambiarActivity)
+                            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                             finish()
                         }
                     }else{
@@ -176,7 +178,9 @@ class Login : AppCompatActivity(),View.OnClickListener {
 
     }
 
-
+    override fun onBackPressed() {
+        finishAffinity()
+    }
 
 
 

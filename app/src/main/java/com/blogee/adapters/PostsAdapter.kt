@@ -1,26 +1,34 @@
 package com.blogee.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.ImageUtilities
-import com.blogee.models.Nota
-import com.blogee.models.Usuario
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
+import com.blogee.activitys.ImagenCompleta
+import com.blogee.activitys.Login
+import com.blogee.models.Nota
+import com.blogee.models.Usuario
+import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import kotlinx.android.synthetic.main.item_publicacion.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+
 
 class PostsAdapter(
     private val mContext: Context,
@@ -110,6 +118,21 @@ class PostsAdapter(
 //                layout.imgNota.minimumWidth
 //                layout.imgNota.setImageBitmap(bitmap)
             }
+
+            layout.imgNota.setOnClickListener {
+
+                val notaActual: Nota = nota
+
+                val intent = Intent(
+                    mContext,
+                    ImagenCompleta::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+                intent.putExtra("verNota", notaActual)
+                startActivity(mContext, intent, null)
+
+            }
+
         }
 
         layout.titulo.text = nota.Title

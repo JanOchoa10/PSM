@@ -25,6 +25,7 @@ import com.blogee.adapters.PostsAdapter
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -54,7 +55,6 @@ class MainActivity : AppCompatActivity() {
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
         }
-
 
         traerNotas()
 
@@ -113,39 +113,19 @@ class MainActivity : AppCompatActivity() {
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
 
-//                            val userActual: Usuario =
-//                                parent.getItemAtPosition(position) as Usuario
-
                             val idUserLog = Bundle()
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-//                            val cambiarActivity = Intent(this, VerPerfil::class.java)
-//                            cambiarActivity.putExtras(idUserLog)
-//                            startActivity(cambiarActivity)
 
-                            val intent = Intent(applicationContext, DetallesNota::class.java)
+                            val intent = Intent(applicationContext, DetallesNota::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
 
 
                             intent.putExtra("verNota", notaActual)
                             intent.putExtras(idUserLog)
-//                            intent.putExtra("userNota", userActual)
-
 
                             startActivity(intent)
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-//                            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
-
-//                            Toast.makeText(
-//                                applicationContext,
-//                                notaActual.Title
-//                                        + "\n\n" + notaActual.Description
-//                                        + "\n\n" + notaActual.id_User,
-//                                Toast.LENGTH_SHORT
-//                            )
-//                                .show()
                         }
-
-
 
 
                         lvPost.setOnScrollListener(object : AbsListView.OnScrollListener {
@@ -218,26 +198,6 @@ class MainActivity : AppCompatActivity() {
                             }
 
                         })
-
-
-//                        lvPost.setOnScrollListener(object : AbsListView.OnScrollListener() {
-//                            override fun onScroll(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                                if (dy > 0) // Puedes ocultarlo simplemente
-//                                //fab.hide();
-//                                // o añadir la animación deseada
-//                                    fab.animate().translationY(
-//                                        fab.getHeight() +
-//                                                resources.getDimension(R.dimen.fab_margin)
-//                                    )
-//                                        .setInterpolator(LinearInterpolator())
-//                                        .setDuration(1000) // Cambiar al tiempo deseado
-//                                else if (dy < 0) //fab.show();
-//                                    fab.animate().translationY(0)
-//                                        .setInterpolator(LinearInterpolator())
-//                                        .setDuration(1000) // Cambiar al tiempo deseado
-//                            }
-//                        })
-
 
                     }
                 } else {
@@ -349,7 +309,7 @@ class MainActivity : AppCompatActivity() {
                 // Acción al presionar el botón
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val cambiarActivity = Intent(this, VerPerfil::class.java)
+                val cambiarActivity = Intent(this, VerPerfil::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

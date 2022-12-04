@@ -125,6 +125,7 @@ class EditarPost : AppCompatActivity() {
                 val cambiarActivity = Intent(this, VerPerfil::class.java)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
             }
             /**R.id.create_new -> {

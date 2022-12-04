@@ -57,6 +57,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
             val cambiarActivity = Intent(this, Login::class.java)
             startActivity(cambiarActivity)
+            overridePendingTransition(R.anim.from_left, R.anim.to_right)
             finish()
         }
 
@@ -151,6 +152,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                     passUser!!.text = ""
                     Toast.makeText(this@SingUp,"Guardado",Toast.LENGTH_LONG).show()
                     startActivity(cambiarActivity)
+                    overridePendingTransition(R.anim.from_left, R.anim.to_right)
                     finish()
                 }
             })

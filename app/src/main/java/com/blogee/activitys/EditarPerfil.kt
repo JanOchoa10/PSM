@@ -69,6 +69,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             val cambiarActivity = Intent(this, VerPerfil::class.java)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
     }
@@ -214,6 +215,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(this@EditarPerfil,"Guardado", Toast.LENGTH_LONG).show()
                     cambiarActivity.putExtras(idUserLog)
                     startActivity(cambiarActivity)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     finish()
                 }
             })
@@ -283,18 +285,23 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
 
                 if (f == 0) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    //Toast.makeText(this,"Modo oscuro activado", Toast.LENGTH_SHORT).show()
                     myEditor.putInt(getString(R.string.modo_oscuro), 1)
+                    myEditor.apply()
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
                 } else {
                     if (f == 1) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                        //Toast.makeText(this,"Modo oscuro desactivado", Toast.LENGTH_SHORT).show()
                         myEditor.putInt(getString(R.string.modo_oscuro), 0)
+                        myEditor.apply()
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+
+                        //Toast.makeText(this,"Modo oscuro desactivado", Toast.LENGTH_SHORT).show()
+
                     }
                 }
 
-                myEditor.apply()
+
                 true
             }
             /**R.id.create_new -> {

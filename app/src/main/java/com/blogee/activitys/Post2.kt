@@ -58,6 +58,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             val cambiarActivity = Intent(this, VerPerfil::class.java)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
     }
 
@@ -147,6 +148,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 val cambiarActivity = Intent(this, VerPerfil::class.java)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
             }
             /**R.id.create_new -> {
@@ -244,6 +246,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(this@Post2,"Publicado", Toast.LENGTH_LONG).show()
                     cambiarActivity.putExtras(idUserLog)
                     startActivity(cambiarActivity)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     finish()
                 }
             })
