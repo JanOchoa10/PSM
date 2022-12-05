@@ -195,14 +195,21 @@ class VerPerfil : AppCompatActivity() {
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
 
-                            Toast.makeText(
+                            val idUserLog = Bundle()
+                            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
+                            val intent = Intent(
                                 applicationContext,
-                                notaActual.Title
-                                        + "\n\n" + notaActual.Description
-                                        + "\n\n" + notaActual.id_User,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                                DetallesNota::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+
+
+                            intent.putExtra("verNota", notaActual)
+                            intent.putExtras(idUserLog)
+
+                            startActivity(intent)
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         }
 
                     }

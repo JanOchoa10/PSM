@@ -92,9 +92,9 @@ class EditarPost : AppCompatActivity() {
                                         Resources.getSystem(),
                                         bitmap
                                     )
-                                roundedBitmapWrapper.setCircular(true)
+                                roundedBitmapWrapper.isCircular = true
 //                                imageUI!!.setImageDrawable(roundedBitmapWrapper)
-                                miItem5.setIcon(roundedBitmapWrapper)
+                                miItem5.icon = roundedBitmapWrapper
 
                             }
                         }

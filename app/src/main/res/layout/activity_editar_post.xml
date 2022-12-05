@@ -106,7 +106,7 @@
         android:background="@drawable/anim_button"
         android:textColor="@color/white"
         app:backgroundTint="@null"
-        android:text="@string/save"
+        android:text="@string/delete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
