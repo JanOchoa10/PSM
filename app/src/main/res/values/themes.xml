@@ -24,6 +24,10 @@
         <item name="android:background">@color/color_bar_light</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.Blogee" >
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
 <!--    <style name="Theme.ButtonChanger"-->
 <!--        parent="Theme.AppCompat.Light.NoActionBar">-->
 <!--        <item name="android:background">@drawable/custom_button</item>-->

@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.ImageUtilities
 import com.blogee.R
@@ -26,7 +25,6 @@ import com.blogee.adapters.PostsAdapter
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -309,7 +307,7 @@ class MainActivity : AppCompatActivity() {
         val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
         //permite modificar el hint que el EditText muestra por defecto
         //permite modificar el hint que el EditText muestra por defecto
-        searchView.setQueryHint("Buscar")
+        searchView.queryHint = "Buscar"
 //        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener() {
 //            fun onQueryTextSubmit(query: String?): Boolean {
 //                Toast.makeText(this@MainActivity, R.string.submitted, Toast.LENGTH_SHORT).show()

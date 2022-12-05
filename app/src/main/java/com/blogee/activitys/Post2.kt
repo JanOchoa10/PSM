@@ -150,7 +150,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         asignaFotoUsuario(menu)
 
         val searchItem = menu.findItem(R.id.app_bar_search)
-        searchItem.setVisible(false)
+        searchItem.isVisible = false
 
         return true
     }
