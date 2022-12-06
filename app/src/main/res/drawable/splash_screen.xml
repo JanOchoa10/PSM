@@ -6,7 +6,7 @@
         <bitmap
             android:gravity="center"
             android:radius="15dp"
-            android:src="@drawable/bluebird" />
+            android:src="@drawable/circlebluebird" />
     </item>
 
 </layer-list>

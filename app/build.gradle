@@ -54,4 +54,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.6.0'
     //Checar en el android manifest tener lo user permisos
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation "com.github.MikeOrtiz:TouchImageView:1.4.1"
 }
