@@ -1,20 +1,22 @@
-package com.blogee
+package com.blogee.activitys
 
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.Models.Nota
-import com.blogee.Models.Usuario
+import com.blogee.*
 import com.blogee.adapters.PostsAdapter
+import com.blogee.models.Nota
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,9 +45,9 @@ class VerPerfil : AppCompatActivity() {
 
         val btnEditarPerfil = findViewById<Button>(R.id.btn_editar_perfil)
 
-        namePerfil = findViewById<TextView>(R.id.textView6)
-        lastnamePerfil = findViewById<TextView>(R.id.textView7)
-        emailPerfil = findViewById<TextView>(R.id.textView3)
+        namePerfil = findViewById<TextView>(R.id.lbName)
+        lastnamePerfil = findViewById<TextView>(R.id.lbLastName)
+        emailPerfil = findViewById<TextView>(R.id.lbEmail)
         imageUI = findViewById(R.id.imageView)
 
 
@@ -69,9 +71,13 @@ class VerPerfil : AppCompatActivity() {
         btnEditarPerfil.setOnClickListener {
             val idUserLog = Bundle()
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-            val cambiarActivity = Intent(this, EditarPerfil::class.java)
+            val cambiarActivity = Intent(
+                this,
+                EditarPerfil::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
         //Toast.makeText(this,args[0], Toast.LENGTH_SHORT).show()
@@ -212,9 +218,13 @@ class VerPerfil : AppCompatActivity() {
 //        onBackPressed()
         val idUserLog = Bundle()
         idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-        val cambiarActivity = Intent(this, MainActivity::class.java)
+        val cambiarActivity = Intent(
+            this,
+            MainActivity::class.java
+        ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
+        overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
     }
 
@@ -230,8 +240,23 @@ class VerPerfil : AppCompatActivity() {
 
             R.id.log_out -> {
                 // Acción al presionar el botón
-                val cambiarActivity = Intent(this, Login::class.java)
+
+                val myPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                val myEditor = myPreferences.edit()
+//                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+                myEditor.putString("emailLogged", "")
+                myEditor.putString("passLogged", "")
+
+                myEditor.apply()
+
+                val cambiarActivity = Intent(
+                    this,
+                    Login::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.from_left, R.anim.to_right)
+
                 true
             }
             /**R.id.create_new -> {

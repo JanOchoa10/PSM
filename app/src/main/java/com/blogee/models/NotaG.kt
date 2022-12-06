@@ -1,7 +1,7 @@
-package com.blogee.Models
+package com.blogee.models
 
-data class Nota(
-    var id_Nota: Int? = null,
+data class NotaG(
+    var id_NotaG: Int? = null,
     var Title: String? = null,
     var Description: String? = null,
     var id_User: Int? = null,

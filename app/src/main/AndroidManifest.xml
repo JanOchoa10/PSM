@@ -15,24 +15,38 @@
         android:theme="@style/Theme.Blogee"
         tools:targetApi="31">
         <activity
-            android:name=".Post2"
+            android:name=".activitys.ImagenCompleta"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activitys.DetallesNota"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activitys.Post2"
             android:exported="false" />
         <activity
-            android:name=".EditarPost"
+            android:name=".activitys.EditarPost"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".VerPerfil"
+            android:name=".activitys.VerPerfil"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".Login"
+            android:name=".activitys.Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,21 +59,21 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".EditarPerfil"
+            android:name=".activitys.EditarPerfil"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".SingUp"
+            android:name=".activitys.SingUp"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activitys.MainActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

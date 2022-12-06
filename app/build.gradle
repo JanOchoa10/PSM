@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'com.blogee'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.blogee"
         minSdk 26
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -31,23 +31,27 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     //Se agregar librerias para  manejo  consumir la web Api  y manejo de json
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.9'
     //Esto para generar un interseptor que nos va a permitir desplegar la respuesta del  servicio en el logcat
     implementation 'com.squareup.okhttp3:okhttp:4.6.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.6.0'
     //Checar en el android manifest tener lo user permisos
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }

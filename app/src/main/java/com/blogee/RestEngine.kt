@@ -11,22 +11,22 @@ import retrofit2.converter.gson.GsonConverterFactory
 //La interface rest
 
 //Esta clase configura  el rest Adapter, definindo su configuración inicial
-class RestEngine{
+class RestEngine {
     // nos permite acceder sin instanciar el objecto
-    companion object{
+    companion object {
         fun getRestEngine(): Retrofit {
             //Creamos el interceptor
             val interceptor = HttpLoggingInterceptor()
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-            val client =  OkHttpClient.Builder().addInterceptor(interceptor).build()
-            val retrofit =  Retrofit.Builder()
+            val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+            val retrofit = Retrofit.Builder()
                 .baseUrl("https://blogee7.000webhostapp.com/Blogee.api/") // tu url
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
 
-            return  retrofit
+            return retrofit
 
         }
     }

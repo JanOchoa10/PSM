@@ -31,4 +31,7 @@
     <string name="new_post">Nueva publicación</string>
     <string name="log_out">Cerrar sesión</string>
     <string name="dark_mode">Modo oscuro</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="search">Buscar</string>
+    <string name="edit">Editar</string>
 </resources>

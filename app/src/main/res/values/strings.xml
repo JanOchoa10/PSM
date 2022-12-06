@@ -33,4 +33,9 @@
     <string name="log_out">Log out</string>
     <string name="dark_mode">Dark mode</string>
     <string name="modo_oscuro" translatable="false">ModoOscuro</string>
+    <string name="title_activity_scrolling" translatable="false">ScrollingActivity</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="edit">Edit</string>
 </resources>
