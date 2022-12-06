@@ -111,13 +111,13 @@
                 android:text="@string/name"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/editTextTextName"
+                app:layout_constraintBottom_toTopOf="@+id/editPostTitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="MissingConstraints" />
 
             <EditText
-                android:id="@+id/editTextTextName"
+                android:id="@+id/editPostTitle"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:backgroundTint="#FFFFFF"

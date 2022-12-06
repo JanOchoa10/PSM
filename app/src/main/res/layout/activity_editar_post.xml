@@ -8,7 +8,7 @@
     tools:context=".activitys.EditarPost">
 
     <EditText
-        android:id="@+id/editTextTextName"
+        android:id="@+id/editPostTitle"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="32dp"
@@ -33,8 +33,8 @@
         android:text="@string/title"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextName"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextName"
+        app:layout_constraintBottom_toTopOf="@+id/editPostTitle"
+        app:layout_constraintStart_toStartOf="@+id/editPostTitle"
         tools:ignore="MissingConstraints" />
 
     <TextView
@@ -44,12 +44,12 @@
         android:text="@string/description"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextMultiLine"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextMultiLine"
+        app:layout_constraintBottom_toTopOf="@+id/editPostDesc"
+        app:layout_constraintStart_toStartOf="@+id/editPostDesc"
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine"
+        android:id="@+id/editPostDesc"
         android:layout_width="0dp"
         android:layout_height="114dp"
         android:layout_marginTop="32dp"
@@ -60,73 +60,96 @@
         android:inputType="textMultiLine"
         android:textColor="#FFFFFF"
         android:textColorHint="#80FFFFFF"
-        app:layout_constraintEnd_toEndOf="@+id/editTextTextName"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextName"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextName" />
+        app:layout_constraintEnd_toEndOf="@+id/editPostTitle"
+        app:layout_constraintStart_toStartOf="@+id/editPostTitle"
+        app:layout_constraintTop_toBottomOf="@+id/editPostTitle" />
 
     <Button
         android:id="@+id/btn_img"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/anim_button"
+        android:text="@string/upload_images"
         android:textColor="@color/white"
         app:backgroundTint="@null"
-        android:text="@string/upload_images"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
+        app:layout_constraintTop_toBottomOf="@+id/editPostDesc" />
 
     <Button
         android:id="@+id/btn_post"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="128dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/anim_button"
+        android:text="@string/post"
         android:textColor="@color/white"
         app:backgroundTint="@null"
-        android:text="@string/post"
+        app:layout_constraintBottom_toTopOf="@+id/btn_delete"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_img" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_save"
+        android:id="@+id/btn_delete"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/anim_button"
         android:textColor="@color/white"
         app:backgroundTint="@null"
         android:text="@string/save"
+        app:layout_constraintBottom_toTopOf="@+id/btn_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_post" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_cancel"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/anim_button"
         android:textColor="@color/white"
         app:backgroundTint="@null"
         android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="180dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_post"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_save" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_img"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/btn_EliminarImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        tools:layout_editor_absoluteY="382dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

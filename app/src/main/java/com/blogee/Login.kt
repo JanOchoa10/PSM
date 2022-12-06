@@ -11,7 +11,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.blogee.Models.Usuario
+import com.blogee.activitys.MainActivity
+import com.blogee.activitys.SingUp
+import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -68,7 +70,7 @@ class Login : AppCompatActivity(),View.OnClickListener {
         //}
 
         // get reference to TextView
-        val textSignUp = findViewById<TextView>(R.id.textView5)
+        val textSignUp = findViewById<TextView>(R.id.tienesCuenta)
         // set on-click listener
         textSignUp.setOnClickListener {
             //Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()

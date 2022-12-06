@@ -122,13 +122,15 @@ class DetallesNota : AppCompatActivity() {
             imgNota2.setOnClickListener {
 
                 val notaActual: Nota = nota
-
+                val idUserLog = Bundle()
+                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
                 val intent = Intent(
                     applicationContext,
                     ImagenCompleta::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
                 intent.putExtra("verNota", notaActual)
+                intent.putExtras(idUserLog)
                 startActivity(intent)
 //                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
@@ -261,11 +263,14 @@ class DetallesNota : AppCompatActivity() {
             }
             R.id.app_bar_edit_note -> {
                 val idUserLog = Bundle()
+                val nota = intent.getSerializableExtra("verNota") as Nota
+
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
                 val cambiarActivity = Intent(
                     this,
                     EditarPost::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                cambiarActivity.putExtra("verNota", nota)
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

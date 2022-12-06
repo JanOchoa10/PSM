@@ -143,9 +143,6 @@ class MainActivity : AppCompatActivity() {
                                 applicationContext,
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
-
-
                             intent.putExtra("verNota", notaActual)
                             intent.putExtras(idUserLog)
 

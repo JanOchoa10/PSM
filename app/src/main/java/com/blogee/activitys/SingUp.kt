@@ -41,7 +41,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         btnCamera.setOnClickListener(this)
         val btnSignUp = findViewById<Button>(R.id.button)
         btnSignUp.setOnClickListener(this)
-        nameUser = findViewById<TextView>(R.id.editTextTextName)
+        nameUser = findViewById<TextView>(R.id.editPostTitle)
         lastNameUser = findViewById<TextView>(R.id.editTextTextLastName)
         emailUser = findViewById<TextView>(R.id.editTextTextEmailAddress)
         passUser = findViewById<TextView>(R.id.editTextTextPassword)
