@@ -37,4 +37,11 @@
     <string name="delete">Eliminar</string>
     <string name="delete_images">Eliminar imágenes</string>
     <string name="take_photo">Tomar foto</string>
+    <string name="can_not_be_empty">El campo no puede estar vacío</string>
+    <string name="valid_email_address">Por favor, introduce una dirección de correo electrónico válida</string>
+    <string name="password_is_too_weak">La contraseña es demasiado débil</string>
+    <string name="introduce_nombres">Introduce tu nombre</string>
+    <string name="introduce_apellido">Introduce tu apellido</string>
+    <string name="enter_valid_name">Introduce un nombre válido</string>
+    <string name="enter_valid_lastname">Introducir un apellido válido</string>
 </resources>

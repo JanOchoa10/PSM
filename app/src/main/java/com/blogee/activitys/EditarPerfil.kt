@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.util.PatternsCompat
 import com.blogee.ImageUtilities
 import com.blogee.R
 import com.blogee.RestEngine
@@ -28,6 +29,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.util.*
+import java.util.regex.Pattern
 
 
 class EditarPerfil : AppCompatActivity(), View.OnClickListener {
@@ -153,7 +155,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.btn_guardar_cambios -> GuardarCambios()
+            R.id.btn_guardar_cambios -> validate()
             R.id.btnCamera2 -> openCamera()
         }
     }
@@ -192,7 +194,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             val cambiarActivity = Intent(
                 this,
                 VerPerfil::class.java
-            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
             val strEncodeImage: String
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
@@ -333,6 +335,143 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             }*/
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    val caracteresEspeciales = "[:punct:]"
+
+    private fun validateEmail(): Boolean {
+        // /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
+        val email = emailUser!!.text.toString()
+        return if (email.isEmpty()) {
+            emailUser!!.error = getString(R.string.can_not_be_empty)
+            emailUser!!.requestFocus()
+            false
+        } else if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailUser!!.error = getString(R.string.valid_email_address)
+            emailUser!!.requestFocus()
+            false
+        } else {
+            emailUser!!.error = null
+            true
+        }
+    }
+
+    private fun validatePassword(): Boolean {
+        val password = passUser!!.text.toString()
+
+        val passwordRegex = Pattern.compile(
+            "^"
+                    + "(?=.*[0-9])"         // Al menos un digito
+                    + "(?=.*[a-z])"         // Al menos una minuscula
+                    + "(?=.*[A-Z])"         // Al menos una mayuscula
+                    + "(?=.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
+                    + "(?=\\S+$)"           // No espacios en blanco
+                    + ".{8,50}"               // Al menos 8 caracteres
+                    + "$"
+
+        )
+
+        return if (password.isEmpty()) {
+//            passUser!!.setErrorEnabled(true)
+            passUser!!.setError(getString(R.string.can_not_be_empty), null)
+            passUser!!.requestFocus()
+            false
+        } else if (!passwordRegex.matcher(password).matches()) {
+            passUser!!.setError(getString(R.string.password_is_too_weak), null)
+            passUser!!.requestFocus()
+            false
+        } else {
+            passUser!!.error = null
+            true
+        }
+    }
+
+    private fun validateName(): Boolean {
+        val name = nameUser!!.text.toString()
+
+        val nameRegex = Pattern.compile(
+            "^"
+//                    + "([A-Z])"               // Empezar con mayúscula
+                    + "(?!.*[0-9])"         // Al menos un digito
+                    + "(?=.*[a-z])"         // Al menos una minuscula
+                    + "(?=.*[A-Z])"         // Al menos una mayuscula
+                    + "(?!.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
+//                    + "(?=\\S+$)"           // No espacios en blanco
+                    + ".{2,50}"               // Al menos 2 caracteres
+                    + "$"
+
+        )
+
+        return if (name.isEmpty()) {
+//            passUser!!.setErrorEnabled(true)
+            nameUser!!.setError(getString(R.string.can_not_be_empty))
+            nameUser!!.requestFocus()
+            false
+        } else if (!nameRegex.matcher(name).matches()) {
+            nameUser!!.setError(getString(R.string.enter_valid_name))
+            nameUser!!.requestFocus()
+            false
+        } else {
+            nameUser!!.error = null
+            true
+        }
+    }
+
+    private fun validateLastName(): Boolean {
+        val lastName = lastNameUser!!.text.toString()
+
+        val nameRegex = Pattern.compile(
+
+//            "^(?!.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?!.*[$caracteresEspeciales])(?=\\S+$).{2,50}\$"
+
+            "^"
+//                    + "[A-Z]"               // Empezar con mayúscula
+                    + "(?!.*[0-9])"         // Al menos un digito
+                    + "(?=.*[a-z])"         // Al menos una minuscula
+                    + "(?=.*[A-Z])"         // Al menos una mayuscula
+                    + "(?!.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
+//                    + "(?=\\S+$)"           // No espacios en blanco
+//                    + "[a-z]"             // Terminar con minúscula
+                    + ".{2,50}"               // Al menos 2 caracteres
+                    + "$"
+
+        )
+
+        return if (lastName.isEmpty()) {
+//            passUser!!.setErrorEnabled(true)
+            lastNameUser!!.setError(getString(R.string.can_not_be_empty))
+            lastNameUser!!.requestFocus()
+            false
+        } else if (!nameRegex.matcher(lastName).matches()) {
+            lastNameUser!!.setError(getString(R.string.enter_valid_lastname))
+            lastNameUser!!.requestFocus()
+            false
+        } else {
+            lastNameUser!!.error = null
+            true
+        }
+    }
+
+
+    private fun validate() {
+
+        if (!validateName()) {
+            return
+        }
+
+        if (!validateLastName()) {
+            return
+        }
+
+        if (!validateEmail()) {
+            return
+        }
+
+        if (!validatePassword()) {
+            return
+        }
+
+        GuardarCambios()
     }
 
 

@@ -1,5 +1,6 @@
 package com.blogee.activitys
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.util.PatternsCompat
 import androidx.core.view.MenuItemCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.R
@@ -25,12 +27,13 @@ import kotlinx.android.synthetic.main.activity_loading.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.regex.Pattern
+
 
 class Login : AppCompatActivity(), View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper
     var emailUser: TextView? = null
     var passUser: TextView? = null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,8 +155,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.btn_login -> login()
-
+            R.id.btn_login -> validate()
         }
     }
 
@@ -187,7 +189,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     // Se ejecuta cada 5 segundos o 5000 milisegundos
                     // Vuelve a intentar conectarse
                     Handler().postDelayed(Runnable {
-                    login()
+                        login()
                     }, 5000)
 
                 }
@@ -323,6 +325,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.app_menu_main, menu)
@@ -366,6 +369,73 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     override fun onBackPressed() {
         finishAffinity()
+    }
+
+    val caracteresEspeciales = "[:punct:]"
+
+    private fun validateEmail(): Boolean {
+        val email = emailUser!!.text.toString()
+        return if (email.isEmpty()) {
+            emailUser!!.error = getString(R.string.can_not_be_empty)
+            emailUser!!.requestFocus()
+            false
+        } else if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailUser!!.error = getString(R.string.valid_email_address)
+            emailUser!!.requestFocus()
+            false
+        } else {
+            emailUser!!.error = null
+            true
+        }
+    }
+
+    private fun validatePassword(): Boolean {
+        val password = passUser!!.text.toString()
+
+        val passwordRegex = Pattern.compile(
+            "^"
+                    + "(?=.*[0-9])"         // Al menos un digito
+                    + "(?=.*[a-z])"         // Al menos una minuscula
+                    + "(?=.*[A-Z])"         // Al menos una mayuscula
+                    + "(?=.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
+                    + "(?=\\S+$)"           // No espacios en blanco
+                    + ".{8,}"               // Al menos 8 caracteres
+                    + "$"
+
+        )
+
+        return if (password.isEmpty()) {
+//            passUser!!.setErrorEnabled(true)
+            passUser!!.setError(getString(R.string.can_not_be_empty), null)
+            passUser!!.requestFocus()
+            false
+        } else if (!passwordRegex.matcher(password).matches()) {
+            passUser!!.setError(getString(R.string.password_is_too_weak), null)
+            passUser!!.requestFocus()
+            false
+        } else {
+            passUser!!.error = null
+            true
+        }
+    }
+
+    private fun validate() {
+//        val result = arrayOf(validateEmail(), validatePassword())
+//
+//        if (false in result) {
+//            return
+//        }
+
+        if (!validateEmail()) {
+            return
+        }
+
+//        if (!validatePassword()) {
+//            return
+//        }
+
+        login()
+//        Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
     }
 
 

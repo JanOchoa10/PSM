@@ -41,4 +41,11 @@
     <string name="delete">Delete</string>
     <string name="delete_images">Delete images</string>
     <string name="take_photo">Take photo</string>
+    <string name="can_not_be_empty">Field can not be empty</string>
+    <string name="valid_email_address">Please enter a valid email address</string>
+    <string name="password_is_too_weak">Password is too weak</string>
+    <string name="introduce_nombres">Enter your name</string>
+    <string name="introduce_apellido">Enter your last name</string>
+    <string name="enter_valid_name">Enter a valid name</string>
+    <string name="enter_valid_lastname">Enter a valid last name</string>
 </resources>
