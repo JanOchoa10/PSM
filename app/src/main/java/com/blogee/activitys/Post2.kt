@@ -1,26 +1,41 @@
 package com.blogee.activitys
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.activity.result.registerForActivityResult
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.ImageUtilities
+//import com.blogee.Manifest
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
+import com.blogee.databinding.ActivityMainBinding
+import com.blogee.databinding.ActivityPost2Binding
+//import com.blogee.databinding.ActivityMainBinding
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
+import kotlinx.android.synthetic.main.activity_post2.*
+import kotlinx.android.synthetic.main.activity_post2.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,22 +46,35 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
     var titlePost: TextView? = null
     var descPost: TextView? = null
     var imageUI: ImageView? = null
+//    lateinit var imageUI : ImageView
     var imgArray: ByteArray? = null
 
+    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+        // Callback is invoked after the user selects a media item or closes the
+        // photo picker.
+        if (uri != null) {
+            Log.d("PhotoPicker", "Selected URI: $uri")
+        } else {
+            Log.d("PhotoPicker", "No media selected")
+        }
+    }
+
+//    private lateinit var btn_galeria : Button
+//    lateinit var imageView3 : ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post2)
 
-        titlePost = findViewById<TextView>(R.id.editText_PostTitle)
-        descPost = findViewById<TextView>(R.id.editText_PostDescrip)
-        imageUI = findViewById<ImageView>(R.id.imageView3)
+        titlePost = findViewById(R.id.editText_PostTitle)
+        descPost = findViewById(R.id.editText_PostDescrip)
+        imageUI = findViewById(R.id.imageView3)
         val btnPost = findViewById<Button>(R.id.btn_PostPost)
         btnPost.setOnClickListener(this)
         val btnCam = findViewById<Button>(R.id.btn_PostUpImages)
         btnCam.setOnClickListener(this)
 
-        this.imageUI!!.setImageResource(R.mipmap.ic_launcher)
+//        this.imageUI.setImageResource(R.mipmap.ic_launcher)
 
 
         Objects.requireNonNull(supportActionBar)?.setDisplayHomeAsUpEnabled(true)
@@ -63,7 +91,18 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
+
+//        btn_galeria = findViewById(R.id.btn_galeria)
+//        imageView3 = findViewById(R.id.imageView3)
+
+//        btn_galeria.setOnClickListener {
+////            if(PickVisualMedia.isPhotoPickerAvailable())
+//            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+//        }
     }
+
+
+
 
     override fun onSupportNavigateUp(): Boolean {
         val idUserLog = Bundle()
@@ -124,9 +163,9 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                                         Resources.getSystem(),
                                         bitmap
                                     )
-                                roundedBitmapWrapper.setCircular(true)
+                                roundedBitmapWrapper.isCircular = true
 //                                imageUI!!.setImageDrawable(roundedBitmapWrapper)
-                                miItem5.setIcon(roundedBitmapWrapper)
+                                miItem5.icon = roundedBitmapWrapper
 
                             }
                         }

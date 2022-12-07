@@ -40,4 +40,5 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="delete_images">Delete images</string>
+    <string name="take_photo">Take photo</string>
 </resources>

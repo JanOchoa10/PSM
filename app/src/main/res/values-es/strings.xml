@@ -36,4 +36,5 @@
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>
     <string name="delete_images">Eliminar imágenes</string>
+    <string name="take_photo">Tomar foto</string>
 </resources>
