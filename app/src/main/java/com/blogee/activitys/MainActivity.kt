@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat
@@ -32,7 +34,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     var animando = false
     var abajo = false
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
 //    lateinit var textView: TextView
 //    var number: Int = 0
+
+    var adaptador: PostsAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 //                            getUnUsuario(item.id_User)
                         }
 
-                        val adaptador = PostsAdapter(this@MainActivity, listaPosts)
+                         adaptador = PostsAdapter(this@MainActivity, listaPosts)
 
                         // Elementos dentro del listview
                         val lvPost = findViewById<ListView>(R.id.lvPosts)
@@ -306,22 +310,9 @@ class MainActivity : AppCompatActivity() {
         val searchItem = menu.findItem(R.id.app_bar_search)
         val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
         //permite modificar el hint que el EditText muestra por defecto
-        //permite modificar el hint que el EditText muestra por defecto
         searchView.queryHint = "Buscar"
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener() {
-//            fun onQueryTextSubmit(query: String?): Boolean {
-//                Toast.makeText(this@MainActivity, R.string.submitted, Toast.LENGTH_SHORT).show()
-//                //se oculta el EditText
-//                searchView.setQuery("", false)
-//                searchView.setIconified(true)
-//                return true
-//            }
-//
-//            fun onQueryTextChange(newText: String?): Boolean {
-//                textView.setText(newText)
-//                return true
-//            }
-//        })
+
+        searchView.setOnQueryTextListener(this)
 
         return true
     }
@@ -344,6 +335,16 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null){
+            if(adaptador != null) this.adaptador?.filter?.filter(newText)
+        }
+        return false
     }
 
 }

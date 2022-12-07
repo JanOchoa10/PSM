@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
@@ -32,8 +30,10 @@ import java.util.*
 
 class PostsAdapter(
     private val mContext: Context,
-    private val listaPosts: List<Nota>
-) : ArrayAdapter<Nota>(mContext, 0, listaPosts) {
+    private var listaPosts: List<Nota>
+) : ArrayAdapter<Nota>(mContext, 0, listaPosts), Filterable {
+
+    private val listaPostsInicial = mutableListOf(listaPosts)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layout = LayoutInflater.from(mContext).inflate(R.layout.item_publicacion, parent, false)
@@ -138,8 +138,61 @@ class PostsAdapter(
         layout.titulo.text = nota.Title
         layout.descripcion.text = nota.Description
 
+        listaPostsInicial.add(listaPosts)
+
+        while (listaPostsInicial.count() > 2) {
+            listaPostsInicial.removeAt(1)
+        }
 
         return layout
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence?): FilterResults {
+
+                listaPosts = listaPostsInicial[0]
+
+                //Obtenemos la cadena
+                val filterResults = FilterResults()
+                filterResults.values = if (charSequence == null || charSequence.isEmpty()) {
+
+                    listaPosts
+
+                } else {
+                    val queryString = charSequence.toString()?.toLowerCase()
+
+
+                    listaPosts.filter { album ->
+
+                        album.Title!!.toLowerCase()
+                            .contains(queryString.toString()) || album.Description!!.toLowerCase()
+                            .contains(
+                                queryString.toString()
+                            )
+                    }
+                }
+
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+                val miListaProv: List<Nota> = results?.values as List<Nota>
+
+                miListaProv.size
+
+                if (miListaProv.isNotEmpty()) {
+                    listaPosts = results?.values as List<Nota>
+                }
+
+                notifyDataSetChanged()
+
+
+            }
+
+        }
+
     }
 
 }

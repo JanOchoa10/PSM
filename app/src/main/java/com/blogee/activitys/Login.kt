@@ -78,6 +78,19 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     swipeRefreshLayout2.isRefreshing = false
                 }, 200)
             }
+            val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+
+            if (f == 0) {
+                //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            } else {
+                if (f == 1) {
+                    // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+            }
+
 
 
         } else {
