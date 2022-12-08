@@ -121,30 +121,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="24dp"
-                    android:layout_marginEnd="32dp"
                     android:background="@drawable/anim_button"
                     android:text="@string/take_photo"
 
                     android:textColor="@color/white"
                     app:backgroundTint="@null"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_galeria"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />
 
 
-                <!--                <Button-->
-                <!--                    android:id="@+id/btn_galeria"-->
-                <!--                    android:layout_width="0dp"-->
-                <!--                    android:layout_height="48dp"-->
-                <!--                    android:layout_marginTop="24dp"-->
-                <!--                    android:layout_marginEnd="32dp"-->
-                <!--                    android:background="@drawable/anim_button"-->
-                <!--                    android:text="@string/upload_images"-->
-                <!--                    android:textColor="@color/white"-->
-                <!--                    app:backgroundTint="@null"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintStart_toEndOf="@+id/btn_PostUpImages"-->
-                <!--                    app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />-->
+                <Button
+                    android:id="@+id/btn_galeria"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/upload_images"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_PostUpImages"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />
 
                 <EditText
                     android:id="@+id/editText_PostTitle"
@@ -166,7 +165,7 @@
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="24dp"

@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     var listaPosts: MutableList<Nota> = mutableListOf()
 
     fun traerNotas() {
-
+        listaPosts.clear()
 
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
         val result: Call<List<Nota>> = service.getNotas()
@@ -145,6 +145,8 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
 
+                            
+
                             val idUserLog = Bundle()
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
 
@@ -152,7 +154,6 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                 this@MainActivity,
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
 
 
                             intent.putExtra("verNota", notaActual)
@@ -345,7 +346,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
 

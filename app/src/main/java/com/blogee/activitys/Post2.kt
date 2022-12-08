@@ -1,52 +1,53 @@
 package com.blogee.activitys
 
+//import com.blogee.Manifest
+//import com.blogee.databinding.ActivityMainBinding
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64.DEFAULT
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.webkit.URLUtil.decode
 import android.widget.*
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.*
-import androidx.activity.result.registerForActivityResult
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.ImageUtilities
-//import com.blogee.Manifest
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
-import com.blogee.databinding.ActivityMainBinding
-import com.blogee.databinding.ActivityPost2Binding
-//import com.blogee.databinding.ActivityMainBinding
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_post2.*
 import kotlinx.android.synthetic.main.activity_post2.view.*
+import kotlinx.android.synthetic.main.item_publicacion.view.*
+import okhttp3.internal.http2.Huffman.decode
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.util.*
 
+
 class Post2 : AppCompatActivity(), View.OnClickListener {
     var titlePost: TextView? = null
     var descPost: TextView? = null
     var imageUI: ImageView? = null
-//    lateinit var imageUI : ImageView
+
+    //    lateinit var imageUI : ImageView
     var imgArray: ByteArray? = null
 
     val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
@@ -73,6 +74,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         btnPost.setOnClickListener(this)
         val btnCam = findViewById<Button>(R.id.btn_PostUpImages)
         btnCam.setOnClickListener(this)
+        btn_galeria.setOnClickListener(this)
+
 
 //        this.imageUI.setImageResource(R.mipmap.ic_launcher)
 
@@ -100,8 +103,6 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 //            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
 //        }
     }
-
-
 
 
     override fun onSupportNavigateUp(): Boolean {
@@ -240,6 +241,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         when (v!!.id) {
             R.id.btn_PostPost -> post()
             R.id.btn_PostUpImages -> openCamera()
+            R.id.btn_galeria -> changeImage()
         }
     }
 
@@ -268,7 +270,102 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 val bitmap = (imageUI!!.getDrawable() as BitmapDrawable).bitmap
             }
 
+            if (requestcode == IMAGE_PICK_CODE) {
+                this.imageUI!!.setImageURI(data?.data)
+                var bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                var baos = ByteArrayOutputStream()
+
+
+                var calidad = 80
+                bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+                imgArray = baos.toByteArray()
+
+
+                var strEncodeImage2: String
+                var encodedString2: String = Base64.getEncoder().encodeToString(this.imgArray)
+                strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                val tamanoPermitido = 16777215
+                var tamano = strEncodeImage2.count()
+
+                var mostrarCargando = true
+                var entroAWhile = false
+
+                while (tamano > tamanoPermitido && calidad > 1) {
+                    if (mostrarCargando) {
+                        Toast.makeText(this@Post2, "Cargando imagen...", Toast.LENGTH_SHORT).show()
+                    }
+                    mostrarCargando = false
+
+                    calidad -= 1
+                    if (!mostrarCargando && calidad % 40 == 0) {
+                        mostrarCargando = true
+                    }
+
+
+                    bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                    baos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+//                    bitmap.scale(80,80,true).compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+
+                    imgArray = baos.toByteArray()
+
+                    encodedString2 = Base64.getEncoder().encodeToString(this.imgArray)
+                    strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                    tamano = strEncodeImage2.count()
+
+                    entroAWhile = true
+
+                }
+
+//                this.imageUI!!.setImageURI(baos)
+
+                if (tamano > tamanoPermitido) {
+                    Toast.makeText(
+                        this@Post2,
+                        "Imagen demasiado grande, intente con otra imagen",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    this.imageUI!!.setImageURI(null)
+                    baos = ByteArrayOutputStream()
+                    imgArray = baos.toByteArray()
+                } else if (entroAWhile) {
+
+
+//                    Toast.makeText(
+//                        this@Post2,
+//                        "Entro al while",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+
+//                    this.imageUI!!.setImageURI(null)
+
+                    if (strEncodeImage2 != "") {
+                        var byteArray: ByteArray? = null
+                        val strImage: String =
+                            strEncodeImage2.replace("data:image/png;base64,", "")
+                        byteArray = Base64.getDecoder().decode(strImage)
+                        var bitmap: Bitmap? = null
+                        if (byteArray != null) {
+                            bitmap =
+                                ImageUtilities.getBitMapFromByteArray(byteArray)
+                            val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                    Resources.getSystem(),
+                                    bitmap
+                                )
+                            this.imageUI!!.setImageDrawable(roundedBitmapWrapper)
+                        }
+
+                    }
+                }
+
+            }
+
         }
+
+
     }
 
     private fun post() {
@@ -326,6 +423,42 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         } else {
             Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun changeImage() {
+        //check runtime permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var boolDo = false
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED
+            ) {
+                //permission denied
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                //show popup to request runtime permission
+                requestPermissions(permissions, PERMISSION_CODE)
+            } else {
+                //permission already granted
+                boolDo = true
+
+            }
+
+            if (boolDo) {
+                pickImageFromGallery()
+            }
+
+        }
+
+    }
+
+    private fun pickImageFromGallery() {
+        //Abrir la galería
+        val intent = Intent()
+        intent.action = Intent.ACTION_PICK
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.type = "image/*"
+        //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+
     }
 
 
