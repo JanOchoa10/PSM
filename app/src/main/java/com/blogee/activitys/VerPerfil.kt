@@ -260,10 +260,10 @@ class VerPerfil : AppCompatActivity() {
                 val cambiarActivity = Intent(
                     this,
                     Login::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                )
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.from_left, R.anim.to_right)
-
+                finishAffinity()
                 true
             }
             /**R.id.create_new -> {

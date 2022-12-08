@@ -7,12 +7,16 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.*
+import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
@@ -34,7 +38,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
     var animando = false
     var abajo = false
@@ -43,7 +47,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 //    lateinit var textView: TextView
 //    var number: Int = 0
 
-    var adaptador: PostsAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,8 +88,10 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     }
 
+    var listaPosts: MutableList<Nota> = mutableListOf()
+
     fun traerNotas() {
-        var listaPosts: MutableList<Nota> = mutableListOf()
+
 
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
         val result: Call<List<Nota>> = service.getNotas()
@@ -126,14 +131,16 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 //                            getUnUsuario(item.id_User)
                         }
 
-                         adaptador = PostsAdapter(this@MainActivity, listaPosts)
 
                         // Elementos dentro del listview
                         val lvPost = findViewById<ListView>(R.id.lvPosts)
 
+                        val adaptador: PostsAdapter? = PostsAdapter(this@MainActivity, listaPosts)
                         lvPost.adapter = adaptador
 
                         lvPost.setOnItemClickListener { parent, view, position, id ->
+
+//                            Toast.makeText(applicationContext, "Nuestro id: " + id, Toast.LENGTH_SHORT).show()
 
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
@@ -142,7 +149,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
 
                             val intent = Intent(
-                                applicationContext,
+                                this@MainActivity,
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
@@ -336,15 +343,59 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         TODO("Not yet implemented")
     }
 
+
     override fun onQueryTextChange(newText: String?): Boolean {
-        if (newText != null){
-            if(adaptador != null) this.adaptador?.filter?.filter(newText)
+        if (newText != null) {
+
+            Log.d("Filtro", newText.toString())
+
+            val listaFiltrada = listaPosts.filter {
+                it.Title.toString().lowercase(Locale.getDefault()).contains(
+                    newText.toString()
+                        .lowercase(Locale.getDefault())
+                ) || it.Description.toString().lowercase(Locale.getDefault()).contains(
+                    newText.toString()
+                        .lowercase(Locale.getDefault())
+                )
+            }
+//                Log.d("Filtro", listaFiltrada.toString())
+
+            lvPosts.adapter = PostsAdapter(this@MainActivity, listaFiltrada)
+
+            swipeRefreshLayout = findViewById(R.id.swipe)
+//        textView = findViewById(R.id.textView)
+            swipeRefreshLayout.setOnRefreshListener {
+                //Ejecutamos código
+//            number++
+//            textView.text = " Total number = $number"
+
+//                traerNotas()
+
+                listaPosts.filter {
+                    it.Title.toString().lowercase(Locale.getDefault()).contains(
+                        newText.toString()
+                            .lowercase(Locale.getDefault())
+                    ) || it.Description.toString().lowercase(Locale.getDefault()).contains(
+                        newText.toString()
+                            .lowercase(Locale.getDefault())
+                    )
+                }
+
+                lvPosts.adapter = PostsAdapter(this@MainActivity, listaFiltrada)
+
+                Handler().postDelayed(Runnable {
+                    swipeRefreshLayout.isRefreshing = false
+                }, 200)
+            }
+
         }
         return false
     }
+
 
 }

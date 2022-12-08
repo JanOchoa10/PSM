@@ -31,7 +31,7 @@ import java.util.*
 class PostsAdapter(
     private val mContext: Context,
     private var listaPosts: List<Nota>
-) : ArrayAdapter<Nota>(mContext, 0, listaPosts), Filterable {
+) : ArrayAdapter<Nota>(mContext, 0, listaPosts) {
 
     private val listaPostsInicial = mutableListOf(listaPosts)
 
@@ -121,14 +121,12 @@ class PostsAdapter(
 
             layout.imgNota.setOnClickListener {
 
-                val notaActual: Nota = nota
-
                 val intent = Intent(
                     mContext,
                     ImagenCompleta::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-                intent.putExtra("verNota", notaActual)
+                intent.putExtra("verNota", nota)
                 startActivity(mContext, intent, null)
 
             }
@@ -145,54 +143,6 @@ class PostsAdapter(
         }
 
         return layout
-    }
-
-    override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(charSequence: CharSequence?): FilterResults {
-
-                listaPosts = listaPostsInicial[0]
-
-                //Obtenemos la cadena
-                val filterResults = FilterResults()
-                filterResults.values = if (charSequence == null || charSequence.isEmpty()) {
-
-                    listaPosts
-
-                } else {
-                    val queryString = charSequence.toString()?.toLowerCase()
-
-
-                    listaPosts.filter { album ->
-
-                        album.Title!!.toLowerCase()
-                            .contains(queryString.toString()) || album.Description!!.toLowerCase()
-                            .contains(
-                                queryString.toString()
-                            )
-                    }
-                }
-
-                return filterResults
-            }
-
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-
-                val miListaProv: List<Nota> = results?.values as List<Nota>
-
-                miListaProv.size
-
-                if (miListaProv.isNotEmpty()) {
-                    listaPosts = results?.values as List<Nota>
-                }
-
-                notifyDataSetChanged()
-
-
-            }
-
-        }
-
     }
 
 }

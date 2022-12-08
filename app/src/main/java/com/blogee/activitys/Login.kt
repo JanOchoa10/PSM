@@ -78,20 +78,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     swipeRefreshLayout2.isRefreshing = false
                 }, 200)
             }
-            val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-            val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
-
-            if (f == 0) {
-                //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            } else {
-                if (f == 1) {
-                    // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
-            }
-
-
 
         } else {
 
@@ -106,36 +92,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
             usuarioDBHelper = miSQLiteHelper(this)
 
-
-            //btnLogin.setOnClickListener{
-            /* if(emailLogin.text.isNotBlank() && passLogin.text.isNotBlank() ){
-             val args = arrayOf(emailLogin.text.toString(),passLogin.text.toString())
-             val db : SQLiteDatabase = usuarioDBHelper.readableDatabase
-             val cursor = db.rawQuery("Select * From usuarios where emailUser = ? and passUser = ?", args)
-
-
-             if(cursor.moveToFirst()){
-                 Toast.makeText(this,cursor.getString(1).toString() + cursor.getString(2).toString(),Toast.LENGTH_SHORT).show()
-                 val emailUserLog = Bundle()
-                 emailUserLog.putString("emailUserLog", emailLogin.text.toString())
-                 val cambiarActivity = Intent(this, MainActivity::class.java)
-                 cambiarActivity.putExtras(emailUserLog)
-                 startActivity(cambiarActivity)
-                 finish()
-             }else{
-                 Toast.makeText(this,"Usuario no identificado",Toast.LENGTH_SHORT).show()
-             }
-
-         }
-         else{
-             Toast.makeText(this,"Comprueba tus datos",Toast.LENGTH_SHORT).show()
-         }
-
-         //Toast.makeText(this, "You clicked me.", Toast.LENGTH_SHORT).show()
-         var txtEmail = findViewById<TextView>(R.id.editTextTextEmailAddress).text
-         Toast.makeText(applicationContext,txtEmail,Toast.LENGTH_SHORT).show()*/
-            //}
-
             // get reference to TextView
             val textSignUp = findViewById<TextView>(R.id.tienesCuenta)
             // set on-click listener
@@ -149,20 +105,19 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                 finish()
             }
+        }
 
 
-            val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+        val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
 
-            if (f == 0) {
-                //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            } else {
-                if (f == 1) {
-                    // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
+        if (f == 0) {
+            //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        } else {
+            if (f == 1) {
+                // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             }
-
         }
     }
 
@@ -380,9 +335,9 @@ class Login : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    override fun onBackPressed() {
-        finishAffinity()
-    }
+//    override fun onBackPressed() {
+//        finishAffinity()
+//    }
 
     val caracteresEspeciales = "[:punct:]"
 

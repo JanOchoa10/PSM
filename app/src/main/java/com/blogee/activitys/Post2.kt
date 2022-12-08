@@ -279,7 +279,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             val cambiarActivity = Intent(
                 this,
                 MainActivity::class.java
-            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
 
             val strEncodeImage: String
             if (this.imgArray != null) {
@@ -318,6 +318,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     startActivity(cambiarActivity)
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     finish()
+
                 }
             })
 
