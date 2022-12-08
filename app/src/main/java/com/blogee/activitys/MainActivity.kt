@@ -397,5 +397,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         return false
     }
 
+//    override fun onBackPressed() {
+////        super.onBackPressed()
+//        finishAffinity()
+//    }
+
 
 }
