@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
@@ -32,8 +30,10 @@ import java.util.*
 
 class PostsAdapter(
     private val mContext: Context,
-    private val listaPosts: List<Nota>
+    private var listaPosts: List<Nota>
 ) : ArrayAdapter<Nota>(mContext, 0, listaPosts) {
+
+    private val listaPostsInicial = mutableListOf(listaPosts)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layout = LayoutInflater.from(mContext).inflate(R.layout.item_publicacion, parent, false)
@@ -121,14 +121,13 @@ class PostsAdapter(
 
             layout.imgNota.setOnClickListener {
 
-                val notaActual: Nota = nota
-
                 val intent = Intent(
                     mContext,
                     ImagenCompleta::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-                intent.putExtra("verNota", notaActual)
+//                intent.putExtra("verNota", nota)
+                intent.putExtra("idDeMiNotaActualClave", nota.id_Nota)
                 startActivity(mContext, intent, null)
 
             }
@@ -138,6 +137,11 @@ class PostsAdapter(
         layout.titulo.text = nota.Title
         layout.descripcion.text = nota.Description
 
+        listaPostsInicial.add(listaPosts)
+
+        while (listaPostsInicial.count() > 2) {
+            listaPostsInicial.removeAt(1)
+        }
 
         return layout
     }

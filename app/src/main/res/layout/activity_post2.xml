@@ -4,154 +4,185 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorOnBackground"
     tools:context=".activitys.Post2">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/colorOnBackground"
-        tools:context=".activitys.EditarPost"
-        tools:layout_editor_absoluteX="-16dp"
-        tools:layout_editor_absoluteY="-131dp">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <TextView
-            android:id="@+id/lbName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/editText_PostTitle"
-            app:layout_constraintStart_toStartOf="@+id/editText_PostTitle"
-            tools:ignore="MissingConstraints" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/lbLastName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/description"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/editText_PostDescrip"
-            app:layout_constraintStart_toStartOf="@+id/editText_PostDescrip"
-            tools:ignore="MissingConstraints" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
 
-        <EditText
-            android:id="@+id/editText_PostDescrip"
-            android:layout_width="0dp"
-            android:layout_height="114dp"
-            android:layout_marginTop="32dp"
-            android:backgroundTint="#FFFFFF"
-            android:ems="10"
-            android:gravity="start|top"
-            android:hint="@string/write_a_description"
-            android:inputType="textMultiLine"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#80FFFFFF"
-            app:layout_constraintEnd_toEndOf="@+id/editText_PostTitle"
-            app:layout_constraintStart_toStartOf="@+id/editText_PostTitle"
-            app:layout_constraintTop_toBottomOf="@+id/editText_PostTitle" />
+                tools:context=".activitys.EditarPost">
 
 
-        <Button
-            android:id="@+id/btn_PostPost"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/anim_button"
-            android:textColor="@color/white"
-            app:backgroundTint="@null"
-            android:text="@string/post"
-            app:layout_constraintBottom_toTopOf="@+id/btn_PostSave"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+                <TextView
+                    android:id="@+id/lbName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/title"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/editText_PostTitle"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="MissingConstraints" />
 
-        <Button
-            android:id="@+id/btn_PostUpImages"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="32dp"
-            android:background="@drawable/anim_button"
-            android:textColor="@color/white"
-            app:backgroundTint="@null"
-            android:text="@string/upload_images"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />
+                <TextView
+                    android:id="@+id/lbLastName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/description"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/editText_PostDescrip"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_PostTitle"
+                    tools:ignore="MissingConstraints" />
 
-
-        <Button
-            android:id="@+id/btn_PostCancel"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/anim_button"
-            android:textColor="@color/white"
-            app:backgroundTint="@null"
-            android:text="@string/cancel"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btn_PostSave"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/anim_button"
-            android:textColor="@color/white"
-            app:backgroundTint="@null"
-            android:text="@string/save"
-            app:layout_constraintBottom_toTopOf="@+id/btn_PostCancel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/editText_PostTitle"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="64dp"
-            android:layout_marginEnd="32dp"
-            android:backgroundTint="#FFFFFF"
-            android:ems="10"
-            android:hint="@string/write_a_title"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#80FFFFFF"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="180dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_PostPost"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_PostUpImages"
-            tools:srcCompat="@tools:sample/avatars" />
+                <EditText
+                    android:id="@+id/editText_PostDescrip"
+                    android:layout_width="0dp"
+                    android:layout_height="114dp"
+                    android:backgroundTint="#FFFFFF"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:hint="@string/write_a_description"
+                    android:inputType="textMultiLine"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#80FFFFFF"
+                    app:layout_constraintEnd_toEndOf="@+id/editText_PostTitle"
+                    app:layout_constraintStart_toStartOf="@+id/editText_PostTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/lbLastName" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/btn_PostPost"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/post"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_PostSave"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/btn_PostSave"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/save"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_PostCancel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/btn_PostCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="32dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/cancel"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/btn_PostUpImages"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/take_photo"
+
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_galeria"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />
+
+
+                <Button
+                    android:id="@+id/btn_galeria"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/upload_images"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_PostUpImages"
+                    app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />
+
+                <EditText
+                    android:id="@+id/editText_PostTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:backgroundTint="#FFFFFF"
+                    android:ems="10"
+                    android:hint="@string/write_a_title"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#80FFFFFF"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lbName" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="24dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_PostPost"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.497"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_PostUpImages"
+                    app:layout_constraintVertical_bias="1.0"
+                    tools:srcCompat="@tools:sample/avatars" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -191,18 +191,24 @@ class VerPerfil : AppCompatActivity() {
                         lvPost.adapter = adaptador
 
                         lvPost.setOnItemClickListener { parent, view, position, id ->
-
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
 
-                            Toast.makeText(
-                                applicationContext,
-                                notaActual.Title
-                                        + "\n\n" + notaActual.Description
-                                        + "\n\n" + notaActual.id_User,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+
+                            val idUserLog = Bundle()
+                            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
+                            val intent = Intent(
+                                this@VerPerfil,
+                                DetallesNota::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+                            intent.putExtras(idUserLog)
+                            intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+                            intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
+
+                            startActivity(intent)
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         }
 
                     }
@@ -253,10 +259,10 @@ class VerPerfil : AppCompatActivity() {
                 val cambiarActivity = Intent(
                     this,
                     Login::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                )
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.from_left, R.anim.to_right)
-
+                finishAffinity()
                 true
             }
             /**R.id.create_new -> {

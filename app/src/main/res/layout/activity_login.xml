@@ -7,120 +7,134 @@
     android:background="?attr/colorOnBackground"
     tools:context=".activitys.Login">
 
-    <TextView
-        android:id="@+id/crearCuenta"
-        android:layout_width="0dp"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="96dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/welcome"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/blogee_is_the_blog_of_the_moment"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/crearCuenta"
-        app:layout_constraintStart_toStartOf="@+id/crearCuenta"
-        app:layout_constraintTop_toBottomOf="@+id/crearCuenta"
-        tools:ignore="MissingConstraints" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="32dp">
 
-    <TextView
-        android:id="@+id/lbEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/email"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextEmailAddress"
-        tools:ignore="MissingConstraints" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/lbPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/password"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPassword"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextPassword"
-        tools:ignore="MissingConstraints" />
+                <TextView
+                    android:id="@+id/crearCuenta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/welcome"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="34sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="MissingConstraints" />
 
-    <EditText
-        android:id="@+id/editTextTextEmailAddress"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="96dp"
-        android:layout_marginEnd="32dp"
-        android:backgroundTint="#FFFFFF"
-        android:ems="10"
-        android:hint="@string/ex_mail_gmail_com"
-        android:importantForAutofill="no"
-        android:inputType="textEmailAddress"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#80FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/blogee_is_the_blog_of_the_moment"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/crearCuenta"
+                    tools:ignore="MissingConstraints" />
 
-    <EditText
-        android:id="@+id/editTextTextPassword"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#FFFFFF"
-        android:ems="10"
-        android:hint="@string/password_hint"
-        android:importantForAutofill="no"
-        android:inputType="textPassword"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#80FFFFFF"
-        app:layout_constraintEnd_toEndOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutEmail"
+                    style="@style/outlinedTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:hint="@string/email"
+                    app:errorEnabled="true"
+                    app:errorIconDrawable="@null"
+                    app:hintTextColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2"
+                    app:startIconDrawable="@drawable/ic_baseline_email_24"
+                    app:startIconTint="@color/white">
 
-    <Button
-        android:id="@+id/btn_login"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/anim_button"
-        android:textColor="@color/white"
-        app:backgroundTint="@null"
-        android:text="@string/log_in"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextTextEmailAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/tienesCuenta"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/don_t_have_an_account_sign_up"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/btn_login"
-        app:layout_constraintStart_toStartOf="@+id/btn_login"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login"
-        android:clickable="true"
-        tools:ignore="MissingConstraints"
-        android:focusable="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutPass"
+                    style="@style/outlinedTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/password"
+                    app:counterTextColor="@color/white"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/white"
+                    app:errorEnabled="true"
+                    app:passwordToggleEnabled="true"
+                    app:helperTextTextColor="@color/white"
+                    app:hintTextColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayoutEmail"
+                    app:startIconDrawable="@drawable/ic_baseline_lock_24"
+                    app:startIconTint="@color/white"
+                    app:errorIconDrawable="@null">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextTextPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/white" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/log_in"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPass" />
+
+                <TextView
+                    android:id="@+id/tienesCuenta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/don_t_have_an_account_sign_up"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_login"
+                    tools:ignore="MissingConstraints" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

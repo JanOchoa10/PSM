@@ -6,17 +6,22 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.*
+import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.ImageUtilities
 import com.blogee.R
@@ -26,7 +31,6 @@ import com.blogee.adapters.PostsAdapter
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +38,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
     var animando = false
     var abajo = false
@@ -42,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
 //    lateinit var textView: TextView
 //    var number: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,8 +88,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    var listaPosts: MutableList<Nota> = mutableListOf()
+
     fun traerNotas() {
-        var listaPosts: MutableList<Nota> = mutableListOf()
+        listaPosts.clear()
 
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
         val result: Call<List<Nota>> = service.getNotas()
@@ -124,27 +131,36 @@ class MainActivity : AppCompatActivity() {
 //                            getUnUsuario(item.id_User)
                         }
 
-                        val adaptador = PostsAdapter(this@MainActivity, listaPosts)
 
                         // Elementos dentro del listview
                         val lvPost = findViewById<ListView>(R.id.lvPosts)
 
+                        val adaptador: PostsAdapter? = PostsAdapter(this@MainActivity, listaPosts)
                         lvPost.adapter = adaptador
 
                         lvPost.setOnItemClickListener { parent, view, position, id ->
 
+
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
+
 
                             val idUserLog = Bundle()
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
 
                             val intent = Intent(
-                                applicationContext,
+                                this@MainActivity,
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                            intent.putExtra("verNota", notaActual)
+
+//                            val imgNota = notaActual.Image
+
+//                            intent.putExtra("stringBlob", imgNota)
+//                            notaActual.Image = ""
+//                            intent.putExtra("verNota", notaActual)
                             intent.putExtras(idUserLog)
+                            intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+                            intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
 
                             startActivity(intent)
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -305,22 +321,9 @@ class MainActivity : AppCompatActivity() {
         val searchItem = menu.findItem(R.id.app_bar_search)
         val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
         //permite modificar el hint que el EditText muestra por defecto
-        //permite modificar el hint que el EditText muestra por defecto
-        searchView.setQueryHint("Buscar")
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener() {
-//            fun onQueryTextSubmit(query: String?): Boolean {
-//                Toast.makeText(this@MainActivity, R.string.submitted, Toast.LENGTH_SHORT).show()
-//                //se oculta el EditText
-//                searchView.setQuery("", false)
-//                searchView.setIconified(true)
-//                return true
-//            }
-//
-//            fun onQueryTextChange(newText: String?): Boolean {
-//                textView.setText(newText)
-//                return true
-//            }
-//        })
+        searchView.queryHint = "Buscar"
+
+        searchView.setOnQueryTextListener(this)
 
         return true
     }
@@ -344,5 +347,64 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null) {
+
+            Log.d("Filtro", newText.toString())
+
+            val listaFiltrada = listaPosts.filter {
+                it.Title.toString().lowercase(Locale.getDefault()).contains(
+                    newText.toString()
+                        .lowercase(Locale.getDefault())
+                ) || it.Description.toString().lowercase(Locale.getDefault()).contains(
+                    newText.toString()
+                        .lowercase(Locale.getDefault())
+                )
+            }
+//                Log.d("Filtro", listaFiltrada.toString())
+
+            lvPosts.adapter = PostsAdapter(this@MainActivity, listaFiltrada)
+
+            swipeRefreshLayout = findViewById(R.id.swipe)
+//        textView = findViewById(R.id.textView)
+            swipeRefreshLayout.setOnRefreshListener {
+                //Ejecutamos código
+//            number++
+//            textView.text = " Total number = $number"
+
+//                traerNotas()
+
+                listaPosts.filter {
+                    it.Title.toString().lowercase(Locale.getDefault()).contains(
+                        newText.toString()
+                            .lowercase(Locale.getDefault())
+                    ) || it.Description.toString().lowercase(Locale.getDefault()).contains(
+                        newText.toString()
+                            .lowercase(Locale.getDefault())
+                    )
+                }
+
+                lvPosts.adapter = PostsAdapter(this@MainActivity, listaFiltrada)
+
+                Handler().postDelayed(Runnable {
+                    swipeRefreshLayout.isRefreshing = false
+                }, 200)
+            }
+
+        }
+        return false
+    }
+
+//    override fun onBackPressed() {
+////        super.onBackPressed()
+//        finishAffinity()
+//    }
+
 
 }
