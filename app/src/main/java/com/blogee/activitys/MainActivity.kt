@@ -140,12 +140,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
                         lvPost.setOnItemClickListener { parent, view, position, id ->
 
-//                            Toast.makeText(applicationContext, "Nuestro id: " + id, Toast.LENGTH_SHORT).show()
 
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
 
-                            
 
                             val idUserLog = Bundle()
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
@@ -155,9 +153,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
+//                            val imgNota = notaActual.Image
 
-                            intent.putExtra("verNota", notaActual)
+//                            intent.putExtra("stringBlob", imgNota)
+//                            notaActual.Image = ""
+//                            intent.putExtra("verNota", notaActual)
                             intent.putExtras(idUserLog)
+                            intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+                            intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
 
                             startActivity(intent)
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

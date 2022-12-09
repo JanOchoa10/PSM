@@ -191,22 +191,21 @@ class VerPerfil : AppCompatActivity() {
                         lvPost.adapter = adaptador
 
                         lvPost.setOnItemClickListener { parent, view, position, id ->
-
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
+
 
                             val idUserLog = Bundle()
                             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
 
                             val intent = Intent(
-                                applicationContext,
+                                this@VerPerfil,
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-
-
-                            intent.putExtra("verNota", notaActual)
                             intent.putExtras(idUserLog)
+                            intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+                            intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
 
                             startActivity(intent)
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

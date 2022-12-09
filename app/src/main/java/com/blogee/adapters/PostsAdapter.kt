@@ -126,7 +126,8 @@ class PostsAdapter(
                     ImagenCompleta::class.java
                 ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-                intent.putExtra("verNota", nota)
+//                intent.putExtra("verNota", nota)
+                intent.putExtra("idDeMiNotaActualClave", nota.id_Nota)
                 startActivity(mContext, intent, null)
 
             }

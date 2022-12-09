@@ -36,106 +36,164 @@ class DetallesNota : AppCompatActivity() {
 
         Objects.requireNonNull(supportActionBar)?.setDisplayHomeAsUpEnabled(true)
 
-        val nota = intent.getSerializableExtra("verNota") as Nota
+//        val nota = intent.getSerializableExtra("verNota") as Nota
+
+//        val imagenDeNota = intent.getStringExtra("stringBlob")
+//        nota.Image = imagenDeNota
 
 
-        val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-        val result: Call<List<Usuario>> = service.getUser(nota.id_User.toString())
+        val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
+        var userIdDeNota: Int? = null
 
-        result.enqueue(object : Callback<List<Usuario>> {
-            override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+        val serviceNota: Service = RestEngine.getRestEngine().create(Service::class.java)
+        val resultNota: Call<List<Nota>> = serviceNota.getNotas()
+
+        resultNota.enqueue(object : Callback<List<Nota>> {
+            override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
+                Toast.makeText(this@DetallesNota, "Error", Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(
-                call: Call<List<Usuario>>,
-                response: Response<List<Usuario>>
+                call: Call<List<Nota>>,
+                response: Response<List<Nota>>
             ) {
-                val item = response.body()
-                if (item != null) {
-                    if (item.isEmpty()) {
+                val arrayPosts = response.body()
+                if (arrayPosts != null) {
+                    if (arrayPosts.isEmpty()) {
                         Toast.makeText(
-                            applicationContext,
-                            "No tiene información",
+                            this@DetallesNota,
+                            "No tiene notas",
                             Toast.LENGTH_LONG
                         ).show()
                     } else {
+//                        Toast.makeText(this@DetallesNota, "Hay notas", Toast.LENGTH_LONG).show()
 
-                        var byteArray2: ByteArray? = null
+                        for (itemNota in arrayPosts) {
+                            if (itemNota.id_Nota == numeroNota) {
+
+//                                val miNotaSelecta: Nota = itemNota
+                                userIdDeNota = itemNota.id_User
+
+                                titulo2.text = itemNota.Title
+                                descripcion2.text = itemNota.Description
+
+                                if (itemNota.Image != "") {
+                                    var byteArray3: ByteArray? = null
+                                    val strImage: String =
+                                        itemNota.Image!!.replace("data:image/png;base64,", "")
+                                    byteArray3 = Base64.getDecoder().decode(strImage)
+
+                                    var bitmap: Bitmap? = null
+                                    if (byteArray3 != null) {
+                                        bitmap =
+                                            ImageUtilities.getBitMapFromByteArray(byteArray3)
+                                        val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                            RoundedBitmapDrawableFactory.create(
+                                                Resources.getSystem(),
+                                                bitmap
+                                            )
+                                        imgNota2.setImageDrawable(roundedBitmapWrapper)
+                                    }
+                                }
+
+                                imgNota2.setOnClickListener {
+
+//                                    val notaActual: Nota = nota
+
+                                    val intent = Intent(
+                                        applicationContext,
+                                        ImagenCompleta::class.java
+                                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+//                                    intent.putExtra("verNota", itemNota)
+                                    intent.putExtra("idDeMiNotaActualClave", itemNota.id_Nota)
+                                    startActivity(intent)
+//                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+
+                                }
+
+
+                                val service: Service =
+                                    RestEngine.getRestEngine().create(Service::class.java)
+                                val result: Call<List<Usuario>> =
+                                    service.getUser(itemNota.id_User.toString())
+
+                                result.enqueue(object : Callback<List<Usuario>> {
+                                    override fun onFailure(
+                                        call: Call<List<Usuario>>,
+                                        t: Throwable
+                                    ) {
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Error",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+
+                                    override fun onResponse(
+                                        call: Call<List<Usuario>>,
+                                        response: Response<List<Usuario>>
+                                    ) {
+                                        val item = response.body()
+                                        if (item != null) {
+                                            if (item.isEmpty()) {
+                                                Toast.makeText(
+                                                    applicationContext,
+                                                    "No tiene información",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            } else {
+
+                                                var byteArray2: ByteArray? = null
 //                            namePerfil!!.text = getString(R.string.name) + ": " + item[0].Name
 //                            lastnamePerfil!!.text =
 //                                getString(R.string.last_name) + ": " + item[0].LastName
 //                            emailPerfil!!.text = getString(R.string.email) + ": " + item[0].Email
 
-                        nombre2.text = item[0].Name
+                                                nombre2.text = item[0].Name
 
-                        val strImage: String =
-                            item[0].Image!!.replace("data:image/png;base64,", "")
-                        byteArray2 = Base64.getDecoder().decode(strImage)
-                        if (byteArray2 != null) {
-                            //Bitmap redondo
-                            val bitmap: Bitmap =
-                                ImageUtilities.getBitMapFromByteArray(byteArray2)
-                            val roundedBitmapWrapper: RoundedBitmapDrawable =
-                                RoundedBitmapDrawableFactory.create(
-                                    Resources.getSystem(),
-                                    bitmap
-                                )
-                            roundedBitmapWrapper.setCircular(true)
-                            imgPerfil2.setImageDrawable(roundedBitmapWrapper)
+                                                val strImage: String =
+                                                    item[0].Image!!.replace(
+                                                        "data:image/png;base64,",
+                                                        ""
+                                                    )
+                                                byteArray2 = Base64.getDecoder().decode(strImage)
+                                                if (byteArray2 != null) {
+                                                    //Bitmap redondo
+                                                    val bitmap: Bitmap =
+                                                        ImageUtilities.getBitMapFromByteArray(
+                                                            byteArray2
+                                                        )
+                                                    val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                                        RoundedBitmapDrawableFactory.create(
+                                                            Resources.getSystem(),
+                                                            bitmap
+                                                        )
+                                                    roundedBitmapWrapper.setCircular(true)
+                                                    imgPerfil2.setImageDrawable(roundedBitmapWrapper)
+                                                }
+                                            }
+                                        } else {
+                                            Toast.makeText(
+                                                applicationContext,
+                                                "Incorrectas",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+
+
+                                    }
+                                })
+
+                            }
                         }
+
                     }
                 } else {
-                    Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@DetallesNota, "No hay notas", Toast.LENGTH_LONG).show()
                 }
-
-
             }
         })
-
-
-
-        titulo2.text = nota.Title
-        descripcion2.text = nota.Description
-
-        if (nota.Image != "") {
-            var byteArray: ByteArray? = null
-
-            val strImage: String =
-                nota.Image!!.replace("data:image/png;base64,", "")
-            byteArray = Base64.getDecoder().decode(strImage)
-
-            var bitmap: Bitmap? = null
-
-            if (byteArray != null) {
-//            //Bitmap redondo
-                bitmap =
-                    ImageUtilities.getBitMapFromByteArray(byteArray)
-                val roundedBitmapWrapper: RoundedBitmapDrawable =
-                    RoundedBitmapDrawableFactory.create(
-                        Resources.getSystem(),
-                        bitmap
-                    )
-                imgNota2.setImageDrawable(roundedBitmapWrapper)
-            }
-
-            imgNota2.setOnClickListener {
-
-                val notaActual: Nota = nota
-
-                val intent = Intent(
-                    applicationContext,
-                    ImagenCompleta::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
-                intent.putExtra("verNota", notaActual)
-                startActivity(intent)
-//                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-
-            }
-
-
-        }
 
 
     }
@@ -210,9 +268,11 @@ class DetallesNota : AppCompatActivity() {
 
         val id_User = intent.getStringExtra("idUserLog")
 
-        val nota = intent.getSerializableExtra("verNota") as Nota
+//        val nota = intent.getSerializableExtra("verNota") as Nota
 
-        if (id_User != nota.id_User.toString()) {
+        val numeroUser = intent.getSerializableExtra("idDeMiUsuarioDeNotaActualClave")
+
+        if (id_User != numeroUser.toString()) {
             searchItem.isVisible = false
         }
 
