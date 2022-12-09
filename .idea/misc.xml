@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/debug/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.5205" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/drawable/ic_round_add_24.xml" value="0.5205" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/layout/activity_editar_perfil.xml" value="0.5020833333333333" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/layout/activity_login.xml" value="0.33" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/layout/activity_main.xml" value="0.5541666666666667" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/layout/activity_sing_up.xml" value="0.5" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/layout/activity_ver_perfil.xml" value="0.5" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/menu/app_menu.xml" value="0.5541666666666667" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/menu/app_menu_2.xml" value="0.5541666666666667" />
+        <entry key="..\:/FCFM/7to Semestre/Sistemas/PSM-main/app/src/main/res/menu/app_menu_3.xml" value="0.5541666666666667" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_editar_perfil.xml" value="0.3233695652173913" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_editar_post.xml" value="0.46693840579710144" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_main.xml" value="0.46693840579710144" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_post.xml" value="0.5" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_post2.xml" value="0.46693840579710144" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_sing_up.xml" value="0.3233695652173913" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/activity_ver_perfil.xml" value="0.3233695652173913" />
+        <entry key="..\:/GitHub/PSM/app/src/main/res/layout/item_list_view.xml" value="0.8282149712092131" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
