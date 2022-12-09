@@ -51,6 +51,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/editText_PostTitle"
                     tools:ignore="MissingConstraints" />
 
+
                 <EditText
                     android:id="@+id/editText_PostDescrip"
                     android:layout_width="0dp"
@@ -63,9 +64,10 @@
                     android:textColor="#FFFFFF"
                     android:textColorHint="#80FFFFFF"
                     app:layout_constraintEnd_toEndOf="@+id/editText_PostTitle"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="@+id/editText_PostTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/lbLastName" />
-
+                    app:layout_constraintTop_toBottomOf="@+id/lbLastName"
+                    android:maxLength="255"/>
 
                 <Button
                     android:id="@+id/btn_PostPost"
@@ -161,7 +163,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lbName" />
+                    app:layout_constraintTop_toBottomOf="@+id/lbName"
+                    android:maxLength="50"/>
 
                 <ImageView
                     android:id="@+id/imageView3"

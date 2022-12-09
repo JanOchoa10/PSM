@@ -174,7 +174,7 @@ class DetallesNota : AppCompatActivity() {
                                                             Resources.getSystem(),
                                                             bitmap
                                                         )
-                                                    roundedBitmapWrapper.setCircular(true)
+                                                    roundedBitmapWrapper.isCircular = true
                                                     imgPerfil2.setImageDrawable(roundedBitmapWrapper)
                                                 }
                                             }
