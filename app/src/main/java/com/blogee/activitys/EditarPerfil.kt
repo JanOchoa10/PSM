@@ -48,7 +48,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
         Objects.requireNonNull(supportActionBar)?.setDisplayHomeAsUpEnabled(true)
 
-        nameUser = findViewById<TextView>(R.id.editPostTitle)
+        nameUser = findViewById<TextView>(R.id.editTextTextName)
         lastNameUser = findViewById<TextView>(R.id.editTextTextLastName)
         emailUser = findViewById<TextView>(R.id.editTextTextEmailAddress)
         passUser = findViewById<TextView>(R.id.editTextTextPassword)

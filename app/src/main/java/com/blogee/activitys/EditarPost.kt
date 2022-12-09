@@ -12,6 +12,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -37,6 +38,8 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
     var desc: TextView? = null
     var imageUI: ImageView? = null
     var imgArray: ByteArray? = null
+    var notaGeneral: Nota? = null
+    var ImgNota: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,41 +56,69 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         btnEliminarImg.setOnClickListener(this)
         val btnCamera = findViewById<Button>(R.id.btn_img)
         btnCamera.setOnClickListener(this)
-        title = findViewById<TextView>(R.id.editPostTitle)
-        desc = findViewById<TextView>(R.id.editPostDesc)
+        title = findViewById<TextView>(R.id.editTextTextName)
+        desc = findViewById<EditText>(R.id.editTextTextMultiLine)
         imageUI = findViewById<ImageView>(R.id.imageView4)
 
 
 
-        val nota = intent.getSerializableExtra("verNota") as Nota
-        title!!.text = nota.Title
-        desc!!.text = nota.Description
+        val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
+//        var userIdDeNota: Int? = null
 
-        if(nota.Image != ""){
-            var byteArray: ByteArray? = null
+        val serviceNota: Service = RestEngine.getRestEngine().create(Service::class.java)
+        val resultNota: Call<List<Nota>> = serviceNota.getNota(numeroNota.toString())
 
-            val strImage: String =
-                nota.Image!!.replace("data:image/png;base64,", "")
-            byteArray = Base64.getDecoder().decode(strImage)
-
-            var bitmap: Bitmap? = null
-
-            if (byteArray != null) {
-//            //Bitmap redondo
-                bitmap =
-                    ImageUtilities.getBitMapFromByteArray(byteArray)
-                /*val roundedBitmapWrapper: RoundedBitmapDrawable =
-                    RoundedBitmapDrawableFactory.create(
-                        Resources.getSystem(),
-                        bitmap
-                    )*/
-                imageUI!!.setImageBitmap(bitmap)
+        resultNota.enqueue(object : Callback<List<Nota>> {
+            override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
+                Toast.makeText(this@EditarPost, "Error", Toast.LENGTH_LONG).show()
             }
-        }else{
-            this.imageUI!!.setImageResource(R.mipmap.ic_launcher)
-        }
+
+            override fun onResponse(
+                call: Call<List<Nota>>,
+                response: Response<List<Nota>>
+            ) {
+                val arrayPosts = response.body()
+
+                if (arrayPosts != null) {
+                    if (arrayPosts.isEmpty()) {
+                        Toast.makeText(
+                            this@EditarPost,
+                            "No tiene notas",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+//                        Toast.makeText(this@DetallesNota, "Hay notas", Toast.LENGTH_LONG).show()
+
+                       title!!.text = arrayPosts[0].Title
+                        desc!!.text = arrayPosts[0].Description
+                        notaGeneral = arrayPosts[0]
 
 
+                        if(arrayPosts[0].Image != ""){
+                            var byteArray: ByteArray? = null
+
+                            val strImage: String =
+                                arrayPosts[0].Image!!.replace("data:image/png;base64,", "")
+                            byteArray = Base64.getDecoder().decode(strImage)
+
+                            var bitmap: Bitmap? = null
+
+                            if (byteArray != null) {
+                                bitmap =
+                                    ImageUtilities.getBitMapFromByteArray(byteArray)
+
+                                imageUI!!.setImageBitmap(bitmap)
+                            }
+                        }else{
+                            imageUI!!.setImageResource(R.mipmap.ic_launcher)
+                        }
+
+                    }
+                } else {
+                    Toast.makeText(this@EditarPost, "No hay notas", Toast.LENGTH_LONG).show()
+                }
+            }
+        })
 
 
     }
@@ -210,22 +241,20 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun deleteImg() {
-        val nota = intent.getSerializableExtra("verNota") as Nota
-        nota.Image=""
+
+        notaGeneral!!.Image = ""
         this.imgArray = null
         this.imageUI!!.setImageResource(R.mipmap.ic_launcher)
 
     }
 
     private fun deletePost() {
-        val nota = intent.getSerializableExtra("verNota") as Nota
-        //Toast.makeText(this@EditarPost, nota.id_Nota.toString() , Toast.LENGTH_LONG).show()
         val service2: Service =  RestEngine.getRestEngine().create(Service::class.java)
-        val result2: Call<String> = service2.deleteNota(nota.id_Nota.toString())
+        val result2: Call<String> = service2.deleteNota(notaGeneral?.id_Nota.toString())
         val cambiarActivity = Intent(
             this,
             MainActivity::class.java
-        ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        )
         result2.enqueue(object: Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Toast.makeText(this@EditarPost,"Error",Toast.LENGTH_LONG).show()
@@ -289,27 +318,25 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun GuardarCambios() {
-        val nota = intent.getSerializableExtra("verNota") as Nota
+        //val nota = intent.getSerializableExtra("verNota") as Nota
         if(title!!.text.isNotBlank() && desc!!.text.isNotBlank()){
             val strEncodeImage: String
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
                 strEncodeImage = "data:image/png;base64," + encodedString
-            } else if(nota.Image != "") {
-                strEncodeImage = nota.Image.toString()
+            }else if(notaGeneral?.Image != "") {
+                strEncodeImage = notaGeneral?.Image.toString()
+
             }else{
                 strEncodeImage = ""
             }
 
-
-           //Toast.makeText(this@EditarPost,  strEncodeImage, Toast.LENGTH_LONG).show()
-
-            val notaSave = Nota(nota.id_Nota,
+            val notaSave = Nota(notaGeneral?.id_Nota,
                 title!!.text.toString(),
                 desc!!.text.toString(),
-                nota.id_User,
+                notaGeneral?.id_User,
                 strEncodeImage)
-            //Toast.makeText(this@EditarPost,  notaSave.Image, Toast.LENGTH_LONG).show()
+
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<Int> = service.saveNota(notaSave)
 
@@ -327,9 +354,8 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                         applicationContext,
                         DetallesNota::class.java
                     )
-                    val notaActual: Nota =
-                       notaSave
-                    intent2.putExtra("verNota", notaActual)
+
+                    intent2.putExtra("idDeMiNotaActualClave", notaSave.id_Nota)
                     intent2.putExtras(idUserLog)
                     startActivity(intent2)
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

@@ -47,6 +47,9 @@ interface Service {
     @GET("Nota/Notas/{id}")
     fun getNotaUser(@Path("id") id: String?): Call<List<Nota>>
 
+    @GET("Nota/NotaP/{id}")
+    fun getNota(@Path("id") id: String?): Call<List<Nota>>
+
     @GET("Nota/DeleteNotaG/{id}")
     fun deleteNotaG(@Path("id") id: String?): Call<String>
 
