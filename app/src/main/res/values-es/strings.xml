@@ -23,7 +23,7 @@
     <string name="title">Título</string>
     <string name="description">Descripción</string>
     <string name="write_a_description">Escribe una descripción</string>
-    <string name="upload_images">Subir imágenes</string>
+    <string name="upload_images">Subir imagen</string>
     <string name="post">Publicar</string>
     <string name="save">Guardar</string>
     <string name="cancel">Cancelar</string>
@@ -35,7 +35,7 @@
     <string name="search">Buscar</string>
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>
-    <string name="delete_images">Eliminar imágenes</string>
+    <string name="delete_images">Eliminar imagen</string>
     <string name="take_photo">Tomar foto</string>
     <string name="can_not_be_empty">El campo no puede estar vacío</string>
     <string name="valid_email_address">Por favor, introduce una dirección de correo electrónico válida</string>

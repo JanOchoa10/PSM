@@ -24,7 +24,7 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="write_a_description">Write a description</string>
-    <string name="upload_images">Upload images</string>
+    <string name="upload_images">Upload image</string>
     <string name="post">Post</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
@@ -39,7 +39,7 @@
     <string name="search">Search</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="delete_images">Delete images</string>
+    <string name="delete_images">Delete image</string>
     <string name="take_photo">Take photo</string>
     <string name="can_not_be_empty">Field can not be empty</string>
     <string name="valid_email_address">Please enter a valid email address</string>

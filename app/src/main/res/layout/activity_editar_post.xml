@@ -55,43 +55,48 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/btn_save" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout7"
-                    android:layout_width="match_parent"
+
+                <Button
+                    android:id="@+id/btn_galeria"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/upload_images"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_img"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextTextMultiLine"
+                    app:layout_constraintStart_toEndOf="@+id/btn_img"
+                    app:layout_constraintTop_toTopOf="@+id/btn_img" />
+
+                <Button
+                    android:id="@+id/btn_EliminarImg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/delete_images"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine">
+                    app:layout_constraintTop_toBottomOf="@+id/btn_img" />
 
-                    <Button
-                        android:id="@+id/btn_EliminarImg"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="32dp"
-                        android:background="@drawable/anim_button"
-                        android:text="@string/delete_images"
-                        android:textColor="@color/white"
-                        app:backgroundTint="@null"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/btn_img"
-                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
-                        android:id="@+id/btn_img"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="32dp"
-                        android:background="@drawable/anim_button"
-                        android:text="@string/upload_images"
-                        android:textColor="@color/white"
-                        app:backgroundTint="@null"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_EliminarImg"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/btn_img"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/take_photo"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_galeria"
+                    app:layout_constraintStart_toStartOf="@+id/editTextTextMultiLine"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
 
                 <Button
                     android:id="@+id/btn_save"
@@ -119,7 +124,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.497"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout7"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_EliminarImg"
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <Button
@@ -181,6 +186,7 @@
                     android:textColor="#FFFFFF"
                     android:textColorHint="#80FFFFFF"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lbLastName" />
 

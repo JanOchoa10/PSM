@@ -30,6 +30,9 @@ import java.util.*
 
 class DetallesNota : AppCompatActivity() {
 
+//    var numeroIdNota: Int? = null
+//    var numeroIdUser: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalles_nota)
@@ -43,7 +46,7 @@ class DetallesNota : AppCompatActivity() {
 
 
         val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
-        var userIdDeNota: Int? = null
+//        var userIdDeNota: Int? = null
 
         val serviceNota: Service = RestEngine.getRestEngine().create(Service::class.java)
         val resultNota: Call<List<Nota>> = serviceNota.getNotas()
@@ -71,8 +74,10 @@ class DetallesNota : AppCompatActivity() {
                         for (itemNota in arrayPosts) {
                             if (itemNota.id_Nota == numeroNota) {
 
+//                                numeroIdUser = itemNota.id_User
+//                                numeroIdNota = itemNota.id_Nota
 //                                val miNotaSelecta: Nota = itemNota
-                                userIdDeNota = itemNota.id_User
+//                                userIdDeNota = itemNota.id_User
 
                                 titulo2.text = itemNota.Title
                                 descripcion2.text = itemNota.Description
@@ -327,6 +332,11 @@ class DetallesNota : AppCompatActivity() {
                     EditarPost::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
+
+                val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
+
+                cambiarActivity.putExtra("idDeMiNotaActualClave", numeroNota)
+
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
