@@ -25,10 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Nota
 import com.blogee.models.NotaG
 import com.blogee.models.Usuario
@@ -385,9 +382,15 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
 
         } else {
-            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
 
-
+            Dialogo.getInstance(this@Post2)
+                .crearDialogoSinAccion(
+                    this@Post2,
+                    getString(R.string.dialog_datos_faltantes),
+                    getString(R.string.dialog_datos_faltantes_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
     }
 
@@ -583,7 +586,15 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
 
         } else {
-            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+
+            Dialogo.getInstance(this@Post2)
+                .crearDialogoSinAccion(
+                    this@Post2,
+                    getString(R.string.dialog_datos_faltantes),
+                    getString(R.string.dialog_datos_faltantes_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
     }
 

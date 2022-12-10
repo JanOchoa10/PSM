@@ -23,10 +23,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
@@ -92,7 +89,15 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@EditarPerfil)
+                        .crearDialogoSinAccion(
+                            this@EditarPerfil,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(
@@ -102,11 +107,20 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@EditarPerfil,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@EditarPerfil,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+
+                            Dialogo.getInstance(this@EditarPerfil)
+                                .crearDialogoSinAccion(
+                                    this@EditarPerfil,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+
                         } else {
                             var byteArray: ByteArray? = null
                             nameUser!!.text = item[0].Name
@@ -131,14 +145,30 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                     } else {
-                        Toast.makeText(this@EditarPerfil, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@EditarPerfil, "Incorrectas", Toast.LENGTH_LONG).show()
+
+                        Dialogo.getInstance(this@EditarPerfil)
+                            .crearDialogoSinAccion(
+                                this@EditarPerfil,
+                                getString(R.string.dialog_error_de_usuario),
+                                getString(R.string.dialog_error_de_usuario_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+
+            Dialogo.getInstance(this@EditarPerfil)
+                .crearDialogoSinAccion(
+                    this@EditarPerfil,
+                    getString(R.string.dialog_error_de_usuario),
+                    getString(R.string.dialog_error_de_usuario_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
     }
 
@@ -211,7 +241,8 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@EditarPerfil, "Cargando imagen...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditarPerfil, "Cargando imagen...", Toast.LENGTH_SHORT)
+                            .show()
                     }
                     mostrarCargando = false
 
@@ -245,6 +276,9 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                         "Imagen demasiado grande, intente con otra imagen",
                         Toast.LENGTH_LONG
                     ).show()
+
+
+
                     this.imageUI!!.setImageURI(null)
                     baos = ByteArrayOutputStream()
                     imgArray = baos.toByteArray()
@@ -572,6 +606,19 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun abrirDialogo() {
+
+//        Dialogo.getInstance(this@EditarPerfil)
+//            .crearDialogoConDobleAccion(
+//                this@EditarPerfil,
+//                getString(R.string.dialog_error_de_usuario),
+//                getString(R.string.dialog_error_de_usuario_text),
+//                getString(R.string.dialog_galeria),
+//                getString(R.string.dialog_cancelar),
+//                getString(R.string.dialog_camera),
+//                changeImage(),
+//                openCamera()
+//            )
+
         val builder = AlertDialog.Builder(this@EditarPerfil)
         builder.setTitle("Cambiar avatar")
         builder.setMessage("¿Deseas cambiar tu avatar desde la galería o tomar una foto?")
@@ -586,7 +633,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     }
 
 
-    private fun changeImage() {
+    public fun changeImage() {
         //check runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             var boolDo = false

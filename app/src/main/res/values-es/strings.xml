@@ -54,4 +54,10 @@
     <string name="dialog_user_no_register">Usuario no registrado</string>
     <string name="dialog_user_no_register_text">Ha ocurrido un error al intentar registrar el usuario. Intente más tarde.</string>
     <string name="dialog_aceptar">Aceptar</string>
+    <string name="dialog_error_de_notas">Error de notas</string>
+    <string name="dialog_error_de_notas_text">A ocurrido un error al traer las notas, intente más tarde.</string>
+    <string name="dialog_no_tiene_notas">No tiene notas</string>
+    <string name="dialog_no_tiene_notas_text">No hay notas creadas.</string>
+    <string name="dialog_error_de_usuario">Error de usuario</string>
+    <string name="dialog_error_de_usuario_text">A ocurrido un error al traer el usuario, intente más tarde.</string>
 </resources>

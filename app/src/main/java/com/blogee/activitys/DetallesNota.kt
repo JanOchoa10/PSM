@@ -7,21 +7,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_detalles_nota.*
-import kotlinx.android.synthetic.main.item_publicacion.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,7 +45,14 @@ class DetallesNota : AppCompatActivity() {
 
         resultNota.enqueue(object : Callback<List<Nota>> {
             override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-                Toast.makeText(this@DetallesNota, "Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@DetallesNota, "Error", Toast.LENGTH_LONG).show()
+                Dialogo.getInstance(this@DetallesNota)
+                    .crearDialogoSinAccion(
+                        this@DetallesNota,
+                        getString(R.string.dialog_error_de_notas),
+                        getString(R.string.dialog_error_de_notas_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
 
             override fun onResponse(
@@ -63,11 +62,21 @@ class DetallesNota : AppCompatActivity() {
                 val arrayPosts = response.body()
                 if (arrayPosts != null) {
                     if (arrayPosts.isEmpty()) {
-                        Toast.makeText(
-                            this@DetallesNota,
-                            "No tiene notas",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            this@DetallesNota,
+//                            "No tiene notas",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+
+                        Dialogo.getInstance(this@DetallesNota)
+                            .crearDialogoSinAccion(
+                                this@DetallesNota,
+                                getString(R.string.dialog_no_tiene_notas),
+                                getString(R.string.dialog_no_tiene_notas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+
+
                     } else {
 //                        Toast.makeText(this@DetallesNota, "Hay notas", Toast.LENGTH_LONG).show()
 
@@ -128,11 +137,18 @@ class DetallesNota : AppCompatActivity() {
                                         call: Call<List<Usuario>>,
                                         t: Throwable
                                     ) {
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Error",
-                                            Toast.LENGTH_LONG
-                                        ).show()
+//                                        Toast.makeText(
+//                                            applicationContext,
+//                                            "Error",
+//                                            Toast.LENGTH_LONG
+//                                        ).show()
+                                        Dialogo.getInstance(this@DetallesNota)
+                                            .crearDialogoSinAccion(
+                                                this@DetallesNota,
+                                                getString(R.string.dialog_error_de_usuario),
+                                                getString(R.string.dialog_error_de_usuario_text),
+                                                getString(R.string.dialog_aceptar)
+                                            )
                                     }
 
                                     override fun onResponse(
@@ -142,11 +158,21 @@ class DetallesNota : AppCompatActivity() {
                                         val item = response.body()
                                         if (item != null) {
                                             if (item.isEmpty()) {
-                                                Toast.makeText(
-                                                    applicationContext,
-                                                    "No tiene información",
-                                                    Toast.LENGTH_LONG
-                                                ).show()
+//                                                Toast.makeText(
+//                                                    applicationContext,
+//                                                    "No tiene información",
+//                                                    Toast.LENGTH_LONG
+//                                                ).show()
+
+                                                Dialogo.getInstance(this@DetallesNota)
+                                                    .crearDialogoSinAccion(
+                                                        this@DetallesNota,
+                                                        getString(R.string.dialog_error_de_usuario),
+                                                        getString(R.string.dialog_error_de_usuario_text),
+                                                        getString(R.string.dialog_aceptar)
+                                                    )
+
+
                                             } else {
 
                                                 var byteArray2: ByteArray? = null
@@ -179,11 +205,18 @@ class DetallesNota : AppCompatActivity() {
                                                 }
                                             }
                                         } else {
-                                            Toast.makeText(
-                                                applicationContext,
-                                                "Incorrectas",
-                                                Toast.LENGTH_LONG
-                                            ).show()
+//                                            Toast.makeText(
+//                                                applicationContext,
+//                                                "Incorrectas",
+//                                                Toast.LENGTH_LONG
+//                                            ).show()
+                                            Dialogo.getInstance(this@DetallesNota)
+                                                .crearDialogoSinAccion(
+                                                    this@DetallesNota,
+                                                    getString(R.string.dialog_error_de_usuario),
+                                                    getString(R.string.dialog_error_de_usuario_text),
+                                                    getString(R.string.dialog_aceptar)
+                                                )
                                         }
 
 
@@ -195,7 +228,15 @@ class DetallesNota : AppCompatActivity() {
 
                     }
                 } else {
-                    Toast.makeText(this@DetallesNota, "No hay notas", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@DetallesNota, "No hay notas", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@DetallesNota)
+                        .crearDialogoSinAccion(
+                            this@DetallesNota,
+                            getString(R.string.dialog_no_tiene_notas),
+                            getString(R.string.dialog_no_tiene_notas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
             }
         })
@@ -215,7 +256,17 @@ class DetallesNota : AppCompatActivity() {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@DetallesNota)
+                        .crearDialogoSinAccion(
+                            this@DetallesNota,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+
+
                 }
 
                 override fun onResponse(
@@ -225,11 +276,20 @@ class DetallesNota : AppCompatActivity() {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                applicationContext,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                applicationContext,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+
+                            Dialogo.getInstance(this@DetallesNota)
+                                .crearDialogoSinAccion(
+                                    this@DetallesNota,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+
                         } else {
                             var byteArray: ByteArray? = null
 //                            nameUser!!.text = item[0].Name
@@ -256,14 +316,30 @@ class DetallesNota : AppCompatActivity() {
                             }
                         }
                     } else {
-                        Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@DetallesNota)
+                            .crearDialogoSinAccion(
+                                this@DetallesNota,
+                                getString(R.string.dialog_error_de_usuario),
+                                getString(R.string.dialog_error_de_usuario_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+
                     }
 
 
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+
+            Dialogo.getInstance(this@DetallesNota)
+                .crearDialogoSinAccion(
+                    this@DetallesNota,
+                    getString(R.string.dialog_error_de_usuario),
+                    getString(R.string.dialog_error_de_usuario_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
 
     }
