@@ -44,4 +44,14 @@
     <string name="introduce_apellido">Introduce tu apellido</string>
     <string name="enter_valid_name">Introduce un nombre válido</string>
     <string name="enter_valid_lastname">Introducir un apellido válido</string>
+    <string name="dialog_imagen_no_cargada">Imagen no cargada</string>
+    <string name="dialog_imagen_no_cargada_text">Imagen demasiado grande, intente con otra imagen.</string>
+    <string name="dialog_ingresa_imagen_text">Por favor, ingresa una imagen como avatar.</string>
+    <string name="dialog_user_register">Usuario registrado</string>
+    <string name="dialog_user_register_text">Usuario registrado exitosamente, inicia sesión para continuar.</string>
+    <string name="dialog_datos_faltantes">Datos faltantes</string>
+    <string name="dialog_datos_faltantes_text">Rellene todos los campos.</string>
+    <string name="dialog_user_no_register">Usuario no registrado</string>
+    <string name="dialog_user_no_register_text">Ha ocurrido un error al intentar registrar el usuario. Intente más tarde.</string>
+    <string name="dialog_aceptar">Aceptar</string>
 </resources>
