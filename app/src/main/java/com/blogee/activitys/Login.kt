@@ -1,6 +1,7 @@
 package com.blogee.activitys
 
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -13,16 +14,19 @@ import android.widget.Button
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.util.PatternsCompat
 import androidx.core.view.MenuItemCompat
+import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
 import com.blogee.miSQLiteHelper
 import com.blogee.models.Usuario
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_loading.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -182,6 +186,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                                 "Bienvenido " + item[0].Name,
                                 Toast.LENGTH_LONG
                             ).show()
+
                             val idUserLog = Bundle()
 
                             idUserLog.putString("idUserLog", item[0].id_User.toString())
@@ -203,6 +208,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             startActivity(cambiarActivity)
                             overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                             finish()
+
                         }
                     } else {
                         Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
@@ -405,6 +411,5 @@ class Login : AppCompatActivity(), View.OnClickListener {
         login()
 //        Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
     }
-
 
 }

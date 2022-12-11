@@ -48,4 +48,23 @@
     <string name="introduce_apellido">Enter your last name</string>
     <string name="enter_valid_name">Enter a valid name</string>
     <string name="enter_valid_lastname">Enter a valid last name</string>
+    <string name="dialog_aceptar">Accept</string>
+    <string name="dialog_imagen_no_cargada">Image not loaded</string>
+    <string name="dialog_imagen_no_cargada_text">Image too large, try another image.</string>
+    <string name="dialog_ingresa_imagen_text">Please enter an image as an avatar.</string>
+    <string name="dialog_user_register">Registered user</string>
+    <string name="dialog_user_register_text">Successfully registered user, please log in to continue.</string>
+    <string name="dialog_datos_faltantes">Missing data</string>
+    <string name="dialog_datos_faltantes_text">Fill in all the fields.</string>
+    <string name="dialog_user_no_register">Unregistered user</string>
+    <string name="dialog_user_no_register_text">An error occurred while trying to register the user. Try again later.</string>
+    <string name="dialog_error_de_notas">Note error</string>
+    <string name="dialog_error_de_notas_text">An error occurred while fetching the notes, please try again later.</string>
+    <string name="dialog_no_tiene_notas">Has no notes</string>
+    <string name="dialog_no_tiene_notas_text">No notes created.</string>
+    <string name="dialog_error_de_usuario">User error</string>
+    <string name="dialog_error_de_usuario_text">An error occurred while fetching the user, please try again later.</string>
+    <string name="dialog_cancelar">Cancel</string>
+    <string name="dialog_galeria">Gallery</string>
+    <string name="dialog_camera">Camera</string>
 </resources>

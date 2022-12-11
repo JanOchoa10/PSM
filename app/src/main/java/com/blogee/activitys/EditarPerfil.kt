@@ -1,11 +1,14 @@
 package com.blogee.activitys
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
@@ -14,15 +17,13 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
@@ -88,7 +89,15 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@EditarPerfil)
+                        .crearDialogoSinAccion(
+                            this@EditarPerfil,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(
@@ -98,11 +107,20 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@EditarPerfil,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@EditarPerfil,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+
+                            Dialogo.getInstance(this@EditarPerfil)
+                                .crearDialogoSinAccion(
+                                    this@EditarPerfil,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+
                         } else {
                             var byteArray: ByteArray? = null
                             nameUser!!.text = item[0].Name
@@ -127,14 +145,30 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                     } else {
-                        Toast.makeText(this@EditarPerfil, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@EditarPerfil, "Incorrectas", Toast.LENGTH_LONG).show()
+
+                        Dialogo.getInstance(this@EditarPerfil)
+                            .crearDialogoSinAccion(
+                                this@EditarPerfil,
+                                getString(R.string.dialog_error_de_usuario),
+                                getString(R.string.dialog_error_de_usuario_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+
+            Dialogo.getInstance(this@EditarPerfil)
+                .crearDialogoSinAccion(
+                    this@EditarPerfil,
+                    getString(R.string.dialog_error_de_usuario),
+                    getString(R.string.dialog_error_de_usuario_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
     }
 
@@ -156,7 +190,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.btn_guardar_cambios -> validate()
-            R.id.btnCamera2 -> openCamera()
+            R.id.btnCamera2 -> abrirDialogo()
         }
     }
 
@@ -181,7 +215,104 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                 //Mostramos la imagen en la vista
                 this.imageUI!!.setImageBitmap(photo)
 
-                val bitmap = (imageUI!!.getDrawable() as BitmapDrawable).bitmap
+                val bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+            }
+
+            if (requestcode == IMAGE_PICK_CODE) {
+                this.imageUI!!.setImageURI(data?.data)
+                var bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                var baos = ByteArrayOutputStream()
+
+
+                var calidad = 80
+                bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+                imgArray = baos.toByteArray()
+
+
+                var strEncodeImage2: String
+                var encodedString2: String = Base64.getEncoder().encodeToString(this.imgArray)
+                strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                val tamanoPermitido = 16777215
+                var tamano = strEncodeImage2.count()
+
+                var mostrarCargando = true
+                var entroAWhile = false
+
+                while (tamano > tamanoPermitido && calidad > 1) {
+                    if (mostrarCargando) {
+                        Toast.makeText(this@EditarPerfil, "Cargando imagen...", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    mostrarCargando = false
+
+                    calidad -= 1
+                    if (!mostrarCargando && calidad % 40 == 0) {
+                        mostrarCargando = true
+                    }
+
+
+                    bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                    baos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+//                    bitmap.scale(80,80,true).compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+
+                    imgArray = baos.toByteArray()
+
+                    encodedString2 = Base64.getEncoder().encodeToString(this.imgArray)
+                    strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                    tamano = strEncodeImage2.count()
+
+                    entroAWhile = true
+
+                }
+
+//                this.imageUI!!.setImageURI(baos)
+
+                if (tamano > tamanoPermitido) {
+                    Toast.makeText(
+                        this@EditarPerfil,
+                        "Imagen demasiado grande, intente con otra imagen",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+
+
+                    this.imageUI!!.setImageURI(null)
+                    baos = ByteArrayOutputStream()
+                    imgArray = baos.toByteArray()
+                } else if (entroAWhile) {
+
+
+//                    Toast.makeText(
+//                        this@Post2,
+//                        "Entro al while",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+
+//                    this.imageUI!!.setImageURI(null)
+
+                    if (strEncodeImage2 != "") {
+                        var byteArray: ByteArray? = null
+                        val strImage: String =
+                            strEncodeImage2.replace("data:image/png;base64,", "")
+                        byteArray = Base64.getDecoder().decode(strImage)
+                        var bitmap: Bitmap? = null
+                        if (byteArray != null) {
+                            bitmap =
+                                ImageUtilities.getBitMapFromByteArray(byteArray)
+                            val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                    Resources.getSystem(),
+                                    bitmap
+                                )
+                            this.imageUI!!.setImageDrawable(roundedBitmapWrapper)
+                        }
+
+                    }
+                }
+
             }
 
         }
@@ -364,7 +495,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     + "(?=.*[0-9])"         // Al menos un digito
                     + "(?=.*[a-z])"         // Al menos una minuscula
                     + "(?=.*[A-Z])"         // Al menos una mayuscula
-                    + "(?=.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
+//                    + "(?=.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
                     + "(?=\\S+$)"           // No espacios en blanco
                     + ".{8,50}"               // Al menos 8 caracteres
                     + "$"
@@ -474,5 +605,68 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         GuardarCambios()
     }
 
+    private fun abrirDialogo() {
+
+//        Dialogo.getInstance(this@EditarPerfil)
+//            .crearDialogoConDobleAccion(
+//                this@EditarPerfil,
+//                getString(R.string.dialog_error_de_usuario),
+//                getString(R.string.dialog_error_de_usuario_text),
+//                getString(R.string.dialog_galeria),
+//                getString(R.string.dialog_cancelar),
+//                getString(R.string.dialog_camera),
+//                changeImage(),
+//                openCamera()
+//            )
+
+        val builder = AlertDialog.Builder(this@EditarPerfil)
+        builder.setTitle("Cambiar avatar")
+        builder.setMessage("¿Deseas cambiar tu avatar desde la galería o tomar una foto?")
+        builder.setPositiveButton("Galería") { dialog, which ->
+            changeImage()
+        }
+        builder.setNeutralButton("Cancelar", null)
+        builder.setNegativeButton("Cámara") { dialog, which ->
+            openCamera()
+        }
+        builder.show()
+    }
+
+
+    public fun changeImage() {
+        //check runtime permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var boolDo = false
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED
+            ) {
+                //permission denied
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                //show popup to request runtime permission
+                requestPermissions(permissions, PERMISSION_CODE)
+            } else {
+                //permission already granted
+                boolDo = true
+
+            }
+
+            if (boolDo) {
+                pickImageFromGallery()
+            }
+
+        }
+
+    }
+
+    private fun pickImageFromGallery() {
+        //Abrir la galería
+        val intent = Intent()
+        intent.action = Intent.ACTION_PICK
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.type = "image/*"
+        //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+
+    }
 
 }

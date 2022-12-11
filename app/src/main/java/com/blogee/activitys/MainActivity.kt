@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
             Handler().postDelayed(Runnable {
                 swipeRefreshLayout.isRefreshing = false
-            }, 200)
+            }, 900)
         }
 
         val btnfavNewPost = findViewById<FloatingActionButton>(R.id.fab_new_post)
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     var listaPosts: MutableList<Nota> = mutableListOf()
 
     fun traerNotas() {
-        listaPosts.clear()
 
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
         val result: Call<List<Nota>> = service.getNotas()
@@ -105,6 +104,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 call: Call<List<Nota>>,
                 response: Response<List<Nota>>
             ) {
+
                 val arrayPosts = response.body()
                 if (arrayPosts != null) {
                     if (arrayPosts.isEmpty()) {
@@ -118,6 +118,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                         val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
                         textoInicial.visibility = View.GONE
 
+                        listaPosts.clear()
                         for (item in arrayPosts) {
                             listaPosts.add(
                                 Nota(

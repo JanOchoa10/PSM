@@ -25,10 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Nota
 import com.blogee.models.NotaG
 import com.blogee.models.Usuario
@@ -79,6 +76,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         val btnCam = findViewById<Button>(R.id.btn_PostUpImages)
         btnCam.setOnClickListener(this)
         btn_galeria.setOnClickListener(this)
+        btn_EliminarImg.setOnClickListener(this)
 
 
 //        this.imageUI.setImageResource(R.mipmap.ic_launcher)
@@ -92,7 +90,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
             val cambiarActivity = Intent(
                 this,
-                VerPerfil::class.java
+                MainActivity::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
             startActivity(cambiarActivity)
@@ -118,7 +116,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
             result.enqueue(object : Callback<List<NotaG>> {
                 override fun onFailure(call: Call<List<NotaG>>, t: Throwable) {
-                    Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@Post2, "Error al guardar", Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(
@@ -138,7 +136,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             var byteArray3: ByteArray? = null
                             titlePost!!.text = item[0].Title
                             descPost!!.text = item[0].Description
-                            if(item[0].Image != ""){
+                            if (item[0].Image != "") {
                                 ImgNota = item[0].Image
                                 val strImage: String =
                                     item[0].Image!!.replace("data:image/png;base64,", "")
@@ -310,11 +308,20 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             R.id.btn_PostUpImages -> openCamera()
             R.id.btn_galeria -> changeImage()
             R.id.btn_PostSave -> savePost()
+            R.id.btn_EliminarImg -> deleteImg()
         }
     }
 
+    private fun deleteImg() {
+
+//        notaGeneral!!.Image = ""
+        this.imgArray = null
+        this.imageUI!!.setImageDrawable(null)
+
+    }
+
     private fun savePost() {
-        if(titlePost!!.text.isNotBlank() && descPost!!.text.isNotBlank()){
+        if (titlePost!!.text.isNotBlank() && descPost!!.text.isNotBlank()) {
             var id_User = intent.getStringExtra("idUserLog")?.toInt()
 
             val cambiarActivity = Intent(
@@ -322,20 +329,20 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 MainActivity::class.java
             )
 
-            val strEncodeImage:String
-            if(this.imgArray != null){
-                val encodedString:String =  Base64.getEncoder().encodeToString(this.imgArray)
-                strEncodeImage= "data:image/png;base64," + encodedString
-            }else{
-                strEncodeImage=""
+            val strEncodeImage: String
+            if (this.imgArray != null) {
+                val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
+                strEncodeImage = "data:image/png;base64," + encodedString
+            } else {
+                strEncodeImage = ""
             }
 
             //Primero borramos la existente
-            val service2: Service =  RestEngine.getRestEngine().create(Service::class.java)
+            val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result2: Call<String> = service2.deleteNotaG(id_User.toString())
-            result2.enqueue(object: Callback<String> {
+            result2.enqueue(object : Callback<String> {
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    Toast.makeText(this@Post2,"Error",Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<String>, response2: Response<String>) {
@@ -346,13 +353,19 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 }
             })
 
-            val nota =   NotaG(0, titlePost!!.text.toString(),descPost!!.text.toString(),id_User,strEncodeImage)
-            val service: Service =  RestEngine.getRestEngine().create(Service::class.java)
+            val nota = NotaG(
+                0,
+                titlePost!!.text.toString(),
+                descPost!!.text.toString(),
+                id_User,
+                strEncodeImage
+            )
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<Int> = service.saveNotaG(nota)
 
-            result.enqueue(object: Callback<Int> {
+            result.enqueue(object : Callback<Int> {
                 override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@Post2,"Error",Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
@@ -360,7 +373,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     descPost!!.text = ""
                     val idUserLog = Bundle()
                     idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                    Toast.makeText(this@Post2,"Guardado", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
                     cambiarActivity.putExtras(idUserLog)
                     startActivity(cambiarActivity)
                     finish()
@@ -368,11 +381,16 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             })
 
 
-        }
-        else{
-            Toast.makeText(this,"Ingresa todos los datos",Toast.LENGTH_SHORT).show()
+        } else {
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
 
-
+            Dialogo.getInstance(this@Post2)
+                .crearDialogoSinAccion(
+                    this@Post2,
+                    getString(R.string.dialog_datos_faltantes),
+                    getString(R.string.dialog_datos_faltantes_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
     }
 
@@ -513,9 +531,9 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
                 strEncodeImage = "data:image/png;base64," + encodedString
-            } else if(ImgNota != "") {
+            } else if (ImgNota != null) {
                 strEncodeImage = ImgNota.toString()
-            }else {
+            } else {
                 strEncodeImage = ""
             }
 
@@ -531,17 +549,17 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
             result.enqueue(object : Callback<Int> {
                 override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
                     //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
-                    val service2: Service =  RestEngine.getRestEngine().create(Service::class.java)
+                    val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
                     val result2: Call<String> = service2.deleteNotaG(id_User.toString())
-                    result2.enqueue(object: Callback<String> {
+                    result2.enqueue(object : Callback<String> {
                         override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(this@Post2,"Error",Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
                         }
 
                         override fun onResponse(call: Call<String>, response2: Response<String>) {
@@ -568,7 +586,15 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
 
         } else {
-            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+
+            Dialogo.getInstance(this@Post2)
+                .crearDialogoSinAccion(
+                    this@Post2,
+                    getString(R.string.dialog_datos_faltantes),
+                    getString(R.string.dialog_datos_faltantes_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
     }
 

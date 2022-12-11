@@ -1,10 +1,13 @@
 package com.blogee.activitys
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
@@ -26,6 +29,7 @@ import com.blogee.Service
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_detalles_nota.*
+import kotlinx.android.synthetic.main.activity_post2.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,6 +44,9 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
     var imgArray: ByteArray? = null
     var notaGeneral: Nota? = null
     var ImgNota: String = ""
+//
+//    var numeroNotaBack: Int? = null
+//    var numeroUserBack: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +59,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         val btnDelete = findViewById<Button>(R.id.btn_delete)
         btnDelete.setOnClickListener(this)
         val btnCancel = findViewById<Button>(R.id.btn_cancel)
+        btnCancel.setOnClickListener(this)
         val btnEliminarImg = findViewById<Button>(R.id.btn_EliminarImg)
         btnEliminarImg.setOnClickListener(this)
         val btnCamera = findViewById<Button>(R.id.btn_img)
@@ -59,7 +67,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         title = findViewById<TextView>(R.id.editTextTextName)
         desc = findViewById<EditText>(R.id.editTextTextMultiLine)
         imageUI = findViewById<ImageView>(R.id.imageView4)
-
+        btn_galeria.setOnClickListener(this)
 
 
         val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
@@ -92,7 +100,8 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                        title!!.text = arrayPosts[0].Title
                         desc!!.text = arrayPosts[0].Description
                         notaGeneral = arrayPosts[0]
-
+//                        numeroNotaBack = arrayPosts[0].id_Nota
+//                        numeroUserBack = arrayPosts[0].id_User
 
                         if(arrayPosts[0].Image != ""){
                             var byteArray: ByteArray? = null
@@ -110,7 +119,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                                 imageUI!!.setImageBitmap(bitmap)
                             }
                         }else{
-                            imageUI!!.setImageResource(R.mipmap.ic_launcher)
+//                            imageUI!!.setImageResource(R.mipmap.ic_launcher)
                         }
 
                     }
@@ -190,6 +199,8 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
+
+
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
     }
@@ -237,14 +248,23 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
             R.id.btn_img -> openCamera()
             R.id.btn_delete -> deletePost()
             R.id.btn_EliminarImg -> deleteImg()
+            R.id.btn_cancel -> cancelEdit()
+            R.id.btn_galeria -> changeImage()
         }
+    }
+
+    private fun cancelEdit() {
+        onBackPressed()
+
+
+        overridePendingTransition(R.anim.from_left, R.anim.to_right)
     }
 
     private fun deleteImg() {
 
         notaGeneral!!.Image = ""
         this.imgArray = null
-        this.imageUI!!.setImageResource(R.mipmap.ic_launcher)
+        this.imageUI!!.setImageDrawable(null)
 
     }
 
@@ -271,7 +291,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                 cambiarActivity.putExtras(idUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                true
+                finishAffinity()
             }
         })
     }
@@ -315,6 +335,101 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
             }
 
         }
+
+        if (requestcode == IMAGE_PICK_CODE) {
+            this.imageUI!!.setImageURI(data?.data)
+            var bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+            var baos = ByteArrayOutputStream()
+
+
+            var calidad = 80
+            bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+            imgArray = baos.toByteArray()
+
+
+            var strEncodeImage2: String
+            var encodedString2: String = Base64.getEncoder().encodeToString(this.imgArray)
+            strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+            val tamanoPermitido = 16777215
+            var tamano = strEncodeImage2.count()
+
+            var mostrarCargando = true
+            var entroAWhile = false
+
+            while (tamano > tamanoPermitido && calidad > 1) {
+                if (mostrarCargando) {
+                    Toast.makeText(this@EditarPost, "Cargando imagen...", Toast.LENGTH_SHORT).show()
+                }
+                mostrarCargando = false
+
+                calidad -= 1
+                if (!mostrarCargando && calidad % 40 == 0) {
+                    mostrarCargando = true
+                }
+
+
+                bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                baos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+//                    bitmap.scale(80,80,true).compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+
+                imgArray = baos.toByteArray()
+
+                encodedString2 = Base64.getEncoder().encodeToString(this.imgArray)
+                strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                tamano = strEncodeImage2.count()
+
+                entroAWhile = true
+
+            }
+
+//                this.imageUI!!.setImageURI(baos)
+
+            if (tamano > tamanoPermitido) {
+                Toast.makeText(
+                    this@EditarPost,
+                    "Imagen demasiado grande, intente con otra imagen",
+                    Toast.LENGTH_LONG
+                ).show()
+                this.imageUI!!.setImageURI(null)
+                baos = ByteArrayOutputStream()
+                imgArray = baos.toByteArray()
+            } else if (entroAWhile) {
+
+
+//                    Toast.makeText(
+//                        this@Post2,
+//                        "Entro al while",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+
+//                    this.imageUI!!.setImageURI(null)
+
+                if (strEncodeImage2 != "") {
+                    var byteArray: ByteArray? = null
+                    val strImage: String =
+                        strEncodeImage2.replace("data:image/png;base64,", "")
+                    byteArray = Base64.getDecoder().decode(strImage)
+                    var bitmap: Bitmap? = null
+                    if (byteArray != null) {
+                        bitmap =
+                            ImageUtilities.getBitMapFromByteArray(byteArray)
+                        val roundedBitmapWrapper: RoundedBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(
+                                Resources.getSystem(),
+                                bitmap
+                            )
+                        this.imageUI!!.setImageDrawable(roundedBitmapWrapper)
+                    }
+
+                }
+            }
+
+        }
+
+
     }
 
     private fun GuardarCambios() {
@@ -356,6 +471,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                     )
 
                     intent2.putExtra("idDeMiNotaActualClave", notaSave.id_Nota)
+                    intent2.putExtra("idDeMiUsuarioDeNotaActualClave", notaSave.id_User)
                     intent2.putExtras(idUserLog)
                     startActivity(intent2)
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -368,6 +484,42 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         }else{
 
         }
+
+    }
+
+    private fun changeImage() {
+        //check runtime permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var boolDo = false
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED
+            ) {
+                //permission denied
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                //show popup to request runtime permission
+                requestPermissions(permissions, PERMISSION_CODE)
+            } else {
+                //permission already granted
+                boolDo = true
+
+            }
+
+            if (boolDo) {
+                pickImageFromGallery()
+            }
+
+        }
+
+    }
+
+    private fun pickImageFromGallery() {
+        //Abrir la galería
+        val intent = Intent()
+        intent.action = Intent.ACTION_PICK
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.type = "image/*"
+        //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
+        startActivityForResult(intent, IMAGE_PICK_CODE)
 
     }
 }
