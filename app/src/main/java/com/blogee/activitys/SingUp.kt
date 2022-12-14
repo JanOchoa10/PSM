@@ -18,8 +18,8 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
 import com.blogee.*
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Usuario
-import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -283,22 +283,23 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                 result.enqueue(object : Callback<Int> {
                     override fun onFailure(call: Call<Int>, t: Throwable) {
 //                        Toast.makeText(this@SingUp, "Error", Toast.LENGTH_LONG).show()
-                        val builder = AlertDialog.Builder(this@SingUp)
+                        /*val builder = AlertDialog.Builder(this@SingUp)
                         builder.setIcon(R.drawable.bluebird)
                         builder.setTitle(getString(R.string.dialog_user_no_register))
                         builder.setMessage(getString(R.string.dialog_user_no_register_text))
                         builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
 
                         }
-                        builder.show()
+                        builder.show()*/
+                        if(usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString(),strEncodeImage) > -1){
+                            Toast.makeText(this@SingUp, "Agregado", Toast.LENGTH_LONG).show()
+                        }
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                        nameUser!!.text = ""
-                        lastNameUser!!.text = ""
-                        emailUser!!.text = ""
-                        passUser!!.text = ""
+                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString(),strEncodeImage)
+
+
 //                        Toast.makeText(this@SingUp, "Guardado", Toast.LENGTH_LONG).show()
 
                         val builder = AlertDialog.Builder(this@SingUp)
@@ -311,7 +312,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                             finish()
                         }
                         builder.show()
-
+                        usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString(),strEncodeImage)
 
                     }
                 })

@@ -15,6 +15,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
 import com.blogee.adapters.PostsAdapter
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import retrofit2.Call
@@ -71,11 +72,14 @@ class VerPerfil : AppCompatActivity() {
         btnEditarPerfil.setOnClickListener {
             val idUserLog = Bundle()
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+            val emailUserLog = Bundle()
+            emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
             val cambiarActivity = Intent(
                 this,
                 EditarPerfil::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
+            cambiarActivity.putExtras(emailUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
@@ -121,7 +125,7 @@ class VerPerfil : AppCompatActivity() {
                             if (byteArray != null) {
                                 //Bitmap redondo
                                 val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray)
+                                    ImageUtilities.getBitMapFromByteArray(byteArray!!)
                                 val roundedBitmapWrapper: RoundedBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(
                                         Resources.getSystem(),
@@ -139,84 +143,160 @@ class VerPerfil : AppCompatActivity() {
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+            var email_User = intent.getStringExtra("emailUserLog")
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
+            if(c.moveToFirst()){
+                var byteArray: ByteArray? = null
+                namePerfil!!.text = getString(R.string.name) + ": " + c.getString(1).toString()
+                lastnamePerfil!!.text =
+                    getString(R.string.last_name) + ": " + c.getString(2).toString()
+                emailPerfil!!.text = getString(R.string.email) + ": " + c.getString(3).toString()
+
+                val strImage: String =
+                    c.getString(5).toString().replace("data:image/png;base64,", "")
+                byteArray = Base64.getDecoder().decode(strImage)
+                if (byteArray != null) {
+                    //Bitmap redondo
+                    val bitmap: Bitmap =
+                        ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                    val roundedBitmapWrapper: RoundedBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(
+                            Resources.getSystem(),
+                            bitmap
+                        )
+                    roundedBitmapWrapper.setCircular(true)
+                    imageUI!!.setImageDrawable(roundedBitmapWrapper)
+                }
+
+            }
+            //Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
         }
     }
 
     fun traerNotasUsuario() {
         var listaPosts: MutableList<Nota> = mutableListOf()
         val id_UserVP = intent.getStringExtra("idUserLog")
-        val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-        val result: Call<List<Nota>> = service.getNotaUser(id_UserVP)
 
-        result.enqueue(object : Callback<List<Nota>> {
-            override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-                Toast.makeText(this@VerPerfil, "Error", Toast.LENGTH_LONG).show()
-            }
+        if(id_UserVP != null){
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result: Call<List<Nota>> = service.getNotaUser(id_UserVP)
 
-            override fun onResponse(
-                call: Call<List<Nota>>,
-                response: Response<List<Nota>>
-            ) {
-                val arrayPosts = response.body()
-                if (arrayPosts != null) {
-                    if (arrayPosts.isEmpty()) {
-                        Toast.makeText(
-                            this@VerPerfil,
-                            "No tiene notas",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        //      Visibilidad del texto cuando no hay publicaciones
-                        val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
-                        textoInicial.visibility = View.GONE
-
-                        for (item in arrayPosts) {
-                            listaPosts.add(
-                                Nota(
-                                    item.id_Nota,
-                                    item.Title,
-                                    item.Description,
-                                    item.id_User,
-                                    item.Image
-                                )
-                            )
-                        }
-
-                        val adaptador = PostsAdapter(this@VerPerfil, listaPosts)
-
-                        // Elementos dentro del listview
-                        val lvPost = findViewById<ListView>(R.id.lvPostsUsuario)
-
-                        lvPost.adapter = adaptador
-
-                        lvPost.setOnItemClickListener { parent, view, position, id ->
-                            val notaActual: Nota =
-                                parent.getItemAtPosition(position) as Nota
-
-
-                            val idUserLog = Bundle()
-                            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-
-                            val intent = Intent(
-                                this@VerPerfil,
-                                DetallesNota::class.java
-                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
-                            intent.putExtras(idUserLog)
-                            intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
-                            intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
-
-                            startActivity(intent)
-                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                        }
-
-                    }
-                } else {
-                    Toast.makeText(this@VerPerfil, "No hay notas", Toast.LENGTH_LONG).show()
+            result.enqueue(object : Callback<List<Nota>> {
+                override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
+                    Toast.makeText(this@VerPerfil, "Error", Toast.LENGTH_LONG).show()
                 }
+
+                override fun onResponse(
+                    call: Call<List<Nota>>,
+                    response: Response<List<Nota>>
+                ) {
+                    val arrayPosts = response.body()
+                    if (arrayPosts != null) {
+                        if (arrayPosts.isEmpty()) {
+                            Toast.makeText(
+                                this@VerPerfil,
+                                "No tiene notas",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            //      Visibilidad del texto cuando no hay publicaciones
+                            val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
+                            textoInicial.visibility = View.GONE
+
+                            for (item in arrayPosts) {
+                                listaPosts.add(
+                                    Nota(
+                                        item.id_Nota,
+                                        item.Title,
+                                        item.Description,
+                                        item.id_User,
+                                        item.Image
+                                    )
+                                )
+                            }
+
+                            val adaptador = PostsAdapter(this@VerPerfil, listaPosts)
+
+                            // Elementos dentro del listview
+                            val lvPost = findViewById<ListView>(R.id.lvPostsUsuario)
+
+                            lvPost.adapter = adaptador
+
+                            lvPost.setOnItemClickListener { parent, view, position, id ->
+                                val notaActual: Nota =
+                                    parent.getItemAtPosition(position) as Nota
+
+
+                                val idUserLog = Bundle()
+                                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
+                                val intent = Intent(
+                                    this@VerPerfil,
+                                    DetallesNota::class.java
+                                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+                                intent.putExtras(idUserLog)
+                                intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+                                intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
+
+                                startActivity(intent)
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                            }
+
+                        }
+                    } else {
+                        Toast.makeText(this@VerPerfil, "No hay notas", Toast.LENGTH_LONG).show()
+                    }
+                }
+            })
+        }else{
+            var email_User = intent.getStringExtra("emailUserLog")
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery("Select * from notas where emailUser ='"+email_User.toString()+"' and status != 2",null)
+            if(c.moveToFirst()){
+                do {
+                    listaPosts.add(
+                        Nota(
+                            c.getInt(0),
+                            c.getString(2),
+                            c.getString(3),
+                            null,
+                            c.getString(4)
+                        )
+                    )
+                }while (c.moveToNext())
             }
-        })
+            val adaptador = PostsAdapter(this@VerPerfil, listaPosts)
+
+            // Elementos dentro del listview
+            val lvPost = findViewById<ListView>(R.id.lvPostsUsuario)
+
+            lvPost.adapter = adaptador
+
+            lvPost.setOnItemClickListener { parent, view, position, id ->
+                val notaActual: Nota =
+                    parent.getItemAtPosition(position) as Nota
+
+
+                val idUserLog = Bundle()
+                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
+                val intent = Intent(
+                    this@VerPerfil,
+                    DetallesNota::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+                intent.putExtras(idUserLog)
+                intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+                intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
+
+                startActivity(intent)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            }
+
+        }
+
     }
 
 

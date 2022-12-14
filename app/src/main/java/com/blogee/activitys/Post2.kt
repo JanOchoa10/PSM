@@ -8,29 +8,26 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64.DEFAULT
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.webkit.URLUtil.decode
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Nota
 import com.blogee.models.NotaG
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_post2.*
-import kotlinx.android.synthetic.main.activity_post2.view.*
 import kotlinx.android.synthetic.main.item_publicacion.view.*
 import okhttp3.internal.http2.Huffman.decode
 import retrofit2.Call
@@ -41,6 +38,7 @@ import java.util.*
 
 
 class Post2 : AppCompatActivity(), View.OnClickListener {
+    lateinit var usuarioDBHelper: miSQLiteHelper
     var titlePost: TextView? = null
     var descPost: TextView? = null
     var imageUI: ImageView? = null
@@ -65,6 +63,9 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post2)
+
+        usuarioDBHelper = miSQLiteHelper(this)
+
 
         titlePost = findViewById(R.id.editText_PostTitle)
         descPost = findViewById(R.id.editText_PostDescrip)
@@ -144,7 +145,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                                 if (byteArray3 != null) {
                                     //Bitmap redondo
                                     val bitmap: Bitmap =
-                                        ImageUtilities.getBitMapFromByteArray(byteArray3)
+                                        ImageUtilities.getBitMapFromByteArray(byteArray3!!)
                                     /*val roundedBitmapWrapper: RoundedBitmapDrawable =
                                         RoundedBitmapDrawableFactory.create(
                                             Resources.getSystem(),
@@ -165,7 +166,33 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+            val email_User = intent.getStringExtra("emailUserLog")
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery("Select * from notas where emailUser ='"+email_User.toString()+"' and status = 2",null)
+            if(c.moveToFirst()){
+                var byteArray3: ByteArray? = null
+                titlePost!!.text = c.getString(2).toString()
+                descPost!!.text = c.getString(3).toString()
+                if (c.getString(4).toString() != "") {
+                    ImgNota = c.getString(4).toString()
+                    val strImage: String =
+                        c.getString(4).toString()!!.replace("data:image/png;base64,", "")
+                    byteArray3 = Base64.getDecoder().decode(strImage)
+                    if (byteArray3 != null) {
+                        //Bitmap redondo
+                        val bitmap: Bitmap =
+                            ImageUtilities.getBitMapFromByteArray(byteArray3!!)
+                        /*val roundedBitmapWrapper: RoundedBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(
+                                Resources.getSystem(),
+                                bitmap
+                            )
+                        roundedBitmapWrapper.setCircular(true)*/
+                        imageUI!!.setImageBitmap(bitmap)
+                    }
+                }
+
+            }
         }
     }
 
@@ -223,7 +250,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             if (byteArray != null) {
                                 //Bitmap redondo
                                 val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray)
+                                    ImageUtilities.getBitMapFromByteArray(byteArray!!)
                                 val roundedBitmapWrapper: RoundedBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(
                                         Resources.getSystem(),
@@ -243,7 +270,28 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+            var email_User = intent.getStringExtra("emailUserLog")
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
+            if(c.moveToFirst()){
+                var byteArray: ByteArray? = null
+                val strImage: String =
+                    c.getString(5).toString().replace("data:image/png;base64,", "")
+                byteArray = Base64.getDecoder().decode(strImage)
+                if (byteArray != null) {
+                    //Bitmap redondo
+                    val bitmap: Bitmap =
+                        ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                    val roundedBitmapWrapper: RoundedBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(
+                            Resources.getSystem(),
+                            bitmap
+                        )
+                    roundedBitmapWrapper.setCircular(true)
+                    miItem5.setIcon(roundedBitmapWrapper)
+
+                }
+            }
         }
 
     }
@@ -267,11 +315,14 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 // Acción al presionar el botón
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                val emailUserLog = Bundle()
+                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
+                cambiarActivity.putExtras(emailUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
@@ -323,7 +374,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
     private fun savePost() {
         if (titlePost!!.text.isNotBlank() && descPost!!.text.isNotBlank()) {
             var id_User = intent.getStringExtra("idUserLog")?.toInt()
-
+            val emailU = intent.getStringExtra("emailUserLog").toString()
             val cambiarActivity = Intent(
                 this,
                 MainActivity::class.java
@@ -338,47 +389,89 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             }
 
             //Primero borramos la existente
-            val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
-            val result2: Call<String> = service2.deleteNotaG(id_User.toString())
-            result2.enqueue(object : Callback<String> {
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
-                }
+            if(id_User!=null){
+                val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
+                val result2: Call<String> = service2.deleteNotaG(id_User.toString())
+                result2.enqueue(object : Callback<String> {
+                    override fun onFailure(call: Call<String>, t: Throwable) {
+                        Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                    }
 
-                override fun onResponse(call: Call<String>, response2: Response<String>) {
+                    override fun onResponse(call: Call<String>, response2: Response<String>) {
 
-                    val item = response2.body()
+                        val item = response2.body()
 
 
-                }
-            })
+                    }
+                })
 
-            val nota = NotaG(
-                0,
-                titlePost!!.text.toString(),
-                descPost!!.text.toString(),
-                id_User,
-                strEncodeImage
-            )
-            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<Int> = service.saveNotaG(nota)
 
-            result.enqueue(object : Callback<Int> {
-                override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
-                }
+                val nota = NotaG(
+                    0,
+                    titlePost!!.text.toString(),
+                    descPost!!.text.toString(),
+                    id_User,
+                    strEncodeImage
+                )
 
-                override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                    titlePost!!.text = ""
-                    descPost!!.text = ""
-                    val idUserLog = Bundle()
-                    idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                    Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
-                    cambiarActivity.putExtras(idUserLog)
-                    startActivity(cambiarActivity)
-                    finish()
-                }
-            })
+                val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+                val result: Call<Int> = service.saveNotaG(nota)
+
+                result.enqueue(object : Callback<Int> {
+                    override fun onFailure(call: Call<Int>, t: Throwable) {
+                        Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                    }
+
+                    override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                        val service3: Service = RestEngine.getRestEngine().create(Service::class.java)
+                        val result3: Call<List<Usuario>> = service3.getUser(id_User.toString())
+                        result3.enqueue(object : Callback<List<Usuario>> {
+                            override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
+                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                            }
+
+                            override fun onResponse(
+                                call: Call<List<Usuario>>,
+                                response: Response<List<Usuario>>
+                            )  {
+                                //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+                                val item = response.body()
+                                if(item!=null){
+                                        usuarioDBHelper.deleteNotaSaved(item[0].Email.toString())
+                                       usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,item[0].Email.toString(),2)
+                                }
+
+                            }
+                        })
+
+                        val idUserLog = Bundle()
+                        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                        Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
+                        cambiarActivity.putExtras(idUserLog)
+                        startActivity(cambiarActivity)
+                        finish()
+                    }
+                })
+
+            }else{
+
+                usuarioDBHelper.deleteNotaSaved(emailU)
+
+                usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,emailU,2)
+                val idUserLog = Bundle()
+                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                val emailUserLog = Bundle()
+                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
+                Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
+                cambiarActivity.putExtras(idUserLog)
+                cambiarActivity.putExtras(emailUserLog)
+                startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                finish()
+            }
+
+
+
 
 
         } else {
@@ -521,7 +614,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
         if (titlePost!!.text.isNotBlank() && descPost!!.text.isNotBlank()) {
             var id_User = intent.getStringExtra("idUserLog")?.toInt()
-
+            val emailU = intent.getStringExtra("emailUserLog").toString()
             val cambiarActivity = Intent(
                 this,
                 MainActivity::class.java
@@ -537,52 +630,91 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 strEncodeImage = ""
             }
 
-            val nota = Nota(
-                0,
-                titlePost!!.text.toString(),
-                descPost!!.text.toString(),
-                id_User,
-                strEncodeImage
-            )
-            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<Int> = service.saveNota(nota)
+            if(id_User!= null){
+                val nota = Nota(
+                    0,
+                    titlePost!!.text.toString(),
+                    descPost!!.text.toString(),
+                    id_User,
+                    strEncodeImage
+                )
+                val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+                val result: Call<Int> = service.saveNota(nota)
 
-            result.enqueue(object : Callback<Int> {
-                override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
-                }
+                result.enqueue(object : Callback<Int> {
+                    override fun onFailure(call: Call<Int>, t: Throwable) {
+                        Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
+                    }
 
-                override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+                    override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
-                    val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
-                    val result2: Call<String> = service2.deleteNotaG(id_User.toString())
-                    result2.enqueue(object : Callback<String> {
-                        override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
-                        }
+                        val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
+                        val result2: Call<String> = service2.deleteNotaG(id_User.toString())
+                        result2.enqueue(object : Callback<String> {
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                            }
 
-                        override fun onResponse(call: Call<String>, response2: Response<String>) {
-                            //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+                            override fun onResponse(call: Call<String>, response2: Response<String>) {
+                                //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
-                            val item = response2.body()
+                                val item = response2.body()
 
 
-                        }
-                    })
+                            }
+                        })
 
-                    titlePost!!.text = ""
-                    descPost!!.text = ""
-                    val idUserLog = Bundle()
-                    idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                    Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
-                    cambiarActivity.putExtras(idUserLog)
-                    startActivity(cambiarActivity)
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                    finish()
+                        val service3: Service = RestEngine.getRestEngine().create(Service::class.java)
+                        val result3: Call<List<Usuario>> = service3.getUser(id_User.toString())
+                        result3.enqueue(object : Callback<List<Usuario>> {
+                            override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
+                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                            }
 
-                }
-            })
+                            override fun onResponse(
+                                call: Call<List<Usuario>>,
+                                response: Response<List<Usuario>>
+                            )  {
+                                //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+                                val item = response.body()
+                                if(item!=null){
+                                    usuarioDBHelper.deleteNotaSaved(emailU)
+
+                                    usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,item[0].Email.toString(),0)
+                                }
+
+                            }
+                        })
+
+
+                        val idUserLog = Bundle()
+                        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                        Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
+                        cambiarActivity.putExtras(idUserLog)
+                        startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()
+
+                    }
+                })
+            }else{
+                usuarioDBHelper.deleteNotaSaved(emailU)
+
+                usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,emailU,1)
+
+                val idUserLog = Bundle()
+                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                val emailUserLog = Bundle()
+                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
+                Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
+                cambiarActivity.putExtras(idUserLog)
+                cambiarActivity.putExtras(emailUserLog)
+                startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                finish()
+            }
+
 
 
         } else {

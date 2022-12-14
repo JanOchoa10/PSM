@@ -28,6 +28,7 @@ import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
 import com.blogee.adapters.PostsAdapter
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -39,7 +40,7 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), OnQueryTextListener {
-
+    lateinit var usuarioDBHelper: miSQLiteHelper
     var animando = false
     var abajo = false
 
@@ -51,7 +52,9 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        if(intent.getStringExtra("idUserLog").toString() != null){
+            publicarNotas()
+        }
 //        textView.visibility = View.GONE
 
 //        title = "KotlinApp"
@@ -68,23 +71,91 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 swipeRefreshLayout.isRefreshing = false
             }, 900)
         }
-
+        usuarioDBHelper = miSQLiteHelper(this)
         val btnfavNewPost = findViewById<FloatingActionButton>(R.id.fab_new_post)
 
         btnfavNewPost.setOnClickListener {
             val idUserLog = Bundle()
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+            val emailUserLog = Bundle()
+            emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
             val cambiarActivity = Intent(
                 this,
                 Post2::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
+            cambiarActivity.putExtras(emailUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
         }
 
+
         traerNotas()
+
+    }
+
+    private fun publicarNotas() {
+        val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+        val result: Call<List<Usuario>> = service.getUser(intent.getStringExtra("idUserLog").toString())
+
+        result.enqueue(object : Callback<List<Usuario>> {
+            override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
+                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+            }
+
+            override fun onResponse(
+                call: Call<List<Usuario>>,
+                response: Response<List<Usuario>>
+            ) {
+                val item = response.body()
+                if (item != null) {
+                    var email_User = intent.getStringExtra("emailUserLog")
+                    val db = usuarioDBHelper.readableDatabase
+                    val c = db.rawQuery("Select * from notas where emailUser ='"+email_User.toString()+"' and status = 1",null)
+                    if(c.moveToFirst()){
+
+                        do {
+                            var strimage = c.getString(4).toString()
+                            if(strimage == null)
+                                strimage=""
+                            val nota = Nota(
+                                0,
+                                c.getString(2).toString(),
+                                c.getString(3).toString(),
+                                item[0].id_User,
+                                strimage
+                            )
+                            val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
+                            val result2: Call<Int> = service2.saveNota(nota)
+
+                            result2.enqueue(object : Callback<Int> {
+                                override fun onFailure(call: Call<Int>, t: Throwable) {
+                                    //Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
+                                }
+
+                                override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
+
+                                    Toast.makeText(this@MainActivity, "Publicado", Toast.LENGTH_LONG).show()
+
+                                }
+                            })
+
+
+                        }while (c.moveToNext())
+
+                    }
+                    if (email_User != null) {
+                        usuarioDBHelper.updateNotaPost(email_User)
+                    }
+
+                }
+
+            }
+        })
+
 
     }
 
@@ -287,7 +358,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                             if (byteArray != null) {
                                 //Bitmap redondo
                                 val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray)
+                                    ImageUtilities.getBitMapFromByteArray(byteArray!!)
                                 val roundedBitmapWrapper: RoundedBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(
                                         Resources.getSystem(),
@@ -307,7 +378,29 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+            var email_User = intent.getStringExtra("emailUserLog")
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
+            if(c.moveToFirst()){
+                var byteArray: ByteArray? = null
+                val strImage: String =
+                    c.getString(5).toString().replace("data:image/png;base64,", "")
+                byteArray = Base64.getDecoder().decode(strImage)
+                if (byteArray != null) {
+                    //Bitmap redondo
+                    val bitmap: Bitmap =
+                        ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                    val roundedBitmapWrapper: RoundedBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(
+                            Resources.getSystem(),
+                            bitmap
+                        )
+                    roundedBitmapWrapper.setCircular(true)
+                    miItem5.setIcon(roundedBitmapWrapper)
+
+                }
+            }
+
         }
 
     }
@@ -316,9 +409,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.app_menu_main, menu)
-
-        asignaFotoUsuario(menu)
-
+            asignaFotoUsuario(menu)
         val searchItem = menu.findItem(R.id.app_bar_search)
         val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
         //permite modificar el hint que el EditText muestra por defecto
@@ -336,11 +427,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 // Acción al presionar el botón
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                val emailUserLog = Bundle()
+                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 cambiarActivity.putExtras(idUserLog)
+                cambiarActivity.putExtras(emailUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true

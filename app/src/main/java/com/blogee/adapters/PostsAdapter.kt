@@ -45,7 +45,7 @@ class PostsAdapter(
 
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                Toast.makeText(mContext, "Error", Toast.LENGTH_LONG).show()
+                //Toast.makeText(mContext, "Error", Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(

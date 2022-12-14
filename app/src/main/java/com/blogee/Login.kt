@@ -1,23 +1,21 @@
 package com.blogee
 
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.blogee.activitys.MainActivity
 import com.blogee.activitys.SingUp
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 
 class Login : AppCompatActivity(),View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper

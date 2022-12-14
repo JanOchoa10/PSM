@@ -1,7 +1,6 @@
 package com.blogee.activitys
 
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -14,19 +13,16 @@ import android.widget.Button
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.util.PatternsCompat
 import androidx.core.view.MenuItemCompat
-import androidx.fragment.app.DialogFragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
-import com.blogee.miSQLiteHelper
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Usuario
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_loading.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -156,13 +152,27 @@ class Login : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
 
                     // Se ejecuta cada 5 segundos o 5000 milisegundos
                     // Vuelve a intentar conectarse
-                    Handler().postDelayed(Runnable {
+                    /*Handler().postDelayed(Runnable {
                         login()
-                    }, 5000)
+                    }, 5000)*/
+                   if(usuarioDBHelper.getUsuario(emailUser!!.text.toString(), passUser!!.text.toString()) == 1){
+                       val emailUserLog = Bundle()
+                       emailUserLog.putString("emailUserLog",emailUser!!.text.toString())
+                       cambiarActivity.putExtras(emailUserLog)
+                       startActivity(cambiarActivity)
+                       overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
+                       finish()
+                   }else{
+                       Toast.makeText(
+                           this@Login,
+                           "Credenciales Incorrectas",
+                           Toast.LENGTH_LONG
+                       ).show()
+                   }
 
                 }
 
@@ -170,7 +180,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     call: Call<List<Usuario>>,
                     response: Response<List<Usuario>>
                 ) {
-                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
 
                     val item = response.body()
                     if (item != null) {
@@ -190,7 +200,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             val idUserLog = Bundle()
 
                             idUserLog.putString("idUserLog", item[0].id_User.toString())
-
+                            val emailUserLog = Bundle()
+                            emailUserLog.putString("emailUserLog",emailUser!!.text.toString())
                             val myPreferences =
                                 PreferenceManager.getDefaultSharedPreferences(applicationContext)
                             val myEditor = myPreferences.edit()
@@ -205,6 +216,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             passUser!!.text = ""
 
                             cambiarActivity.putExtras(idUserLog)
+                            cambiarActivity.putExtras(emailUserLog)
                             startActivity(cambiarActivity)
                             overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                             finish()
@@ -281,8 +293,10 @@ class Login : AppCompatActivity(), View.OnClickListener {
                         val idUserLog = Bundle()
 
                         idUserLog.putString("idUserLog", item[0].id_User.toString())
-
+                        val emailUserLog = Bundle()
+                        emailUserLog.putString("emailUserLog",item[0].Email.toString())
                         cambiarActivity.putExtras(idUserLog)
+                        cambiarActivity.putExtras(emailUserLog)
                         startActivity(cambiarActivity)
 //                            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

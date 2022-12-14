@@ -24,6 +24,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
 import com.blogee.*
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,6 +36,7 @@ import java.util.regex.Pattern
 
 class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("MissingInflatedId")
+    lateinit var usuarioDBHelper: miSQLiteHelper
     var nameUser: TextView? = null
     var lastNameUser: TextView? = null
     var emailUser: TextView? = null
@@ -48,6 +50,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_editar_perfil)
 
         Objects.requireNonNull(supportActionBar)?.setDisplayHomeAsUpEnabled(true)
+        usuarioDBHelper = miSQLiteHelper(this)
 
         nameUser = findViewById<TextView>(R.id.editTextTextName)
         lastNameUser = findViewById<TextView>(R.id.editTextTextLastName)
@@ -69,11 +72,14 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         btnCancel.setOnClickListener {
             val idUserLog = Bundle()
             idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+            val emailUserLog = Bundle()
+            emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
             val cambiarActivity = Intent(
                 this,
                 VerPerfil::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             cambiarActivity.putExtras(idUserLog)
+            cambiarActivity.putExtras(emailUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
@@ -98,6 +104,9 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                             getString(R.string.dialog_error_de_usuario_text),
                             getString(R.string.dialog_aceptar)
                         )
+
+
+
                 }
 
                 override fun onResponse(
@@ -134,7 +143,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                             if (byteArray != null) {
                                 //Bitmap redondo
                                 val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray)
+                                    ImageUtilities.getBitMapFromByteArray(byteArray!!)
                                 val roundedBitmapWrapper: RoundedBitmapDrawable =
                                     RoundedBitmapDrawableFactory.create(
                                         Resources.getSystem(),
@@ -162,13 +171,43 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         } else {
 //            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
 
-            Dialogo.getInstance(this@EditarPerfil)
+
+            var email_User = intent.getStringExtra("emailUserLog")
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
+            if(c.moveToFirst()){
+                var byteArray: ByteArray? = null
+                nameUser!!.text = c.getString(1).toString()
+                lastNameUser!!.text = c.getString(2).toString()
+                emailUser!!.text = c.getString(3).toString()
+                passUser!!.text = c.getString(4).toString()
+                val strImage: String =
+                    c.getString(5).toString().replace("data:image/png;base64,", "")
+                byteArray = Base64.getDecoder().decode(strImage)
+                if (byteArray != null) {
+                    //Bitmap redondo
+                    val bitmap: Bitmap =
+                        ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                    val roundedBitmapWrapper: RoundedBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(
+                            Resources.getSystem(),
+                            bitmap
+                        )
+                    roundedBitmapWrapper.setCircular(true)
+                    imageUI!!.setImageDrawable(roundedBitmapWrapper)
+                }
+
+            }
+
+
+            /*Dialogo.getInstance(this@EditarPerfil)
                 .crearDialogoSinAccion(
                     this@EditarPerfil,
                     getString(R.string.dialog_error_de_usuario),
                     getString(R.string.dialog_error_de_usuario_text),
                     getString(R.string.dialog_aceptar)
-                )
+                )*/
+
         }
     }
 
