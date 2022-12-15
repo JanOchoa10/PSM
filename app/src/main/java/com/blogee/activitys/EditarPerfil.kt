@@ -3,11 +3,13 @@ package com.blogee.activitys
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -87,8 +89,8 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun infoUserEditar() {
-        var id_User = getCredenciales.idUserGuardado.toString()
-        if (id_User != null) {
+        val id_User = getCredenciales.idUserGuardado.toString()
+        if (id_User != null && (isConnectedWifi(this@EditarPerfil) || isConnectedMobile(this@EditarPerfil)) ) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_User)
@@ -195,7 +197,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                             Resources.getSystem(),
                             bitmap
                         )
-                    roundedBitmapWrapper.setCircular(true)
+                    roundedBitmapWrapper.isCircular = true
                     imageUI!!.setImageDrawable(roundedBitmapWrapper)
                 }
 
@@ -720,7 +722,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     }
 
 
-    public fun changeImage() {
+    fun changeImage() {
         //check runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             var boolDo = false
@@ -754,6 +756,20 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
         startActivityForResult(intent, IMAGE_PICK_CODE)
 
+    }
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
     }
 
 }

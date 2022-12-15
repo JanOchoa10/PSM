@@ -1,8 +1,10 @@
 package com.blogee.activitys
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -182,10 +184,6 @@ class DetallesNota : AppCompatActivity() {
                                             } else {
 
                                                 var byteArray2: ByteArray? = null
-//                            namePerfil!!.text = getString(R.string.name) + ": " + item[0].Name
-//                            lastnamePerfil!!.text =
-//                                getString(R.string.last_name) + ": " + item[0].LastName
-//                            emailPerfil!!.text = getString(R.string.email) + ": " + item[0].Email
 
                                                 nombre2.text = item[0].Name
 
@@ -255,7 +253,7 @@ class DetallesNota : AppCompatActivity() {
         var miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
         var id_User = preferecias()
-        if (id_User != null) {
+        if (id_User != null && (isConnectedWifi(this@DetallesNota) || isConnectedMobile(this@DetallesNota))) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_User)
@@ -421,5 +419,19 @@ class DetallesNota : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
     }
 }

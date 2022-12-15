@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                         do {
                             var strimage = c.getString(4).toString()
                             if (strimage == null)
+                            if (strimage == null)
                                 strimage = ""
                             val nota = Nota(
                                 0,
@@ -388,9 +389,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         var miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
         var id_User = getCredenciales.idUserGuardado.toString()
-        if (id_User != null) {
-
-            if (isConnectedWifi(this@MainActivity) || isConnectedMobile(this@MainActivity)) {
+        if (id_User != null && (isConnectedWifi(this@MainActivity) || isConnectedMobile(this@MainActivity))) {
 
                 val service: Service = RestEngine.getRestEngine().create(Service::class.java)
                 val result: Call<List<Usuario>> = service.getUser(id_User)
@@ -465,33 +464,6 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
                     }
                 })
-            } else {
-                val email_User = getCredenciales.emailGuardado
-                val db = usuarioDBHelper.readableDatabase
-                val c = db.rawQuery(
-                    "Select * from usuarios where emailUser ='$email_User'",
-                    null
-                )
-                if (c.moveToFirst()) {
-                    var byteArray: ByteArray? = null
-                    val strImage: String =
-                        c.getString(5).toString().replace("data:image/png;base64,", "")
-                    byteArray = Base64.getDecoder().decode(strImage)
-                    if (byteArray != null) {
-                        //Bitmap redondo
-                        val bitmap: Bitmap =
-                            ImageUtilities.getBitMapFromByteArray(byteArray!!)
-                        val roundedBitmapWrapper: RoundedBitmapDrawable =
-                            RoundedBitmapDrawableFactory.create(
-                                Resources.getSystem(),
-                                bitmap
-                            )
-                        roundedBitmapWrapper.isCircular = true
-                        miItem5.icon = roundedBitmapWrapper
-
-                    }
-                }
-            }
         } else {
             val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
