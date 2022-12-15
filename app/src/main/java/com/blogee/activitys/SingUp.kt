@@ -290,25 +290,6 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
                 result.enqueue(object : Callback<Int> {
                     override fun onFailure(call: Call<Int>, t: Throwable) {
-//                        Toast.makeText(this@SingUp, "Error", Toast.LENGTH_LONG).show()
-                        /*val builder = AlertDialog.Builder(this@SingUp)
-                        builder.setIcon(R.drawable.bluebird)
-                        builder.setTitle(getString(R.string.dialog_user_no_register))
-                        builder.setMessage(getString(R.string.dialog_user_no_register_text))
-                        builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-
-                        }
-                        builder.show()*/
-//                        if (usuarioDBHelper.addUsuario(
-//                                nameUser!!.text.toString(),
-//                                lastNameUser!!.text.toString(),
-//                                emailUser!!.text.toString(),
-//                                passUser!!.text.toString(),
-//                                strEncodeImage
-//                            ) > -1
-//                        ) {
-//                            Toast.makeText(this@SingUp, "Agregado", Toast.LENGTH_LONG).show()
-
 
                         if (isConnectedWifi(this@SingUp) || isConnectedMobile(this@SingUp)) {
                             Dialogo.getInstance(this@SingUp)
@@ -333,10 +314,6 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString(),strEncodeImage)
-
-
-//                        Toast.makeText(this@SingUp, "Guardado", Toast.LENGTH_LONG).show()
 
                         val builder = AlertDialog.Builder(this@SingUp)
                         builder.setIcon(R.drawable.bluebird)

@@ -77,7 +77,7 @@
     <string name="dialog_nota_guardada">Saved note</string>
     <string name="dialog_nota_guardada_text">The note has been saved successfully.</string>
     <string name="dialog_credenciales_incorrectas">Incorrect credentials</string>
-    <string name="dialog_no_login">Credenciales incorrectas</string>
+    <string name="dialog_no_login">Incorrect credentials</string>
     <string name="dialog_credenciales_incorrectas_text">Wrong email or password, please try again.</string>
     <string name="dialog_sin_internet">No internet connection</string>
     <string name="dialog_sin_internet_text">You do not have an Internet connection, please verify that you are connected to WiFi or mobile data and try again.</string>

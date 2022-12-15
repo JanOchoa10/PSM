@@ -1,9 +1,11 @@
 package com.blogee.activitys
 
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -22,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.*
 import com.blogee.adapters.PostsAdapter
 import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -38,14 +41,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     var abajo = false
 
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
-//    lateinit var textView: TextView
-//    var number: Int = 0
+    private val getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (intent.getStringExtra("idUserLog").toString() != null) {
+        if (getCredenciales.idUserGuardado.toString() != null) {
             publicarNotas()
         }
 //        textView.visibility = View.GONE
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
             //Ejecutamos código
 //            number++
 //            textView.text = " Total number = $number"
-            if (intent.getStringExtra("idUserLog").toString() != null) {
+            if (getCredenciales.idUserGuardado.toString() != null) {
                 publicarNotas()
             }
 
@@ -71,16 +74,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         val btnfavNewPost = findViewById<FloatingActionButton>(R.id.fab_new_post)
 
         btnfavNewPost.setOnClickListener {
-            val idUserLog = Bundle()
-            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-            val emailUserLog = Bundle()
-            emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
             val cambiarActivity = Intent(
                 this,
                 Post2::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            cambiarActivity.putExtras(idUserLog)
-            cambiarActivity.putExtras(emailUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
@@ -94,7 +91,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     private fun publicarNotas() {
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
         val result: Call<List<Usuario>> =
-            service.getUser(intent.getStringExtra("idUserLog").toString())
+            service.getUser(getCredenciales.idUserGuardado.toString())
 
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
@@ -114,10 +111,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
             ) {
                 val item = response.body()
                 if (item != null) {
-                    var email_User = intent.getStringExtra("emailUserLog")
+                    val email_User = getCredenciales.emailGuardado
                     val db = usuarioDBHelper.readableDatabase
                     val c = db.rawQuery(
-                        "Select * from notas where emailUser ='" + email_User.toString() + "' and status = 1",
+                        "Select * from notas where emailUser ='$email_User' and status = 1",
                         null
                     )
                     if (c.moveToFirst()) {
@@ -251,23 +248,22 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                             val notaActual: Nota =
                                 parent.getItemAtPosition(position) as Nota
 
-
-                            val idUserLog = Bundle()
-                            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-
                             val intent = Intent(
                                 this@MainActivity,
                                 DetallesNota::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-//                            val imgNota = notaActual.Image
+                            setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                            setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                            setCredenciales.passGuardado = getCredenciales.passGuardado
 
-//                            intent.putExtra("stringBlob", imgNota)
-//                            notaActual.Image = ""
-//                            intent.putExtra("verNota", notaActual)
-                            intent.putExtras(idUserLog)
-                            intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
-                            intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
+                            setCredenciales.setIdNotaGuardado(notaActual.id_Nota!!)
+                            setCredenciales.setIdUserDeNota(notaActual.id_User!!)
+
+                            val activo: Boolean = getCredenciales.getModoOscuro()
+                            setCredenciales.setModoOscuro(activo)
+
+                            UserApplication.prefs.saveCredenciales(setCredenciales)
 
                             startActivity(intent)
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -360,91 +356,135 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         })
     }
 
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
+    }
+
+
     fun asignaFotoUsuario(menu: Menu) {
 
         var miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
-        var id_User = intent.getStringExtra("idUserLog")
+        var id_User = getCredenciales.idUserGuardado.toString()
         if (id_User != null) {
 
-            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<List<Usuario>> = service.getUser(id_User)
-            //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
-            result.enqueue(object : Callback<List<Usuario>> {
-                override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-//                    Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
-                    Dialogo.getInstance(this@MainActivity)
-                        .crearDialogoSinAccion(
-                            this@MainActivity,
-                            getString(R.string.dialog_error_de_usuario),
-                            getString(R.string.dialog_error_de_usuario_text),
-                            getString(R.string.dialog_aceptar)
-                        )
-                }
+            if (isConnectedWifi(this@MainActivity) || isConnectedMobile(this@MainActivity)) {
 
-                override fun onResponse(
-                    call: Call<List<Usuario>>,
-                    response: Response<List<Usuario>>
-                ) {
-                    val item = response.body()
-                    if (item != null) {
-                        if (item.isEmpty()) {
+                val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+                val result: Call<List<Usuario>> = service.getUser(id_User)
+                //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
+                result.enqueue(object : Callback<List<Usuario>> {
+                    override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
+//                    Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@MainActivity)
+                            .crearDialogoSinAccion(
+                                this@MainActivity,
+                                getString(R.string.dialog_error_de_usuario),
+                                getString(R.string.dialog_error_de_usuario_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+                    }
+
+                    override fun onResponse(
+                        call: Call<List<Usuario>>,
+                        response: Response<List<Usuario>>
+                    ) {
+                        val item = response.body()
+                        if (item != null) {
+                            if (item.isEmpty()) {
 //                            Toast.makeText(
 //                                this@MainActivity,
 //                                "No tiene información",
 //                                Toast.LENGTH_LONG
 //                            ).show()
-                            Dialogo.getInstance(this@MainActivity)
-                                .crearDialogoSinAccion(
-                                    this@MainActivity,
-                                    getString(R.string.dialog_error_de_usuario),
-                                    getString(R.string.dialog_error_de_usuario_text),
-                                    getString(R.string.dialog_aceptar)
-                                )
-                        } else {
-                            var byteArray: ByteArray? = null
+                                Dialogo.getInstance(this@MainActivity)
+                                    .crearDialogoSinAccion(
+                                        this@MainActivity,
+                                        getString(R.string.dialog_error_de_usuario),
+                                        getString(R.string.dialog_error_de_usuario_text),
+                                        getString(R.string.dialog_aceptar)
+                                    )
+                            } else {
+                                var byteArray: ByteArray? = null
 //                            nameUser!!.text = item[0].Name
 //                            lastNameUser!!.text = item[0].LastName
 //                            emailUser!!.text = item[0].Email
 //                            passUser!!.text = item[0].Password
 
-                            val strImage: String =
-                                item[0].Image!!.replace("data:image/png;base64,", "")
-                            byteArray = Base64.getDecoder().decode(strImage)
-                            if (byteArray != null) {
-                                //Bitmap redondo
-                                val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray!!)
-                                val roundedBitmapWrapper: RoundedBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(
-                                        Resources.getSystem(),
-                                        bitmap
-                                    )
-                                roundedBitmapWrapper.setCircular(true)
+                                val strImage: String =
+                                    item[0].Image!!.replace("data:image/png;base64,", "")
+                                byteArray = Base64.getDecoder().decode(strImage)
+                                if (byteArray != null) {
+                                    //Bitmap redondo
+                                    val bitmap: Bitmap =
+                                        ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                                    val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                        RoundedBitmapDrawableFactory.create(
+                                            Resources.getSystem(),
+                                            bitmap
+                                        )
+                                    roundedBitmapWrapper.setCircular(true)
 //                                imageUI!!.setImageDrawable(roundedBitmapWrapper)
-                                miItem5.setIcon(roundedBitmapWrapper)
+                                    miItem5.setIcon(roundedBitmapWrapper)
 
+                                }
                             }
-                        }
-                    } else {
+                        } else {
 //                        Toast.makeText(this@MainActivity, "Incorrectas", Toast.LENGTH_LONG).show()
-                        Dialogo.getInstance(this@MainActivity)
-                            .crearDialogoSinAccion(
-                                this@MainActivity,
-                                getString(R.string.dialog_no_login),
-                                getString(R.string.dialog_credenciales_incorrectas_text),
-                                getString(R.string.dialog_aceptar)
-                            )
+                            Dialogo.getInstance(this@MainActivity)
+                                .crearDialogoSinAccion(
+                                    this@MainActivity,
+                                    getString(R.string.dialog_no_login),
+                                    getString(R.string.dialog_credenciales_incorrectas_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+                        }
+
+
                     }
+                })
+            } else {
+                val email_User = getCredenciales.emailGuardado
+                val db = usuarioDBHelper.readableDatabase
+                val c = db.rawQuery(
+                    "Select * from usuarios where emailUser ='$email_User'",
+                    null
+                )
+                if (c.moveToFirst()) {
+                    var byteArray: ByteArray? = null
+                    val strImage: String =
+                        c.getString(5).toString().replace("data:image/png;base64,", "")
+                    byteArray = Base64.getDecoder().decode(strImage)
+                    if (byteArray != null) {
+                        //Bitmap redondo
+                        val bitmap: Bitmap =
+                            ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                        val roundedBitmapWrapper: RoundedBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(
+                                Resources.getSystem(),
+                                bitmap
+                            )
+                        roundedBitmapWrapper.isCircular = true
+                        miItem5.icon = roundedBitmapWrapper
 
-
+                    }
                 }
-            })
+            }
         } else {
-            var email_User = intent.getStringExtra("emailUserLog")
+            val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
-                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                "Select * from usuarios where emailUser ='$email_User'",
                 null
             )
             if (c.moveToFirst()) {
@@ -461,8 +501,8 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                             Resources.getSystem(),
                             bitmap
                         )
-                    roundedBitmapWrapper.setCircular(true)
-                    miItem5.setIcon(roundedBitmapWrapper)
+                    roundedBitmapWrapper.isCircular = true
+                    miItem5.icon = roundedBitmapWrapper
 
                 }
             }
@@ -475,7 +515,9 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.app_menu_main, menu)
+
         asignaFotoUsuario(menu)
+
         val searchItem = menu.findItem(R.id.app_bar_search)
         val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
         //permite modificar el hint que el EditText muestra por defecto
@@ -491,16 +533,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val emailUserLog = Bundle()
-                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                cambiarActivity.putExtras(idUserLog)
-                cambiarActivity.putExtras(emailUserLog)
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true

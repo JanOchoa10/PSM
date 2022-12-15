@@ -24,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_post2.*
@@ -41,9 +43,9 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
     var imgArray: ByteArray? = null
     var notaGeneral: Nota? = null
     var ImgNota: String = ""
-//
-//    var numeroNotaBack: Int? = null
-//    var numeroUserBack: Int? = null
+
+    private val getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +69,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         btn_galeria.setOnClickListener(this)
 
 
-        val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
+        val numeroNota = getCredenciales.getIdNotaGuardado()
 //        var userIdDeNota: Int? = null
 
         val serviceNota: Service = RestEngine.getRestEngine().create(Service::class.java)
@@ -157,7 +159,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
         var miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
-        var id_User = intent.getStringExtra("idUserLog")
+        var id_User = getCredenciales.idUserGuardado.toString()
         if (id_User != null) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
@@ -272,13 +274,12 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                cambiarActivity.putExtras(idUserLog)
+
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
@@ -363,15 +364,11 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                         )
 
 
-                    val idUserLog = Bundle()
-                    idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-
                     val builder = AlertDialog.Builder(this@EditarPost)
                     builder.setIcon(R.drawable.bluebird)
                     builder.setTitle(getString(R.string.dialog_nota_deleted))
                     builder.setMessage(getString(R.string.dialog_nota_deleted_text))
                     builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                        cambiarActivity.putExtras(idUserLog)
                         startActivity(cambiarActivity)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         finishAffinity()
@@ -577,8 +574,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
                     //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                    val idUserLog = Bundle()
-                    idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
 //                    Toast.makeText(this@EditarPost, "Guardado", Toast.LENGTH_LONG).show()
 
 
@@ -592,9 +588,19 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                             DetallesNota::class.java
                         )
 
-                        intent2.putExtra("idDeMiNotaActualClave", notaSave.id_Nota)
-                        intent2.putExtra("idDeMiUsuarioDeNotaActualClave", notaSave.id_User)
-                        intent2.putExtras(idUserLog)
+                        setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                        setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                        setCredenciales.passGuardado = getCredenciales.passGuardado
+
+                        setCredenciales.setIdNotaGuardado(notaSave.id_Nota!!)
+                        setCredenciales.setIdUserDeNota(notaSave.id_User!!)
+
+                        val activo: Boolean = getCredenciales.getModoOscuro()
+                        setCredenciales.setModoOscuro(activo)
+
+                        prefs.saveCredenciales(setCredenciales)
+
+
                         startActivity(intent2)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         finish()

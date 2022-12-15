@@ -1,7 +1,9 @@
 package com.blogee.activitys
 
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -38,8 +40,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
 
 
         var email: String = getCredenciales.emailGuardado
@@ -128,6 +128,21 @@ class Login : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
+    }
+
+
     private fun login() {
 
 
@@ -160,24 +175,20 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     /*Handler().postDelayed(Runnable {
                         login()
                     }, 5000)*/
-                    if (usuarioDBHelper.getUsuario(
-                            emailUser!!.text.toString(),
-                            passUser!!.text.toString()
-                        ) == 1
-                    ) {
-                        val emailUserLog = Bundle()
-                        emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
-                        cambiarActivity.putExtras(emailUserLog)
-                        startActivity(cambiarActivity)
-                        overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
-                        finish()
-                    } else {
-//                       Toast.makeText(
-//                           this@Login,
-//                           "Credenciales Incorrectas",
-//                           Toast.LENGTH_LONG
-//                       ).show()
+//                    if (usuarioDBHelper.getUsuario(
+//                            emailUser!!.text.toString(),
+//                            passUser!!.text.toString()
+//                        ) == 1
+//                    ) {
+////                        val emailUserLog = Bundle()
+////                        emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
+////                        cambiarActivity.putExtras(emailUserLog)
+//                        startActivity(cambiarActivity)
+//                        overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
+//                        finish()
+//                    } else {
 
+                    if (isConnectedWifi(this@Login) || isConnectedMobile(this@Login)) {
                         Dialogo.getInstance(this@Login)
                             .crearDialogoSinAccion(
                                 this@Login,
@@ -185,7 +196,16 @@ class Login : AppCompatActivity(), View.OnClickListener {
                                 getString(R.string.dialog_credenciales_incorrectas_text),
                                 getString(R.string.dialog_aceptar)
                             )
+                    } else {
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_sin_internet),
+                                getString(R.string.dialog_sin_internet_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
+//                    }
 
                 }
 
@@ -218,11 +238,24 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             ).show()
 
 
-                            val idUserLog = Bundle()
+                            if (usuarioDBHelper.getUsuario(
+                                    emailUser!!.text.toString(),
+                                    passUser!!.text.toString()
+                                ) == 0
+                            )
+                                usuarioDBHelper.addUsuario(
+                                    item[0].Name.toString(),
+                                    item[0].LastName.toString(),
+                                    emailUser!!.text.toString(),
+                                    passUser!!.text.toString(),
+                                    item[0].Image.toString()
+                                )
 
-                            idUserLog.putString("idUserLog", item[0].id_User.toString())
-                            val emailUserLog = Bundle()
-                            emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
+//                            val idUserLog = Bundle()
+
+//                            idUserLog.putString("idUserLog", item[0].id_User.toString())
+//                            val emailUserLog = Bundle()
+//                            emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
 
 
                             setCredenciales.idUserGuardado = item[0].id_User!!
@@ -244,8 +277,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             emailUser!!.text = ""
                             passUser!!.text = ""
 
-                            cambiarActivity.putExtras(idUserLog)
-                            cambiarActivity.putExtras(emailUserLog)
+//                            cambiarActivity.putExtras(idUserLog)
+//                            cambiarActivity.putExtras(emailUserLog)
                             startActivity(cambiarActivity)
                             overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                             finish()
@@ -319,9 +352,9 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 builder.setNeutralButton(getString(R.string.dialog_sin_conexion)) { dialog, which ->
                     val intent = Intent(this@Login, MainActivity::class.java)
 
-                    val emailUserLog = Bundle()
-                    emailUserLog.putString("emailUserLog", email)
-                    intent.putExtras(emailUserLog)
+//                    val emailUserLog = Bundle()
+//                    emailUserLog.putString("emailUserLog", email)
+//                    intent.putExtras(emailUserLog)
 
 //                    intent.putExtra("soloPerfil", true)
 
@@ -362,12 +395,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             Toast.LENGTH_LONG
                         ).show()
 
-                        val idUserLog = Bundle()
-                        idUserLog.putString("idUserLog", item[0].id_User.toString())
-                        val emailUserLog = Bundle()
-                        emailUserLog.putString("emailUserLog", item[0].Email.toString())
-                        cambiarActivity.putExtras(idUserLog)
-                        cambiarActivity.putExtras(emailUserLog)
+//                        val idUserLog = Bundle()
+//                        idUserLog.putString("idUserLog", item[0].id_User.toString())
+//                        val emailUserLog = Bundle()
+//                        emailUserLog.putString("emailUserLog", item[0].Email.toString())
+//                        cambiarActivity.putExtras(idUserLog)
+//                        cambiarActivity.putExtras(emailUserLog)
                         startActivity(cambiarActivity)
 //                            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

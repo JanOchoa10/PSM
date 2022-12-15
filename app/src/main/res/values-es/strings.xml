@@ -99,4 +99,5 @@
     <string name="dialog_requiere_conexion">Requiere conexión a internet para registrar usuario.</string>
     <string name="dialog_correo_usado">Correo registrado</string>
     <string name="dialog_correo_usado_text">El correo que desea registrar ya está registrado, inicie sesión para acceder a su cuenta.</string>
+    <string name="txt_no_information_exists">No existe información</string>
 </resources>

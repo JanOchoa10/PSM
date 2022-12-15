@@ -61,29 +61,11 @@ class VerPerfil : AppCompatActivity() {
         infoUser()
         traerNotasUsuario()
 
-        /*var args = arrayOf(intent.getStringExtra("emailUserLog"))
-        val db : SQLiteDatabase = usuarioDBHelper.readableDatabase
-        val cursor = db.rawQuery("Select * From usuarios where emailUser = ?", args)
-
-       if(cursor.moveToFirst()){
-           namePerfil.text = getString(R.string.name) + ": " +cursor.getString(1)
-           lastnamePerfil.text = getString(R.string.last_name) + ": " +cursor.getString(2)
-           emailPerfil.text = getString(R.string.email) + ": " + cursor.getString(3)
-        }else{
-            Toast.makeText(this,"No encontro el usuario",Toast.LENGTH_SHORT).show()
-        }*/
-
         btnEditarPerfil.setOnClickListener {
-            val idUserLog = Bundle()
-            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-            val emailUserLog = Bundle()
-            emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
             val cambiarActivity = Intent(
                 this,
                 EditarPerfil::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            cambiarActivity.putExtras(idUserLog)
-            cambiarActivity.putExtras(emailUserLog)
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
@@ -92,7 +74,7 @@ class VerPerfil : AppCompatActivity() {
     }
 
     private fun infoUser() {
-        val id_UserVP = intent.getStringExtra("idUserLog")
+        val id_UserVP = getCredenciales.idUserGuardado.toString()
         if (id_UserVP != null) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_UserVP)
@@ -168,10 +150,10 @@ class VerPerfil : AppCompatActivity() {
                 }
             })
         } else {
-            var email_User = intent.getStringExtra("emailUserLog")
+            var email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
-                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                "Select * from usuarios where emailUser ='$email_User'",
                 null
             )
             if (c.moveToFirst()) {
@@ -204,7 +186,7 @@ class VerPerfil : AppCompatActivity() {
 
     fun traerNotasUsuario() {
         var listaPosts: MutableList<Nota> = mutableListOf()
-        val id_UserVP = intent.getStringExtra("idUserLog")
+        val id_UserVP = getCredenciales.idUserGuardado.toString()
 
         if (id_UserVP != null) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
@@ -273,20 +255,22 @@ class VerPerfil : AppCompatActivity() {
                                     parent.getItemAtPosition(position) as Nota
 
 
-                                val idUserLog = Bundle()
-                                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-
                                 val intent = Intent(
                                     this@VerPerfil,
                                     DetallesNota::class.java
                                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-                                intent.putExtras(idUserLog)
-                                intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
-                                intent.putExtra(
-                                    "idDeMiUsuarioDeNotaActualClave",
-                                    notaActual.id_User
-                                )
+                                setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                                setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                                setCredenciales.passGuardado = getCredenciales.passGuardado
+
+                                setCredenciales.setIdNotaGuardado(notaActual.id_Nota!!)
+                                setCredenciales.setIdUserDeNota(notaActual.id_User!!)
+
+                                val activo: Boolean = getCredenciales.getModoOscuro()
+                                setCredenciales.setModoOscuro(activo)
+
+                                prefs.saveCredenciales(setCredenciales)
 
                                 startActivity(intent)
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -307,10 +291,10 @@ class VerPerfil : AppCompatActivity() {
                 }
             })
         } else {
-            var email_User = intent.getStringExtra("emailUserLog")
+            val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
-                "Select * from notas where emailUser ='" + email_User.toString() + "' and status != 2",
+                "Select * from notas where emailUser ='$email_User' and status != 2",
                 null
             )
 
@@ -344,17 +328,13 @@ class VerPerfil : AppCompatActivity() {
                     parent.getItemAtPosition(position) as Nota
 
 
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-
                 val intent = Intent(
                     this@VerPerfil,
                     DetallesNota::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-                intent.putExtras(idUserLog)
-                intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
-                intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
+//                intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
+//                intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
 
                 startActivity(intent)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -367,13 +347,11 @@ class VerPerfil : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
 //        onBackPressed()
-        val idUserLog = Bundle()
-        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
         val cambiarActivity = Intent(
             this,
             MainActivity::class.java
         ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
@@ -395,9 +373,7 @@ class VerPerfil : AppCompatActivity() {
                 val builder = AlertDialog.Builder(this@VerPerfil)
                 builder.setIcon(R.drawable.bluebird)
                 builder.setTitle(getString(R.string.dialog_cerrar_sesion))
-//                builder.setMessage(getString(R.string.dialog_cerrar_sesion_text))
                 builder.setPositiveButton(getString(R.string.dialog_yes)) { dialog, which ->
-
 
                     setCredenciales.emailGuardado = ""
                     setCredenciales.passGuardado = ""

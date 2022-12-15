@@ -33,14 +33,8 @@ class DetallesNota : AppCompatActivity() {
 
         Objects.requireNonNull(supportActionBar)?.setDisplayHomeAsUpEnabled(true)
 
-//        val nota = intent.getSerializableExtra("verNota") as Nota
 
-//        val imagenDeNota = intent.getStringExtra("stringBlob")
-//        nota.Image = imagenDeNota
-
-
-        val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
-//        var userIdDeNota: Int? = null
+        val numeroNota = getCredenciales.getIdNotaGuardado()
 
         val serviceNota: Service = RestEngine.getRestEngine().create(Service::class.java)
         val resultNota: Call<List<Nota>> = serviceNota.getNotas()
@@ -114,15 +108,25 @@ class DetallesNota : AppCompatActivity() {
 
                                 imgNota2.setOnClickListener {
 
-//                                    val notaActual: Nota = nota
-
                                     val intent = Intent(
                                         applicationContext,
                                         ImagenCompleta::class.java
                                     ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-//                                    intent.putExtra("verNota", itemNota)
-                                    intent.putExtra("idDeMiNotaActualClave", itemNota.id_Nota)
+
+                                    setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                                    setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                                    setCredenciales.passGuardado = getCredenciales.passGuardado
+
+                                    setCredenciales.setIdNotaGuardado(itemNota.id_Nota!!)
+                                    setCredenciales.setIdUserDeNota(itemNota.id_User!!)
+
+                                    val activo: Boolean = getCredenciales.getModoOscuro()
+                                    setCredenciales.setModoOscuro(activo)
+
+                                    prefs.saveCredenciales(setCredenciales)
+
+
                                     startActivity(intent)
 //                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
@@ -357,7 +361,7 @@ class DetallesNota : AppCompatActivity() {
 
 //        val nota = intent.getSerializableExtra("verNota") as Nota
 
-        val numeroUser = intent.getSerializableExtra("idDeMiUsuarioDeNotaActualClave")
+        val numeroUser = getCredenciales.getIdUserDeNota()
 
         if (id_User != numeroUser.toString()) {
             searchItem.isVisible = false
@@ -367,13 +371,12 @@ class DetallesNota : AppCompatActivity() {
 
 
     override fun onSupportNavigateUp(): Boolean {
-        val idUserLog = Bundle()
-        idUserLog.putString("idUserLog", preferecias())
+
         val cambiarActivity = Intent(
             this,
             MainActivity::class.java
         ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        cambiarActivity.putExtras(idUserLog)
+
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
@@ -395,42 +398,27 @@ class DetallesNota : AppCompatActivity() {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", preferecias())
+
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                cambiarActivity.putExtras(idUserLog)
+
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
             }
             R.id.app_bar_edit_note -> {
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", preferecias())
+
                 val cambiarActivity = Intent(
                     this,
                     EditarPost::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                cambiarActivity.putExtras(idUserLog)
-
-                val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
-
-                cambiarActivity.putExtra("idDeMiNotaActualClave", numeroNota)
 
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
             }
-            /**R.id.create_new -> {
-            //newGame()
-            true
-            }
-            R.id.open -> {
-            //showHelp()
-            true
-            }*/
             else -> super.onOptionsItemSelected(item)
         }
     }
