@@ -13,11 +13,13 @@ import android.widget.Button
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.util.PatternsCompat
 import androidx.core.view.MenuItemCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.blogee.Dialogo
 import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
@@ -159,20 +161,32 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     /*Handler().postDelayed(Runnable {
                         login()
                     }, 5000)*/
-                   if(usuarioDBHelper.getUsuario(emailUser!!.text.toString(), passUser!!.text.toString()) == 1){
-                       val emailUserLog = Bundle()
-                       emailUserLog.putString("emailUserLog",emailUser!!.text.toString())
-                       cambiarActivity.putExtras(emailUserLog)
-                       startActivity(cambiarActivity)
-                       overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
-                       finish()
-                   }else{
-                       Toast.makeText(
-                           this@Login,
-                           "Credenciales Incorrectas",
-                           Toast.LENGTH_LONG
-                       ).show()
-                   }
+                    if (usuarioDBHelper.getUsuario(
+                            emailUser!!.text.toString(),
+                            passUser!!.text.toString()
+                        ) == 1
+                    ) {
+                        val emailUserLog = Bundle()
+                        emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
+                        cambiarActivity.putExtras(emailUserLog)
+                        startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
+                        finish()
+                    } else {
+//                       Toast.makeText(
+//                           this@Login,
+//                           "Credenciales Incorrectas",
+//                           Toast.LENGTH_LONG
+//                       ).show()
+
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+                    }
 
                 }
 
@@ -185,15 +199,22 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@Login,
-                                "Credenciales Incorrectas",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@Login,
+//                                "Credenciales Incorrectas",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+                            Dialogo.getInstance(this@Login)
+                                .crearDialogoSinAccion(
+                                    this@Login,
+                                    getString(R.string.dialog_no_login),
+                                    getString(R.string.dialog_credenciales_incorrectas_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         } else {
                             Toast.makeText(
                                 this@Login,
-                                "Bienvenido " + item[0].Name,
+                                getString(R.string.dialog_welcome) + " " + item[0].Name,
                                 Toast.LENGTH_LONG
                             ).show()
 
@@ -201,7 +222,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
                             idUserLog.putString("idUserLog", item[0].id_User.toString())
                             val emailUserLog = Bundle()
-                            emailUserLog.putString("emailUserLog",emailUser!!.text.toString())
+                            emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
                             val myPreferences =
                                 PreferenceManager.getDefaultSharedPreferences(applicationContext)
                             val myEditor = myPreferences.edit()
@@ -223,14 +244,28 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
                         }
                     } else {
-                        Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
                 }
             })
         } else {
-            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+            Dialogo.getInstance(this@Login)
+                .crearDialogoSinAccion(
+                    this@Login,
+                    getString(R.string.dialog_datos_faltantes),
+                    getString(R.string.dialog_datos_faltantes_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
 
     }
@@ -260,13 +295,21 @@ class Login : AppCompatActivity(), View.OnClickListener {
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
 //                    setContentView(R.layout.activity_login)
-                Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
 
-                // Se ejecuta cada 5 segundos o 5000 milisegundos
-                // Vuelve a intentar conectarse
-                Handler().postDelayed(Runnable {
-                    loginGuardado(email, pass)
-                }, 5000)
+                val builder = AlertDialog.Builder(this@Login)
+                builder.setIcon(R.drawable.bluebird)
+                builder.setTitle(getString(R.string.dialog_sin_internet))
+                builder.setMessage(getString(R.string.dialog_sin_internet_text))
+                builder.setPositiveButton(getString(R.string.dialog_reintentar)) { dialog, which ->
+                    // Se ejecuta cada 5 segundos o 5000 milisegundos
+                    // Vuelve a intentar conectarse
+                    Handler().postDelayed(Runnable {
+                        loginGuardado(email, pass)
+                    }, 5000)
+                }
+                builder.show()
+
 
             }
 
@@ -279,22 +322,30 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 val item = response.body()
                 if (item != null) {
                     if (item.isEmpty()) {
-                        Toast.makeText(
-                            this@Login,
-                            "Credenciales Incorrectas",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            this@Login,
+//                            "Credenciales Incorrectas",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     } else {
                         Toast.makeText(
                             this@Login,
-                            "Bienvenido " + item[0].Name,
+                            getString(R.string.dialog_welcome) + " "  + item[0].Name,
                             Toast.LENGTH_LONG
                         ).show()
-                        val idUserLog = Bundle()
 
+                        val idUserLog = Bundle()
                         idUserLog.putString("idUserLog", item[0].id_User.toString())
                         val emailUserLog = Bundle()
-                        emailUserLog.putString("emailUserLog",item[0].Email.toString())
+                        emailUserLog.putString("emailUserLog", item[0].Email.toString())
                         cambiarActivity.putExtras(idUserLog)
                         cambiarActivity.putExtras(emailUserLog)
                         startActivity(cambiarActivity)
@@ -303,7 +354,14 @@ class Login : AppCompatActivity(), View.OnClickListener {
                         finish()
                     }
                 } else {
-                    Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@Login)
+                        .crearDialogoSinAccion(
+                            this@Login,
+                            getString(R.string.dialog_no_login),
+                            getString(R.string.dialog_credenciales_incorrectas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
 
@@ -408,22 +466,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun validate() {
-//        val result = arrayOf(validateEmail(), validatePassword())
-//
-//        if (false in result) {
-//            return
-//        }
 
         if (!validateEmail()) {
             return
         }
 
-//        if (!validatePassword()) {
-//            return
-//        }
-
         login()
-//        Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
     }
 
 }

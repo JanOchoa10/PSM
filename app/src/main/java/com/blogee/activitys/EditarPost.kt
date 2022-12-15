@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,13 +20,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_detalles_nota.*
@@ -78,7 +77,15 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
         resultNota.enqueue(object : Callback<List<Nota>> {
             override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-                Toast.makeText(this@EditarPost, "Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@EditarPost, "Error", Toast.LENGTH_LONG).show()
+
+                Dialogo.getInstance(this@EditarPost)
+                    .crearDialogoSinAccion(
+                        this@EditarPost,
+                        getString(R.string.dialog_error_de_usuario),
+                        getString(R.string.dialog_error_de_usuario_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
 
             override fun onResponse(
@@ -89,21 +96,29 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
                 if (arrayPosts != null) {
                     if (arrayPosts.isEmpty()) {
-                        Toast.makeText(
-                            this@EditarPost,
-                            "No tiene notas",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            this@EditarPost,
+//                            "No tiene notas",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+
+                        Dialogo.getInstance(this@EditarPost)
+                            .crearDialogoSinAccion(
+                                this@EditarPost,
+                                getString(R.string.dialog_no_tiene_notas),
+                                getString(R.string.dialog_no_tiene_notas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     } else {
 //                        Toast.makeText(this@DetallesNota, "Hay notas", Toast.LENGTH_LONG).show()
 
-                       title!!.text = arrayPosts[0].Title
+                        title!!.text = arrayPosts[0].Title
                         desc!!.text = arrayPosts[0].Description
                         notaGeneral = arrayPosts[0]
 //                        numeroNotaBack = arrayPosts[0].id_Nota
 //                        numeroUserBack = arrayPosts[0].id_User
 
-                        if(arrayPosts[0].Image != ""){
+                        if (arrayPosts[0].Image != "") {
                             var byteArray: ByteArray? = null
 
                             val strImage: String =
@@ -118,13 +133,21 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
                                 imageUI!!.setImageBitmap(bitmap)
                             }
-                        }else{
+                        } else {
 //                            imageUI!!.setImageResource(R.mipmap.ic_launcher)
                         }
 
                     }
                 } else {
-                    Toast.makeText(this@EditarPost, "No hay notas", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@EditarPost, "No hay notas", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@EditarPost)
+                        .crearDialogoSinAccion(
+                            this@EditarPost,
+                            getString(R.string.dialog_no_tiene_notas),
+                            getString(R.string.dialog_no_tiene_notas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
             }
         })
@@ -144,8 +167,16 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@EditarPost)
+                        .crearDialogoSinAccion(
+                            this@EditarPost,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
+
 
                 override fun onResponse(
                     call: Call<List<Usuario>>,
@@ -154,11 +185,18 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                applicationContext,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                applicationContext,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+                            Dialogo.getInstance(this@EditarPost)
+                                .crearDialogoSinAccion(
+                                    this@EditarPost,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         } else {
                             var byteArray: ByteArray? = null
 //                            nameUser!!.text = item[0].Name
@@ -185,15 +223,32 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                     } else {
-                        Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+
+                        Dialogo.getInstance(this@EditarPost)
+                            .crearDialogoSinAccion(
+                                this@EditarPost,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
                 }
             })
         } else {
-            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
+
+            Dialogo.getInstance(this@EditarPost)
+                .crearDialogoSinAccion(
+                    this@EditarPost,
+                    getString(R.string.dialog_error_de_usuario),
+                    getString(R.string.dialog_error_de_usuario_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
+
 
     }
 
@@ -269,31 +324,72 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun deletePost() {
-        val service2: Service =  RestEngine.getRestEngine().create(Service::class.java)
-        val result2: Call<String> = service2.deleteNota(notaGeneral?.id_Nota.toString())
-        val cambiarActivity = Intent(
-            this,
-            MainActivity::class.java
-        )
-        result2.enqueue(object: Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Toast.makeText(this@EditarPost,"Error",Toast.LENGTH_LONG).show()
-            }
 
-            override fun onResponse(call: Call<String>, response2: Response<String>) {
-                //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+        val builder = AlertDialog.Builder(this@EditarPost)
+        builder.setIcon(R.drawable.bluebird)
+        builder.setTitle(getString(R.string.dialog_eliminar_nota))
+//                builder.setMessage(getString(R.string.dialog_cerrar_sesion_text))
+        builder.setPositiveButton(getString(R.string.dialog_yes)) { dialog, which ->
 
-                Toast.makeText(this@EditarPost,"Nota Eliminada",Toast.LENGTH_LONG).show()
 
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+            val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result2: Call<String> = service2.deleteNota(notaGeneral?.id_Nota.toString())
+            val cambiarActivity = Intent(
+                this,
+                MainActivity::class.java
+            )
+            result2.enqueue(object : Callback<String> {
+                override fun onFailure(call: Call<String>, t: Throwable) {
+//                Toast.makeText(this@EditarPost, "Error", Toast.LENGTH_LONG).show()
 
-                cambiarActivity.putExtras(idUserLog)
-                startActivity(cambiarActivity)
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                finishAffinity()
-            }
-        })
+                    Dialogo.getInstance(this@EditarPost)
+                        .crearDialogoSinAccion(
+                            this@EditarPost,
+                            getString(R.string.dialog_error_de_notas),
+                            getString(R.string.dialog_error_nota_eliminar),
+                            getString(R.string.dialog_aceptar)
+                        )
+                }
+
+                override fun onResponse(call: Call<String>, response2: Response<String>) {
+                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
+//                Toast.makeText(this@EditarPost, "Nota Eliminada", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@EditarPost)
+                        .crearDialogoSinAccion(
+                            this@EditarPost,
+                            getString(R.string.dialog_nota_deleted),
+                            getString(R.string.dialog_nota_deleted_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+
+
+                    val idUserLog = Bundle()
+                    idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
+                    val builder = AlertDialog.Builder(this@EditarPost)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_nota_deleted))
+                    builder.setMessage(getString(R.string.dialog_nota_deleted_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                        cambiarActivity.putExtras(idUserLog)
+                        startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finishAffinity()
+                    }
+                    builder.show()
+
+
+                }
+            })
+
+
+        }
+        builder.setNegativeButton(getString(R.string.dialog_no), null)
+        builder.show()
+
+
     }
 
     companion object {
@@ -359,7 +455,11 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
             while (tamano > tamanoPermitido && calidad > 1) {
                 if (mostrarCargando) {
-                    Toast.makeText(this@EditarPost, "Cargando imagen...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@EditarPost,
+                        getString(R.string.dialog_loading_image),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 mostrarCargando = false
 
@@ -388,11 +488,19 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 //                this.imageUI!!.setImageURI(baos)
 
             if (tamano > tamanoPermitido) {
-                Toast.makeText(
-                    this@EditarPost,
-                    "Imagen demasiado grande, intente con otra imagen",
-                    Toast.LENGTH_LONG
-                ).show()
+//                Toast.makeText(
+//                    this@EditarPost,
+//                    "Imagen demasiado grande, intente con otra imagen",
+//                    Toast.LENGTH_LONG
+//                ).show()
+
+                Dialogo.getInstance(this@EditarPost)
+                    .crearDialogoSinAccion(
+                        this@EditarPost,
+                        getString(R.string.dialog_imagen_no_cargada),
+                        getString(R.string.dialog_ingresa_imagen_text),
+                        getString(R.string.dialog_aceptar)
+                    )
                 this.imageUI!!.setImageURI(null)
                 baos = ByteArrayOutputStream()
                 imgArray = baos.toByteArray()
@@ -434,54 +542,73 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
     private fun GuardarCambios() {
         //val nota = intent.getSerializableExtra("verNota") as Nota
-        if(title!!.text.isNotBlank() && desc!!.text.isNotBlank()){
+        if (title!!.text.isNotBlank() && desc!!.text.isNotBlank()) {
             val strEncodeImage: String
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
                 strEncodeImage = "data:image/png;base64," + encodedString
-            }else if(notaGeneral?.Image != "") {
+            } else if (notaGeneral?.Image != "") {
                 strEncodeImage = notaGeneral?.Image.toString()
 
-            }else{
+            } else {
                 strEncodeImage = ""
             }
 
-            val notaSave = Nota(notaGeneral?.id_Nota,
+            val notaSave = Nota(
+                notaGeneral?.id_Nota,
                 title!!.text.toString(),
                 desc!!.text.toString(),
                 notaGeneral?.id_User,
-                strEncodeImage)
+                strEncodeImage
+            )
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<Int> = service.saveNota(notaSave)
 
             result.enqueue(object : Callback<Int> {
                 override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@EditarPost, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@EditarPost, "Error", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@EditarPost)
+                        .crearDialogoSinAccion(
+                            this@EditarPost,
+                            getString(R.string.dialog_error_guardar_nota),
+                            getString(R.string.dialog_error_guardar_nota_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
                     //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
                     val idUserLog = Bundle()
                     idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                    Toast.makeText(this@EditarPost, "Guardado", Toast.LENGTH_LONG).show()
-                    val intent2 = Intent(
-                        applicationContext,
-                        DetallesNota::class.java
-                    )
+//                    Toast.makeText(this@EditarPost, "Guardado", Toast.LENGTH_LONG).show()
 
-                    intent2.putExtra("idDeMiNotaActualClave", notaSave.id_Nota)
-                    intent2.putExtra("idDeMiUsuarioDeNotaActualClave", notaSave.id_User)
-                    intent2.putExtras(idUserLog)
-                    startActivity(intent2)
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                    finish()
+
+                    val builder = AlertDialog.Builder(this@EditarPost)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_nota_guardada))
+                    builder.setMessage(getString(R.string.dialog_nota_guardada_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                        val intent2 = Intent(
+                            applicationContext,
+                            DetallesNota::class.java
+                        )
+
+                        intent2.putExtra("idDeMiNotaActualClave", notaSave.id_Nota)
+                        intent2.putExtra("idDeMiUsuarioDeNotaActualClave", notaSave.id_User)
+                        intent2.putExtras(idUserLog)
+                        startActivity(intent2)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()
+                    }
+                    builder.show()
+
+
                 }
             })
 
 
-
-        }else{
+        } else {
 
         }
 

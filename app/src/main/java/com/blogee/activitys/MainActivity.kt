@@ -23,10 +23,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.adapters.PostsAdapter
 import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Nota
@@ -52,7 +49,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if(intent.getStringExtra("idUserLog").toString() != null){
+        if (intent.getStringExtra("idUserLog").toString() != null) {
             publicarNotas()
         }
 //        textView.visibility = View.GONE
@@ -97,11 +94,19 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
     private fun publicarNotas() {
         val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-        val result: Call<List<Usuario>> = service.getUser(intent.getStringExtra("idUserLog").toString())
+        val result: Call<List<Usuario>> =
+            service.getUser(intent.getStringExtra("idUserLog").toString())
 
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+                Dialogo.getInstance(this@MainActivity)
+                    .crearDialogoSinAccion(
+                        this@MainActivity,
+                        getString(R.string.dialog_error_de_usuario),
+                        getString(R.string.dialog_error_de_usuario_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
 
             override fun onResponse(
@@ -112,13 +117,16 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 if (item != null) {
                     var email_User = intent.getStringExtra("emailUserLog")
                     val db = usuarioDBHelper.readableDatabase
-                    val c = db.rawQuery("Select * from notas where emailUser ='"+email_User.toString()+"' and status = 1",null)
-                    if(c.moveToFirst()){
+                    val c = db.rawQuery(
+                        "Select * from notas where emailUser ='" + email_User.toString() + "' and status = 1",
+                        null
+                    )
+                    if (c.moveToFirst()) {
 
                         do {
                             var strimage = c.getString(4).toString()
-                            if(strimage == null)
-                                strimage=""
+                            if (strimage == null)
+                                strimage = ""
                             val nota = Nota(
                                 0,
                                 c.getString(2).toString(),
@@ -126,7 +134,8 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                 item[0].id_User,
                                 strimage
                             )
-                            val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
+                            val service2: Service =
+                                RestEngine.getRestEngine().create(Service::class.java)
                             val result2: Call<Int> = service2.saveNota(nota)
 
                             result2.enqueue(object : Callback<Int> {
@@ -138,13 +147,25 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                     //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
 
-                                    Toast.makeText(this@MainActivity, "Publicado", Toast.LENGTH_LONG).show()
+//                                    Toast.makeText(
+//                                        this@MainActivity,
+//                                        "Publicado",
+//                                        Toast.LENGTH_LONG
+//                                    ).show()
+
+                                    Dialogo.getInstance(this@MainActivity)
+                                        .crearDialogoSinAccion(
+                                            this@MainActivity,
+                                            getString(R.string.dialog_publicado),
+                                            getString(R.string.dialog_publicado_text),
+                                            getString(R.string.dialog_aceptar)
+                                        )
 
                                 }
                             })
 
 
-                        }while (c.moveToNext())
+                        } while (c.moveToNext())
 
                     }
                     if (email_User != null) {
@@ -168,7 +189,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
         result.enqueue(object : Callback<List<Nota>> {
             override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+                Dialogo.getInstance(this@MainActivity)
+                    .crearDialogoSinAccion(
+                        this@MainActivity,
+                        getString(R.string.dialog_error_de_notas),
+                        getString(R.string.dialog_error_de_notas_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
 
             override fun onResponse(
@@ -179,11 +207,19 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                 val arrayPosts = response.body()
                 if (arrayPosts != null) {
                     if (arrayPosts.isEmpty()) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "No tiene notas",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            this@MainActivity,
+//                            "No tiene notas",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+
+                        Dialogo.getInstance(this@MainActivity)
+                            .crearDialogoSinAccion(
+                                this@MainActivity,
+                                getString(R.string.dialog_no_tiene_notas),
+                                getString(R.string.dialog_no_tiene_notas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     } else {
                         //      Visibilidad del texto cuando no hay publicaciones
                         val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
@@ -312,7 +348,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "No hay notas", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@MainActivity, "No hay notas", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@MainActivity)
+                        .crearDialogoSinAccion(
+                            this@MainActivity,
+                            getString(R.string.dialog_no_tiene_notas),
+                            getString(R.string.dialog_no_tiene_notas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
             }
         })
@@ -330,7 +373,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@MainActivity)
+                        .crearDialogoSinAccion(
+                            this@MainActivity,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(
@@ -340,11 +390,18 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@MainActivity,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+                            Dialogo.getInstance(this@MainActivity)
+                                .crearDialogoSinAccion(
+                                    this@MainActivity,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         } else {
                             var byteArray: ByteArray? = null
 //                            nameUser!!.text = item[0].Name
@@ -371,7 +428,14 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                             }
                         }
                     } else {
-                        Toast.makeText(this@MainActivity, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@MainActivity, "Incorrectas", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@MainActivity)
+                            .crearDialogoSinAccion(
+                                this@MainActivity,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
@@ -380,8 +444,11 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         } else {
             var email_User = intent.getStringExtra("emailUserLog")
             val db = usuarioDBHelper.readableDatabase
-            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
-            if(c.moveToFirst()){
+            val c = db.rawQuery(
+                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                null
+            )
+            if (c.moveToFirst()) {
                 var byteArray: ByteArray? = null
                 val strImage: String =
                     c.getString(5).toString().replace("data:image/png;base64,", "")
@@ -409,7 +476,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.app_menu_main, menu)
-            asignaFotoUsuario(menu)
+        asignaFotoUsuario(menu)
         val searchItem = menu.findItem(R.id.app_bar_search)
         val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
         //permite modificar el hint que el EditText muestra por defecto

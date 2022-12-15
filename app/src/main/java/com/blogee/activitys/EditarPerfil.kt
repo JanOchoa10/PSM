@@ -106,7 +106,6 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                         )
 
 
-
                 }
 
                 override fun onResponse(
@@ -174,8 +173,11 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
             var email_User = intent.getStringExtra("emailUserLog")
             val db = usuarioDBHelper.readableDatabase
-            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
-            if(c.moveToFirst()){
+            val c = db.rawQuery(
+                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                null
+            )
+            if (c.moveToFirst()) {
                 var byteArray: ByteArray? = null
                 nameUser!!.text = c.getString(1).toString()
                 lastNameUser!!.text = c.getString(2).toString()
@@ -280,7 +282,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@EditarPerfil, "Cargando imagen...", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@EditarPerfil, getString(R.string.dialog_loading_image), Toast.LENGTH_SHORT)
                             .show()
                     }
                     mostrarCargando = false
@@ -310,12 +312,21 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 //                this.imageUI!!.setImageURI(baos)
 
                 if (tamano > tamanoPermitido) {
-                    Toast.makeText(
-                        this@EditarPerfil,
-                        "Imagen demasiado grande, intente con otra imagen",
-                        Toast.LENGTH_LONG
-                    ).show()
 
+                    Dialogo.getInstance(this@EditarPerfil)
+                        .crearDialogoSinAccion(
+                            this@EditarPerfil,
+                            getString(R.string.dialog_imagen_no_cargada),
+                            getString(R.string.dialog_imagen_no_cargada_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+
+
+//                    Toast.makeText(
+//                        this@EditarPerfil,
+//                        "Imagen demasiado grande, intente con otra imagen",
+//                        Toast.LENGTH_LONG
+//                    ).show()
 
 
                     this.imageUI!!.setImageURI(null)
@@ -391,7 +402,14 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
             result.enqueue(object : Callback<Int> {
                 override fun onFailure(call: Call<Int>, t: Throwable) {
-                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@EditarPerfil)
+                        .crearDialogoSinAccion(
+                            this@EditarPerfil,
+                            getString(R.string.dialog_user_no_register),
+                            getString(R.string.dialog_user_no_register_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
@@ -402,17 +420,43 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     passUser!!.text = ""
                     val idUserLog = Bundle()
                     idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                    Toast.makeText(this@EditarPerfil, "Guardado", Toast.LENGTH_LONG).show()
-                    cambiarActivity.putExtras(idUserLog)
-                    startActivity(cambiarActivity)
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                    finish()
+//                    Toast.makeText(this@EditarPerfil, "Guardado", Toast.LENGTH_LONG).show()
+
+//                    Dialogo.getInstance(this@EditarPerfil)
+//                        .crearDialogoSinAccion(
+//                            this@EditarPerfil,
+//                            getString(R.string.dialog_user_register),
+//                            getString(R.string.dialog_user_register_text),
+//                            getString(R.string.dialog_aceptar)
+//                        )
+
+                    val builder = AlertDialog.Builder(this@EditarPerfil)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_user_edited))
+                    builder.setMessage(getString(R.string.dialog_user_edited_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                        cambiarActivity.putExtras(idUserLog)
+                        startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()
+                    }
+                    builder.show()
+
+
                 }
             })
 
 
         } else {
-            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+            val builder = AlertDialog.Builder(this@EditarPerfil)
+            builder.setIcon(R.drawable.bluebird)
+            builder.setTitle(getString(R.string.dialog_datos_faltantes))
+            builder.setMessage(getString(R.string.dialog_datos_faltantes_text))
+            builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+
+            }
+            builder.show()
         }
     }
 

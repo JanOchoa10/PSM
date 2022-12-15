@@ -10,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
@@ -96,7 +97,14 @@ class VerPerfil : AppCompatActivity() {
 
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(this@VerPerfil, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@VerPerfil, "Error", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@VerPerfil)
+                        .crearDialogoSinAccion(
+                            this@VerPerfil,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(
@@ -106,11 +114,19 @@ class VerPerfil : AppCompatActivity() {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@VerPerfil,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@VerPerfil,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+
+                            Dialogo.getInstance(this@VerPerfil)
+                                .crearDialogoSinAccion(
+                                    this@VerPerfil,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         } else {
 
                             var byteArray: ByteArray? = null
@@ -136,7 +152,14 @@ class VerPerfil : AppCompatActivity() {
                             }
                         }
                     } else {
-                        Toast.makeText(this@VerPerfil, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@VerPerfil, "Incorrectas", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@VerPerfil)
+                            .crearDialogoSinAccion(
+                                this@VerPerfil,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
@@ -145,8 +168,11 @@ class VerPerfil : AppCompatActivity() {
         } else {
             var email_User = intent.getStringExtra("emailUserLog")
             val db = usuarioDBHelper.readableDatabase
-            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
-            if(c.moveToFirst()){
+            val c = db.rawQuery(
+                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                null
+            )
+            if (c.moveToFirst()) {
                 var byteArray: ByteArray? = null
                 namePerfil!!.text = getString(R.string.name) + ": " + c.getString(1).toString()
                 lastnamePerfil!!.text =
@@ -178,13 +204,21 @@ class VerPerfil : AppCompatActivity() {
         var listaPosts: MutableList<Nota> = mutableListOf()
         val id_UserVP = intent.getStringExtra("idUserLog")
 
-        if(id_UserVP != null){
+        if (id_UserVP != null) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Nota>> = service.getNotaUser(id_UserVP)
 
             result.enqueue(object : Callback<List<Nota>> {
                 override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-                    Toast.makeText(this@VerPerfil, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@VerPerfil, "Error", Toast.LENGTH_LONG).show()
+
+                    Dialogo.getInstance(this@VerPerfil)
+                        .crearDialogoSinAccion(
+                            this@VerPerfil,
+                            getString(R.string.dialog_error_de_notas),
+                            getString(R.string.dialog_error_de_notas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(
@@ -194,11 +228,20 @@ class VerPerfil : AppCompatActivity() {
                     val arrayPosts = response.body()
                     if (arrayPosts != null) {
                         if (arrayPosts.isEmpty()) {
-                            Toast.makeText(
-                                this@VerPerfil,
-                                "No tiene notas",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@VerPerfil,
+//                                "No tiene notas",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+
+
+                            Dialogo.getInstance(this@VerPerfil)
+                                .crearDialogoSinAccion(
+                                    this@VerPerfil,
+                                    getString(R.string.dialog_no_tiene_notas),
+                                    getString(R.string.dialog_no_tiene_notas_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         } else {
                             //      Visibilidad del texto cuando no hay publicaciones
                             val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
@@ -238,7 +281,10 @@ class VerPerfil : AppCompatActivity() {
 
                                 intent.putExtras(idUserLog)
                                 intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
-                                intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
+                                intent.putExtra(
+                                    "idDeMiUsuarioDeNotaActualClave",
+                                    notaActual.id_User
+                                )
 
                                 startActivity(intent)
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -246,15 +292,26 @@ class VerPerfil : AppCompatActivity() {
 
                         }
                     } else {
-                        Toast.makeText(this@VerPerfil, "No hay notas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@VerPerfil, "No hay notas", Toast.LENGTH_LONG).show()
+
+                        Dialogo.getInstance(this@VerPerfil)
+                            .crearDialogoSinAccion(
+                                this@VerPerfil,
+                                getString(R.string.dialog_no_tiene_notas),
+                                getString(R.string.dialog_no_tiene_notas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
                 }
             })
-        }else{
+        } else {
             var email_User = intent.getStringExtra("emailUserLog")
             val db = usuarioDBHelper.readableDatabase
-            val c = db.rawQuery("Select * from notas where emailUser ='"+email_User.toString()+"' and status != 2",null)
-            if(c.moveToFirst()){
+            val c = db.rawQuery(
+                "Select * from notas where emailUser ='" + email_User.toString() + "' and status != 2",
+                null
+            )
+            if (c.moveToFirst()) {
                 do {
                     listaPosts.add(
                         Nota(
@@ -265,7 +322,7 @@ class VerPerfil : AppCompatActivity() {
                             c.getString(4)
                         )
                     )
-                }while (c.moveToNext())
+                } while (c.moveToNext())
             }
             val adaptador = PostsAdapter(this@VerPerfil, listaPosts)
 
@@ -327,22 +384,33 @@ class VerPerfil : AppCompatActivity() {
             R.id.log_out -> {
                 // Acción al presionar el botón
 
-                val myPreferences =
-                    PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                val myEditor = myPreferences.edit()
+                val builder = AlertDialog.Builder(this@VerPerfil)
+                builder.setIcon(R.drawable.bluebird)
+                builder.setTitle(getString(R.string.dialog_cerrar_sesion))
+//                builder.setMessage(getString(R.string.dialog_cerrar_sesion_text))
+                builder.setPositiveButton(getString(R.string.dialog_yes)) { dialog, which ->
+
+                    val myPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                    val myEditor = myPreferences.edit()
 //                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
-                myEditor.putString("emailLogged", "")
-                myEditor.putString("passLogged", "")
+                    myEditor.putString("emailLogged", "")
+                    myEditor.putString("passLogged", "")
 
-                myEditor.apply()
+                    myEditor.apply()
 
-                val cambiarActivity = Intent(
-                    this,
-                    Login::class.java
-                )
-                startActivity(cambiarActivity)
-                overridePendingTransition(R.anim.from_left, R.anim.to_right)
-                finishAffinity()
+                    val cambiarActivity = Intent(
+                        this,
+                        Login::class.java
+                    )
+                    startActivity(cambiarActivity)
+                    overridePendingTransition(R.anim.from_left, R.anim.to_right)
+                    finishAffinity()
+                }
+                builder.setNegativeButton(getString(R.string.dialog_no), null)
+                builder.show()
+
+
                 true
             }
             /**R.id.create_new -> {

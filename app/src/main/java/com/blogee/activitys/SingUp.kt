@@ -96,6 +96,9 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+
+
+
     private fun abrirDialogo() {
         val builder = AlertDialog.Builder(this@SingUp)
         builder.setIcon(R.drawable.bluebird)
@@ -112,7 +115,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
     }
 
 
-    private fun openCamera() {
+    fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_CODE)
     }
@@ -159,7 +162,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@SingUp, "Cargando imagen...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SingUp, getString(R.string.dialog_loading_image), Toast.LENGTH_SHORT).show()
 //                        Snackbar.make(View(this@SingUp), "My Message", Snackbar.LENGTH_SHORT).show()
                     }
                     mostrarCargando = false
@@ -291,8 +294,24 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
                         }
                         builder.show()*/
-                        if(usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString(),strEncodeImage) > -1){
-                            Toast.makeText(this@SingUp, "Agregado", Toast.LENGTH_LONG).show()
+                        if (usuarioDBHelper.addUsuario(
+                                nameUser!!.text.toString(),
+                                lastNameUser!!.text.toString(),
+                                emailUser!!.text.toString(),
+                                passUser!!.text.toString(),
+                                strEncodeImage
+                            ) > -1
+                        ) {
+//                            Toast.makeText(this@SingUp, "Agregado", Toast.LENGTH_LONG).show()
+
+                            Dialogo.getInstance(this@SingUp)
+                                .crearDialogoSinAccion(
+                                    this@SingUp,
+                                    getString(R.string.dialog_usuario_agregado),
+                                    getString(R.string.dialog_usuario_agregado_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+
                         }
                     }
 
@@ -312,7 +331,13 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                             finish()
                         }
                         builder.show()
-                        usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString(),strEncodeImage)
+                        usuarioDBHelper.addUsuario(
+                            nameUser!!.text.toString(),
+                            lastNameUser!!.text.toString(),
+                            emailUser!!.text.toString(),
+                            passUser!!.text.toString(),
+                            strEncodeImage
+                        )
 
                     }
                 })
@@ -320,14 +345,16 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
             } else {
 //                Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
-                val builder = AlertDialog.Builder(this@SingUp)
-                builder.setIcon(R.drawable.bluebird)
-                builder.setTitle(getString(R.string.dialog_datos_faltantes))
-                builder.setMessage(getString(R.string.dialog_datos_faltantes_text))
-                builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
 
-                }
-                builder.show()
+                Dialogo.getInstance(this@SingUp)
+                    .crearDialogoSinAccion(
+                        this@SingUp,
+                        getString(R.string.dialog_datos_faltantes),
+                        getString(R.string.dialog_datos_faltantes_text),
+                        getString(R.string.dialog_aceptar)
+                    )
+
+
             }
 
 
@@ -473,7 +500,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         saveUser()
     }
 
-    private fun changeImage() {
+    fun changeImage() {
         //check runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             var boolDo = false

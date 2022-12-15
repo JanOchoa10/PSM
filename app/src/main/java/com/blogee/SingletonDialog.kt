@@ -2,6 +2,7 @@ package com.blogee
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
+import com.blogee.activitys.SingUp
 
 //import android.app.Application
 
@@ -61,9 +62,7 @@ class Dialogo private constructor(context: Context) {
         message: String,
         textPositiveButton: String,
         textNeutralButton: String,
-        textNegativeButton: String,
-        accion1: Unit,
-        accion2: Unit,
+        textNegativeButton: String
     ) {
         val builder = AlertDialog.Builder(mContext)
         builder.setIcon(R.drawable.bluebird)
@@ -71,10 +70,13 @@ class Dialogo private constructor(context: Context) {
         builder.setMessage(message)
         builder.setPositiveButton(textPositiveButton) { dialog, which ->
 //            accion1
+
+
         }
         builder.setNeutralButton(textNeutralButton, null)
         builder.setNegativeButton(textNegativeButton) { dialog, which ->
 //            accion2
+
         }
         builder.show()
     }

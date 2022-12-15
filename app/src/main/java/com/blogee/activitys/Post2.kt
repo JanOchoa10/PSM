@@ -19,6 +19,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
@@ -117,7 +118,14 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
             result.enqueue(object : Callback<List<NotaG>> {
                 override fun onFailure(call: Call<List<NotaG>>, t: Throwable) {
-                    Toast.makeText(this@Post2, "Error al guardar", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@Post2, "Error al guardar", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@Post2)
+                        .crearDialogoSinAccion(
+                            this@Post2,
+                            getString(R.string.dialog_error_guardar_nota),
+                            getString(R.string.dialog_error_guardar_nota_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
                 override fun onResponse(
@@ -127,11 +135,20 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@Post2,
-                                "No hay nota guardada",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@Post2,
+//                                "No hay nota guardada",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+
+                            Dialogo.getInstance(this@Post2)
+                                .crearDialogoSinAccion(
+                                    this@Post2,
+                                    getString(R.string.dialog_no_hay_nota_guardada),
+                                    getString(R.string.dialog_no_hay_nota_guardada_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+
                         } else {
 
                             var byteArray3: ByteArray? = null
@@ -168,8 +185,11 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         } else {
             val email_User = intent.getStringExtra("emailUserLog")
             val db = usuarioDBHelper.readableDatabase
-            val c = db.rawQuery("Select * from notas where emailUser ='"+email_User.toString()+"' and status = 2",null)
-            if(c.moveToFirst()){
+            val c = db.rawQuery(
+                "Select * from notas where emailUser ='" + email_User.toString() + "' and status = 2",
+                null
+            )
+            if (c.moveToFirst()) {
                 var byteArray3: ByteArray? = null
                 titlePost!!.text = c.getString(2).toString()
                 descPost!!.text = c.getString(3).toString()
@@ -222,7 +242,15 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(applicationContext, "Error", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@Post2)
+                        .crearDialogoSinAccion(
+                            this@Post2,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+
                 }
 
                 override fun onResponse(
@@ -232,11 +260,19 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                applicationContext,
-                                "No tiene información",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                applicationContext,
+//                                "No tiene información",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+                            Dialogo.getInstance(this@Post2)
+                                .crearDialogoSinAccion(
+                                    this@Post2,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+
                         } else {
                             var byteArray: ByteArray? = null
 //                            nameUser!!.text = item[0].Name
@@ -263,7 +299,16 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                     } else {
-                        Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(applicationContext, "Incorrectas", Toast.LENGTH_LONG).show()
+
+                        Dialogo.getInstance(this@Post2)
+                            .crearDialogoSinAccion(
+                                this@Post2,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+
                     }
 
 
@@ -272,8 +317,11 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         } else {
             var email_User = intent.getStringExtra("emailUserLog")
             val db = usuarioDBHelper.readableDatabase
-            val c = db.rawQuery("Select * from usuarios where emailUser ='"+email_User.toString()+"'",null)
-            if(c.moveToFirst()){
+            val c = db.rawQuery(
+                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                null
+            )
+            if (c.moveToFirst()) {
                 var byteArray: ByteArray? = null
                 val strImage: String =
                     c.getString(5).toString().replace("data:image/png;base64,", "")
@@ -389,12 +437,19 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             }
 
             //Primero borramos la existente
-            if(id_User!=null){
+            if (id_User != null) {
                 val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
                 val result2: Call<String> = service2.deleteNotaG(id_User.toString())
                 result2.enqueue(object : Callback<String> {
                     override fun onFailure(call: Call<String>, t: Throwable) {
-                        Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@Post2)
+                            .crearDialogoSinAccion(
+                                this@Post2,
+                                getString(R.string.dialog_error_de_usuario),
+                                getString(R.string.dialog_error_de_usuario_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
                     override fun onResponse(call: Call<String>, response2: Response<String>) {
@@ -419,26 +474,49 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
                 result.enqueue(object : Callback<Int> {
                     override fun onFailure(call: Call<Int>, t: Throwable) {
-                        Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+
+                        Dialogo.getInstance(this@Post2)
+                            .crearDialogoSinAccion(
+                                this@Post2,
+                                getString(R.string.dialog_error_guardar_nota),
+                                getString(R.string.dialog_error_guardar_nota_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                        val service3: Service = RestEngine.getRestEngine().create(Service::class.java)
+                        val service3: Service =
+                            RestEngine.getRestEngine().create(Service::class.java)
                         val result3: Call<List<Usuario>> = service3.getUser(id_User.toString())
                         result3.enqueue(object : Callback<List<Usuario>> {
                             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+//                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                                Dialogo.getInstance(this@Post2)
+                                    .crearDialogoSinAccion(
+                                        this@Post2,
+                                        getString(R.string.dialog_error_de_usuario),
+                                        getString(R.string.dialog_error_de_usuario_text),
+                                        getString(R.string.dialog_aceptar)
+                                    )
                             }
 
                             override fun onResponse(
                                 call: Call<List<Usuario>>,
                                 response: Response<List<Usuario>>
-                            )  {
+                            ) {
                                 //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
                                 val item = response.body()
-                                if(item!=null){
-                                        usuarioDBHelper.deleteNotaSaved(item[0].Email.toString())
-                                       usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,item[0].Email.toString(),2)
+                                if (item != null) {
+                                    usuarioDBHelper.deleteNotaSaved(item[0].Email.toString())
+                                    usuarioDBHelper.addNota(
+                                        titlePost!!.text.toString(),
+                                        descPost!!.text.toString(),
+                                        strEncodeImage,
+                                        item[0].Email.toString(),
+                                        2
+                                    )
                                 }
 
                             }
@@ -446,32 +524,56 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
                         val idUserLog = Bundle()
                         idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                        Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
-                        cambiarActivity.putExtras(idUserLog)
-                        startActivity(cambiarActivity)
-                        finish()
+//                        Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
+
+                        val builder = AlertDialog.Builder(this@Post2)
+                        builder.setIcon(R.drawable.bluebird)
+                        builder.setTitle(getString(R.string.dialog_nota_guardada))
+                        builder.setMessage(getString(R.string.dialog_nota_guardada_text))
+                        builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                            cambiarActivity.putExtras(idUserLog)
+                            startActivity(cambiarActivity)
+                            finish()
+                        }
+                        builder.show()
+
+
                     }
                 })
 
-            }else{
+            } else {
 
                 usuarioDBHelper.deleteNotaSaved(emailU)
 
-                usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,emailU,2)
+                usuarioDBHelper.addNota(
+                    titlePost!!.text.toString(),
+                    descPost!!.text.toString(),
+                    strEncodeImage,
+                    emailU,
+                    2
+                )
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
                 val emailUserLog = Bundle()
                 emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
-                Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
-                cambiarActivity.putExtras(idUserLog)
-                cambiarActivity.putExtras(emailUserLog)
-                startActivity(cambiarActivity)
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                finish()
+//                Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
+
+
+                val builder = AlertDialog.Builder(this@Post2)
+                builder.setIcon(R.drawable.bluebird)
+                builder.setTitle(getString(R.string.dialog_nota_guardada))
+                builder.setMessage(getString(R.string.dialog_nota_guardada_text))
+                builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                    cambiarActivity.putExtras(idUserLog)
+                    cambiarActivity.putExtras(emailUserLog)
+                    startActivity(cambiarActivity)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                    finish()
+                }
+                builder.show()
+
+
             }
-
-
-
 
 
         } else {
@@ -535,7 +637,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@Post2, "Cargando imagen...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@Post2, getString(R.string.dialog_loading_image), Toast.LENGTH_SHORT).show()
                     }
                     mostrarCargando = false
 
@@ -564,11 +666,20 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 //                this.imageUI!!.setImageURI(baos)
 
                 if (tamano > tamanoPermitido) {
-                    Toast.makeText(
-                        this@Post2,
-                        "Imagen demasiado grande, intente con otra imagen",
-                        Toast.LENGTH_LONG
-                    ).show()
+//                    Toast.makeText(
+//                        this@Post2,
+//                        "Imagen demasiado grande, intente con otra imagen",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+
+                    val builder = AlertDialog.Builder(this@Post2)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_imagen_no_cargada))
+                    builder.setMessage(getString(R.string.dialog_imagen_no_cargada_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+
+                    }
+                    builder.show()
                     this.imageUI!!.setImageURI(null)
                     baos = ByteArrayOutputStream()
                     imgArray = baos.toByteArray()
@@ -630,7 +741,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 strEncodeImage = ""
             }
 
-            if(id_User!= null){
+            if (id_User != null) {
                 val nota = Nota(
                     0,
                     titlePost!!.text.toString(),
@@ -643,20 +754,41 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
                 result.enqueue(object : Callback<Int> {
                     override fun onFailure(call: Call<Int>, t: Throwable) {
-                        Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG)
+//                            .show()
+
+                        Dialogo.getInstance(this@Post2)
+                            .crearDialogoSinAccion(
+                                this@Post2,
+                                getString(R.string.dialog_nota_no_publicada),
+                                getString(R.string.dialog_nota_no_publicada_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
                         //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
-                        val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
+                        val service2: Service =
+                            RestEngine.getRestEngine().create(Service::class.java)
                         val result2: Call<String> = service2.deleteNotaG(id_User.toString())
                         result2.enqueue(object : Callback<String> {
                             override fun onFailure(call: Call<String>, t: Throwable) {
-                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+//                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+
+                                Dialogo.getInstance(this@Post2)
+                                    .crearDialogoSinAccion(
+                                        this@Post2,
+                                        getString(R.string.dialog_save_nota_no_deleted),
+                                        getString(R.string.dialog_save_nota_no_deleted_text),
+                                        getString(R.string.dialog_aceptar)
+                                    )
                             }
 
-                            override fun onResponse(call: Call<String>, response2: Response<String>) {
+                            override fun onResponse(
+                                call: Call<String>,
+                                response2: Response<String>
+                            ) {
                                 //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
                                 val item = response2.body()
@@ -665,56 +797,92 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             }
                         })
 
-                        val service3: Service = RestEngine.getRestEngine().create(Service::class.java)
+                        val service3: Service =
+                            RestEngine.getRestEngine().create(Service::class.java)
                         val result3: Call<List<Usuario>> = service3.getUser(id_User.toString())
                         result3.enqueue(object : Callback<List<Usuario>> {
                             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+//                                Toast.makeText(this@Post2, "Error", Toast.LENGTH_LONG).show()
+                                Dialogo.getInstance(this@Post2)
+                                    .crearDialogoSinAccion(
+                                        this@Post2,
+                                        getString(R.string.dialog_error_de_usuario),
+                                        getString(R.string.dialog_error_de_usuario_text),
+                                        getString(R.string.dialog_aceptar)
+                                    )
                             }
 
                             override fun onResponse(
                                 call: Call<List<Usuario>>,
                                 response: Response<List<Usuario>>
-                            )  {
+                            ) {
                                 //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
                                 val item = response.body()
-                                if(item!=null){
+                                if (item != null) {
                                     usuarioDBHelper.deleteNotaSaved(emailU)
 
-                                    usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,item[0].Email.toString(),0)
+                                    usuarioDBHelper.addNota(
+                                        titlePost!!.text.toString(),
+                                        descPost!!.text.toString(),
+                                        strEncodeImage,
+                                        item[0].Email.toString(),
+                                        0
+                                    )
                                 }
 
                             }
                         })
 
-
                         val idUserLog = Bundle()
                         idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                        Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
-                        cambiarActivity.putExtras(idUserLog)
-                        startActivity(cambiarActivity)
-                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                        finish()
+
+//                        Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
+
+                        val builder = AlertDialog.Builder(this@Post2)
+                        builder.setIcon(R.drawable.bluebird)
+                        builder.setTitle(getString(R.string.dialog_publicado))
+                        builder.setMessage(getString(R.string.dialog_publicado_text))
+                        builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                            cambiarActivity.putExtras(idUserLog)
+                            startActivity(cambiarActivity)
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                            finish()
+                        }
+                        builder.show()
+
 
                     }
                 })
-            }else{
+            } else {
                 usuarioDBHelper.deleteNotaSaved(emailU)
 
-                usuarioDBHelper.addNota(titlePost!!.text.toString(),descPost!!.text.toString(),strEncodeImage,emailU,1)
+                usuarioDBHelper.addNota(
+                    titlePost!!.text.toString(),
+                    descPost!!.text.toString(),
+                    strEncodeImage,
+                    emailU,
+                    1
+                )
 
                 val idUserLog = Bundle()
                 idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
                 val emailUserLog = Bundle()
                 emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
-                Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
-                cambiarActivity.putExtras(idUserLog)
-                cambiarActivity.putExtras(emailUserLog)
-                startActivity(cambiarActivity)
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                finish()
-            }
+//                Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
 
+                val builder = AlertDialog.Builder(this@Post2)
+                builder.setIcon(R.drawable.bluebird)
+                builder.setTitle(getString(R.string.dialog_publicado))
+                builder.setMessage(getString(R.string.dialog_publicado_text))
+                builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                    cambiarActivity.putExtras(idUserLog)
+                    cambiarActivity.putExtras(emailUserLog)
+                    startActivity(cambiarActivity)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                    finish()
+                }
+                builder.show()
+            }
 
 
         } else {

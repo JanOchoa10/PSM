@@ -320,8 +320,8 @@ class DetallesNota : AppCompatActivity() {
                         Dialogo.getInstance(this@DetallesNota)
                             .crearDialogoSinAccion(
                                 this@DetallesNota,
-                                getString(R.string.dialog_error_de_usuario),
-                                getString(R.string.dialog_error_de_usuario_text),
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
                                 getString(R.string.dialog_aceptar)
                             )
 

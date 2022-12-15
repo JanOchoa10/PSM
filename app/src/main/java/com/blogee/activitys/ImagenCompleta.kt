@@ -10,10 +10,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.models.Nota
 import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import retrofit2.Call
@@ -41,7 +38,14 @@ class ImagenCompleta : AppCompatActivity() {
 
         resultNota.enqueue(object : Callback<List<Nota>> {
             override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
-                Toast.makeText(this@ImagenCompleta, "Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@ImagenCompleta, "Error", Toast.LENGTH_LONG).show()
+                Dialogo.getInstance(this@ImagenCompleta)
+                    .crearDialogoSinAccion(
+                        this@ImagenCompleta,
+                        getString(R.string.dialog_error_de_notas),
+                        getString(R.string.dialog_error_de_notas_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
 
             override fun onResponse(
@@ -51,11 +55,19 @@ class ImagenCompleta : AppCompatActivity() {
                 val arrayPosts = response.body()
                 if (arrayPosts != null) {
                     if (arrayPosts.isEmpty()) {
-                        Toast.makeText(
-                            this@ImagenCompleta,
-                            "No tiene notas",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            this@ImagenCompleta,
+//                            "No tiene notas",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+
+                        Dialogo.getInstance(this@ImagenCompleta)
+                            .crearDialogoSinAccion(
+                                this@ImagenCompleta,
+                                getString(R.string.dialog_no_tiene_notas),
+                                getString(R.string.dialog_no_tiene_notas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     } else {
 
                         for (itemNota in arrayPosts) {
@@ -88,7 +100,14 @@ class ImagenCompleta : AppCompatActivity() {
 
                     }
                 } else {
-                    Toast.makeText(this@ImagenCompleta, "No hay notas", Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@ImagenCompleta, "No hay notas", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@ImagenCompleta)
+                        .crearDialogoSinAccion(
+                            this@ImagenCompleta,
+                            getString(R.string.dialog_no_tiene_notas),
+                            getString(R.string.dialog_no_tiene_notas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
             }
         })
