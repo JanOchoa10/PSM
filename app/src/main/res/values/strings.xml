@@ -98,4 +98,9 @@
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
     <string name="dialog_eliminar_nota">Do you want to delete the note?</string>
+    <string name="dialog_ir_a_mi_perfil">Go to my profile</string>
+    <string name="dialog_sin_conexion">Access without internet</string>
+    <string name="dialog_requiere_conexion">Requires internet connection to register user.</string>
+    <string name="dialog_correo_usado">Registered mail</string>
+    <string name="dialog_correo_usado_text">The email you want to register is already registered, please login to access your account.</string>
 </resources>

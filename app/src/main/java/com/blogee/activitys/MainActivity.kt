@@ -61,6 +61,9 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
             //Ejecutamos código
 //            number++
 //            textView.text = " Total number = $number"
+            if (intent.getStringExtra("idUserLog").toString() != null) {
+                publicarNotas()
+            }
 
             traerNotas()
 

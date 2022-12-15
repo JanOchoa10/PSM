@@ -2,9 +2,11 @@ package com.blogee.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import com.blogee.RestEngine
 import com.blogee.Service
 import com.blogee.activitys.ImagenCompleta
 import com.blogee.activitys.Login
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_detalles_nota.*
@@ -33,6 +36,7 @@ class PostsAdapter(
     private var listaPosts: List<Nota>
 ) : ArrayAdapter<Nota>(mContext, 0, listaPosts) {
 
+    lateinit var usuarioDBHelper: miSQLiteHelper
     private val listaPostsInicial = mutableListOf(listaPosts)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -45,7 +49,43 @@ class PostsAdapter(
 
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                //Toast.makeText(mContext, "Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(mContext, "Error", Toast.LENGTH_LONG).show()
+
+                usuarioDBHelper = miSQLiteHelper(mContext)
+
+                val myPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
+
+                var email_User = myPreferences.getString("emailLogged", "").toString()
+
+
+                val db = usuarioDBHelper.readableDatabase
+                val c = db.rawQuery(
+                    "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                    null
+                )
+                if (c.moveToFirst()) {
+                    var byteArray5: ByteArray? = null
+                    layout.nombre!!.text = c.getString(1).toString()
+
+                    val strImage: String =
+                        c.getString(5).toString().replace("data:image/png;base64,", "")
+                    byteArray5 = Base64.getDecoder().decode(strImage)
+                    if (byteArray5 != null) {
+                        //Bitmap redondo
+                        val bitmap: Bitmap =
+                            ImageUtilities.getBitMapFromByteArray(byteArray5!!)
+                        val roundedBitmapWrapper: RoundedBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(
+                                Resources.getSystem(),
+                                bitmap
+                            )
+                        roundedBitmapWrapper.setCircular(true)
+                        layout.imgPerfil!!.setImageDrawable(roundedBitmapWrapper)
+                    }
+
+                }
+
+
             }
 
             override fun onResponse(
@@ -57,7 +97,7 @@ class PostsAdapter(
                     if (item.isEmpty()) {
                         Toast.makeText(
                             mContext,
-                            "No tiene información",
+                            "No tiene información del adaptador",
                             Toast.LENGTH_LONG
                         ).show()
                     } else {
@@ -87,7 +127,11 @@ class PostsAdapter(
                         }
                     }
                 } else {
-                    Toast.makeText(mContext, "Incorrectas", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        mContext,
+                        "Credenciales del usuario incorrectas en el adaptador",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
 

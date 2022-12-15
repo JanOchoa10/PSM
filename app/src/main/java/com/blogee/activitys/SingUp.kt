@@ -2,11 +2,13 @@ package com.blogee.activitys
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -26,6 +28,7 @@ import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.regex.Pattern
+
 
 class SingUp : AppCompatActivity(), View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper
@@ -97,8 +100,6 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
     }
 
 
-
-
     private fun abrirDialogo() {
         val builder = AlertDialog.Builder(this@SingUp)
         builder.setIcon(R.drawable.bluebird)
@@ -162,7 +163,11 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@SingUp, getString(R.string.dialog_loading_image), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@SingUp,
+                            getString(R.string.dialog_loading_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
 //                        Snackbar.make(View(this@SingUp), "My Message", Snackbar.LENGTH_SHORT).show()
                     }
                     mostrarCargando = false
@@ -294,25 +299,37 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
                         }
                         builder.show()*/
-                        if (usuarioDBHelper.addUsuario(
-                                nameUser!!.text.toString(),
-                                lastNameUser!!.text.toString(),
-                                emailUser!!.text.toString(),
-                                passUser!!.text.toString(),
-                                strEncodeImage
-                            ) > -1
-                        ) {
+//                        if (usuarioDBHelper.addUsuario(
+//                                nameUser!!.text.toString(),
+//                                lastNameUser!!.text.toString(),
+//                                emailUser!!.text.toString(),
+//                                passUser!!.text.toString(),
+//                                strEncodeImage
+//                            ) > -1
+//                        ) {
 //                            Toast.makeText(this@SingUp, "Agregado", Toast.LENGTH_LONG).show()
 
+
+                        if (isConnectedWifi(this@SingUp) || isConnectedMobile(this@SingUp)) {
                             Dialogo.getInstance(this@SingUp)
                                 .crearDialogoSinAccion(
                                     this@SingUp,
-                                    getString(R.string.dialog_usuario_agregado),
-                                    getString(R.string.dialog_usuario_agregado_text),
+                                    getString(R.string.dialog_correo_usado),
+                                    getString(R.string.dialog_correo_usado_text),
                                     getString(R.string.dialog_aceptar)
                                 )
-
+                        } else {
+                            Dialogo.getInstance(this@SingUp)
+                                .crearDialogoSinAccion(
+                                    this@SingUp,
+                                    getString(R.string.dialog_sin_internet),
+                                    getString(R.string.dialog_requiere_conexion),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         }
+
+
+//                        }
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
@@ -361,6 +378,20 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         }
 
 
+    }
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
     }
 
     val caracteresEspeciales = "[:punct:]"

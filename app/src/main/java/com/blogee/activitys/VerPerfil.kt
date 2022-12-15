@@ -36,8 +36,8 @@ class VerPerfil : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ver_perfil)
 
+        setContentView(R.layout.activity_ver_perfil)
         Objects.requireNonNull(supportActionBar)?.setDisplayHomeAsUpEnabled(true)
 
         usuarioDBHelper = miSQLiteHelper(this)
@@ -86,7 +86,6 @@ class VerPerfil : AppCompatActivity() {
         }
 
         //Toast.makeText(this,args[0], Toast.LENGTH_SHORT).show()
-
     }
 
     private fun infoUser() {
@@ -311,14 +310,20 @@ class VerPerfil : AppCompatActivity() {
                 "Select * from notas where emailUser ='" + email_User.toString() + "' and status != 2",
                 null
             )
+
+            val myUserID =  PreferenceManager.getDefaultSharedPreferences(this@VerPerfil)
+                .getString("idUserLogeado", "")!!.toInt()
+
             if (c.moveToFirst()) {
+                val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
+                textoInicial.visibility = View.GONE
                 do {
                     listaPosts.add(
                         Nota(
                             c.getInt(0),
                             c.getString(2),
                             c.getString(3),
-                            null,
+                            myUserID,
                             c.getString(4)
                         )
                     )
@@ -424,4 +429,5 @@ class VerPerfil : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

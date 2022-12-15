@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -248,7 +249,7 @@ class DetallesNota : AppCompatActivity() {
 
         var miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
-        var id_User = intent.getStringExtra("idUserLog")
+        var id_User = preferecias()
         if (id_User != null) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
@@ -344,10 +345,17 @@ class DetallesNota : AppCompatActivity() {
 
     }
 
+    fun preferecias(): String? {
+        return PreferenceManager.getDefaultSharedPreferences(this@DetallesNota)
+            .getString("idUserLogeado", "")
+
+
+    }
+
     fun ocultaSiNoEsSuya(menu: Menu) {
         val searchItem = menu.findItem(R.id.app_bar_edit_note)
 
-        val id_User = intent.getStringExtra("idUserLog")
+        val id_User = preferecias()
 
 //        val nota = intent.getSerializableExtra("verNota") as Nota
 
@@ -362,7 +370,7 @@ class DetallesNota : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         val idUserLog = Bundle()
-        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+        idUserLog.putString("idUserLog", preferecias())
         val cambiarActivity = Intent(
             this,
             MainActivity::class.java
@@ -390,7 +398,7 @@ class DetallesNota : AppCompatActivity() {
             R.id.user_profile -> {
                 // Acción al presionar el botón
                 val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                idUserLog.putString("idUserLog", preferecias())
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
@@ -402,7 +410,7 @@ class DetallesNota : AppCompatActivity() {
             }
             R.id.app_bar_edit_note -> {
                 val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+                idUserLog.putString("idUserLog", preferecias())
                 val cambiarActivity = Intent(
                     this,
                     EditarPost::class.java

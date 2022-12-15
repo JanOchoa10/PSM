@@ -94,4 +94,9 @@
     <string name="dialog_yes">Sí</string>
     <string name="dialog_no">No</string>
     <string name="dialog_eliminar_nota">¿Deseas eliminar la nota?</string>
+    <string name="dialog_ir_a_mi_perfil">Ir a mi perfil</string>
+    <string name="dialog_sin_conexion">Acceder sin internet</string>
+    <string name="dialog_requiere_conexion">Requiere conexión a internet para registrar usuario.</string>
+    <string name="dialog_correo_usado">Correo registrado</string>
+    <string name="dialog_correo_usado_text">El correo que desea registrar ya está registrado, inicie sesión para acceder a su cuenta.</string>
 </resources>
