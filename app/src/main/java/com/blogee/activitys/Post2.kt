@@ -29,8 +29,6 @@ import com.blogee.models.Nota
 import com.blogee.models.NotaG
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_post2.*
-import kotlinx.android.synthetic.main.item_publicacion.view.*
-import okhttp3.internal.http2.Huffman.decode
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

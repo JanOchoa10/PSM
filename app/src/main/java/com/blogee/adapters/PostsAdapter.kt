@@ -2,10 +2,8 @@ package com.blogee.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +17,9 @@ import com.blogee.R
 import com.blogee.RestEngine
 import com.blogee.Service
 import com.blogee.activitys.ImagenCompleta
-import com.blogee.activitys.Login
 import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
-import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import kotlinx.android.synthetic.main.item_publicacion.view.*
 import retrofit2.Call
 import retrofit2.Callback

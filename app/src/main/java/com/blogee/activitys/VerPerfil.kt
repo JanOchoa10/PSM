@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -15,8 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
 import com.blogee.adapters.PostsAdapter
 import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import retrofit2.Call
@@ -33,6 +34,8 @@ class VerPerfil : AppCompatActivity() {
     var imageUI: ImageView? = null
     var imgArray: ByteArray? = null
 
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -311,8 +314,8 @@ class VerPerfil : AppCompatActivity() {
                 null
             )
 
-            val myUserID =  PreferenceManager.getDefaultSharedPreferences(this@VerPerfil)
-                .getString("idUserLogeado", "")!!.toInt()
+            val myUserID = getCredenciales.idUserGuardado
+
 
             if (c.moveToFirst()) {
                 val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
@@ -395,14 +398,13 @@ class VerPerfil : AppCompatActivity() {
 //                builder.setMessage(getString(R.string.dialog_cerrar_sesion_text))
                 builder.setPositiveButton(getString(R.string.dialog_yes)) { dialog, which ->
 
-                    val myPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                    val myEditor = myPreferences.edit()
-//                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
-                    myEditor.putString("emailLogged", "")
-                    myEditor.putString("passLogged", "")
 
-                    myEditor.apply()
+                    setCredenciales.emailGuardado = ""
+                    setCredenciales.passGuardado = ""
+                    val activo: Boolean = getCredenciales.getModoOscuro()
+                    setCredenciales.setModoOscuro(activo)
+                    prefs.saveCredenciales(setCredenciales)
+
 
                     val cambiarActivity = Intent(
                         this,

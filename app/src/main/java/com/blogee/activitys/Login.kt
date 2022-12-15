@@ -2,35 +2,29 @@ package com.blogee.activitys
 
 
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.graphics.drawable.RoundedBitmapDrawable
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
-import androidx.core.view.MenuItemCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
 import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_loading.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 import java.util.regex.Pattern
 
 
@@ -38,17 +32,18 @@ class Login : AppCompatActivity(), View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper
     var emailUser: TextView? = null
     var passUser: TextView? = null
-//
-//    var myEmailGlobal: String? = null
-//    var myPassGlobal: String? = null
+
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        var email: String = myPreferences.getString("emailLogged", "").toString()
-        var pass: String = myPreferences.getString("passLogged", "").toString()
+
+
+        var email: String = getCredenciales.emailGuardado
+        var pass: String = getCredenciales.passGuardado
 
 //        myEmailGlobal = email
 //        myPassGlobal = pass
@@ -74,8 +69,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
 //            textView.text = " Total number = $number"
 
 //                traerNotas()
-
-
 
 
                 val cambiarActivity = Intent(
@@ -120,16 +113,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
         }
 
 
-        val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
+        val activo: Boolean = getCredenciales.getModoOscuro()
 
-        if (f == 0) {
-            //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        if (activo) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
-            if (f == 1) {
-                // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
@@ -229,23 +218,27 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             ).show()
 
 
-
-
                             val idUserLog = Bundle()
 
                             idUserLog.putString("idUserLog", item[0].id_User.toString())
                             val emailUserLog = Bundle()
                             emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
-                            val myPreferences =
-                                PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                            val myEditor = myPreferences.edit()
-//                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
 
-                            myEditor.putString("idUserLogeado", item[0].id_User.toString())
-                            myEditor.putString("emailLogged", emailUser!!.text.toString())
-                            myEditor.putString("passLogged", passUser!!.text.toString())
 
-                            myEditor.apply()
+                            setCredenciales.idUserGuardado = item[0].id_User!!
+                            setCredenciales.emailGuardado = emailUser!!.text.toString()
+                            setCredenciales.passGuardado = passUser!!.text.toString()
+                            val activo: Boolean = getCredenciales.getModoOscuro()
+                            setCredenciales.setModoOscuro(activo)
+                            //ESTAMOS GRABANDO
+                            prefs.saveCredenciales(setCredenciales)
+
+
+//                            myEditor.putString("idUserLogeado", item[0].id_User.toString())
+//                            myEditor.putString("emailLogged", emailUser!!.text.toString())
+//                            myEditor.putString("passLogged", passUser!!.text.toString())
+//
+//                            myEditor.apply()
 
 
                             emailUser!!.text = ""
@@ -323,8 +316,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
                         loginGuardado(email, pass)
                     }, 5000)
                 }
-                builder.setNeutralButton(getString(R.string.dialog_sin_conexion)){ dialog, which ->
-                    val intent = Intent(this@Login,  MainActivity::class.java)
+                builder.setNeutralButton(getString(R.string.dialog_sin_conexion)) { dialog, which ->
+                    val intent = Intent(this@Login, MainActivity::class.java)
 
                     val emailUserLog = Bundle()
                     emailUserLog.putString("emailUserLog", email)
@@ -365,7 +358,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     } else {
                         Toast.makeText(
                             this@Login,
-                            getString(R.string.dialog_welcome) + " "  + item[0].Name,
+                            getString(R.string.dialog_welcome) + " " + item[0].Name,
                             Toast.LENGTH_LONG
                         ).show()
 
@@ -397,8 +390,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
 
     }
-
-
 
 
 //    override fun onBackPressed() {
@@ -465,14 +456,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.app_menu_main, menu)
-//        asignaFotoUsuario(menu)
-        val searchItem = menu.findItem(R.id.app_bar_search)
-//        val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
-//        //permite modificar el hint que el EditText muestra por defecto
-//        searchView.queryHint = "Buscar"
-//
-//        searchView.setOnQueryTextListener(this)
 
+        val searchItem = menu.findItem(R.id.app_bar_search)
         searchItem.isVisible = false
 
         return true
@@ -483,18 +468,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
-//                val idUserLog = Bundle()
-//                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-//                val emailUserLog = Bundle()
-//                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
-//                val cambiarActivity = Intent(
-//                    this,
-//                    VerPerfil::class.java
-//                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//                cambiarActivity.putExtras(idUserLog)
-//                cambiarActivity.putExtras(emailUserLog)
-//                startActivity(cambiarActivity)
-//                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+
                 val cambiarActivity = Intent(
                     this,
                     Login::class.java

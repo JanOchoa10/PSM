@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
@@ -24,7 +23,9 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
 import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,6 +45,8 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     var imageUI: ImageView? = null
     var imgArray: ByteArray? = null
 
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -282,7 +285,11 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@EditarPerfil, getString(R.string.dialog_loading_image), Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            this@EditarPerfil,
+                            getString(R.string.dialog_loading_image),
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                     mostrarCargando = false
@@ -481,18 +488,13 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
         val item: MenuItem = menu.findItem(R.id.dark_mode)
 
-        val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
 
+        val activo: Boolean = getCredenciales.getModoOscuro()
 
-        if (f == 0) {
-            //Toast.makeText(this,"Modo oscuro activado", Toast.LENGTH_SHORT).show()
-            item.setIcon(R.drawable.ic_baseline_dark_mode_24)
+        if (activo) {
+            item.setIcon(R.drawable.ic_baseline_light_mode_24)
         } else {
-            if (f == 1) {
-                //Toast.makeText(this,"Modo oscuro desactivado", Toast.LENGTH_SHORT).show()
-                item.setIcon(R.drawable.ic_baseline_light_mode_24)
-            }
+            item.setIcon(R.drawable.ic_baseline_dark_mode_24)
         }
 
 
@@ -513,28 +515,37 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     Toast.LENGTH_LONG
                 ).show()*/
 
-                val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-                val myEditor = myPreferences.edit()
-                val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
 
+//                val credenciales: Credenciales = prefs.getCredenciales()
+                val activo: Boolean = getCredenciales.getModoOscuro()
 
-
-                if (f == 0) {
-                    myEditor.putInt(getString(R.string.modo_oscuro), 1)
-                    myEditor.apply()
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-
+                if (activo) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    getCredenciales.setModoOscuro(false)
                 } else {
-                    if (f == 1) {
-                        myEditor.putInt(getString(R.string.modo_oscuro), 0)
-                        myEditor.apply()
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
-
-                        //Toast.makeText(this,"Modo oscuro desactivado", Toast.LENGTH_SHORT).show()
-
-                    }
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    getCredenciales.setModoOscuro(true)
                 }
+                //ESTAMOS GRABANDO
+                prefs.saveCredenciales(getCredenciales)
+
+//
+//                if (f == 0) {
+//                    myEditor.putInt(getString(R.string.modo_oscuro), 1)
+//                    myEditor.apply()
+//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//
+//                } else {
+//                    if (f == 1) {
+//                        myEditor.putInt(getString(R.string.modo_oscuro), 0)
+//                        myEditor.apply()
+//                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//
+//
+//                        //Toast.makeText(this,"Modo oscuro desactivado", Toast.LENGTH_SHORT).show()
+//
+//                    }
+//                }
 
 
                 true

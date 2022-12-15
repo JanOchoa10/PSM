@@ -9,7 +9,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
@@ -27,7 +26,6 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
-import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import kotlinx.android.synthetic.main.activity_post2.*
 import retrofit2.Call
 import retrofit2.Callback

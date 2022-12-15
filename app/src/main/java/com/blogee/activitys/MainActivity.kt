@@ -6,9 +6,6 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,7 +15,6 @@ import android.view.animation.LinearInterpolator
 import android.widget.*
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -12,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_detalles_nota.*
@@ -23,8 +24,8 @@ import java.util.*
 
 class DetallesNota : AppCompatActivity() {
 
-//    var numeroIdNota: Int? = null
-//    var numeroIdUser: Int? = null
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -345,11 +346,8 @@ class DetallesNota : AppCompatActivity() {
 
     }
 
-    fun preferecias(): String? {
-        return PreferenceManager.getDefaultSharedPreferences(this@DetallesNota)
-            .getString("idUserLogeado", "")
-
-
+    fun preferecias(): String {
+        return getCredenciales.idUserGuardado.toString()
     }
 
     fun ocultaSiNoEsSuya(menu: Menu) {
