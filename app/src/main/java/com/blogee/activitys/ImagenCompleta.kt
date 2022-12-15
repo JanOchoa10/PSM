@@ -7,18 +7,22 @@ import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
-import kotlinx.android.synthetic.main.activity_detalles_nota.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
 class ImagenCompleta : AppCompatActivity() {
+
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // remove title
@@ -30,7 +34,7 @@ class ImagenCompleta : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_imagen_completa)
 
-        val numeroNota = intent.getSerializableExtra("idDeMiNotaActualClave")
+        val numeroNota = getCredenciales.getIdNotaGuardado()
 
 
         val serviceNota: Service = RestEngine.getRestEngine().create(Service::class.java)

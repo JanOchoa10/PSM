@@ -26,7 +26,13 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         onCreate(db)
     }
 
-    fun addUsuario(nameUser: String, lastNameUser: String, emailUser: String, passUser: String, imageUser: String): Long {
+    fun addUsuario(
+        nameUser: String,
+        lastNameUser: String,
+        emailUser: String,
+        passUser: String,
+        imageUser: String
+    ): Long {
         val db = this.writableDatabase
         val data = ContentValues()
         data.put("nameUser", nameUser)
@@ -39,18 +45,27 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         return success
     }
 
-    fun getUsuario(emailU: String,passU: String): Int {
+    fun getUsuario(emailU: String, passU: String): Int {
         var r = 0
         val db = this.readableDatabase
-        val c = db.rawQuery("Select * from usuarios where emailUser ='"+emailU.toString()+"' and passUser= '"+passU.toString()+"'",null)
-        if(c.moveToFirst())
+        val c = db.rawQuery(
+            "Select * from usuarios where emailUser ='" + emailU.toString() + "' and passUser= '" + passU.toString() + "'",
+            null
+        )
+        if (c.moveToFirst())
             r = 1
 
         return r
     }
 
 
-    fun addNota(title: String, description: String, image: String, emailUser: String, status: Int): Long {
+    fun addNota(
+        title: String,
+        description: String,
+        image: String,
+        emailUser: String,
+        status: Int
+    ): Long {
         val db = this.writableDatabase
         val data = ContentValues()
         data.put("emailUser", emailUser)
@@ -63,9 +78,9 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         return success
     }
 
-    fun deleteNotaSaved(email: String){
+    fun deleteNotaSaved(email: String) {
         val db = this.writableDatabase
-        db.delete("notas", "emailUser='"+email.toString()+"' and status = 2", null)
+        db.delete("notas", "emailUser='" + email.toString() + "' and status = 2", null)
         db.close()
     }
 
@@ -74,9 +89,16 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         val data = ContentValues()
         data.put("status", 0)
         //val success = db.rawQuery("Update notas set status = 0 where emailUser = '"+emailUser+"' and status = 1",null)
-        val success = db.update("notas", data, "emailUser= '"+emailUser+"' and status = 1",null)
+        val success =
+            db.update("notas", data, "emailUser= '" + emailUser + "' and status = 1", null)
         db.close()
         return success
+    }
+
+    fun deleteTablaNotas() {
+        val db = this.writableDatabase
+        db.delete("notas", null, null)
+        db.close()
     }
 
 

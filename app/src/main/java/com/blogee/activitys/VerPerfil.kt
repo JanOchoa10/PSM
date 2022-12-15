@@ -1,8 +1,10 @@
 package com.blogee.activitys
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -75,7 +77,7 @@ class VerPerfil : AppCompatActivity() {
 
     private fun infoUser() {
         val id_UserVP = getCredenciales.idUserGuardado.toString()
-        if (id_UserVP != null) {
+        if (id_UserVP != null && (isConnectedWifi(this@VerPerfil) || isConnectedMobile(this@VerPerfil))) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_UserVP)
 
@@ -150,7 +152,7 @@ class VerPerfil : AppCompatActivity() {
                 }
             })
         } else {
-            var email_User = getCredenciales.emailGuardado
+            val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
                 "Select * from usuarios where emailUser ='$email_User'",
@@ -184,11 +186,25 @@ class VerPerfil : AppCompatActivity() {
         }
     }
 
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
+    }
+
     fun traerNotasUsuario() {
         var listaPosts: MutableList<Nota> = mutableListOf()
         val id_UserVP = getCredenciales.idUserGuardado.toString()
 
-        if (id_UserVP != null) {
+        if (id_UserVP != null && (isConnectedWifi(this@VerPerfil) || isConnectedMobile(this@VerPerfil))) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Nota>> = service.getNotaUser(id_UserVP)
 

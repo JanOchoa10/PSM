@@ -222,6 +222,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                         textoInicial.visibility = View.GONE
 
                         listaPosts.clear()
+                        usuarioDBHelper.deleteTablaNotas()
                         for (item in arrayPosts) {
                             listaPosts.add(
                                 Nota(
@@ -232,7 +233,18 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                     item.Image
                                 )
                             )
-//                            getUnUsuario(item.id_User)
+
+
+                            if (item.id_User == getCredenciales.idUserGuardado) {
+                                usuarioDBHelper.addNota(
+                                    item.Title.toString(),
+                                    item.Description.toString(),
+                                    item.Image.toString(),
+                                    getCredenciales.emailGuardado,
+                                    0
+                                )
+                            }
+
                         }
 
 

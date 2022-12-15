@@ -24,7 +24,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
 import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
 import com.blogee.models.NotaG
 import com.blogee.models.Usuario
@@ -56,8 +58,9 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-//    private lateinit var btn_galeria : Button
-//    lateinit var imageView3 : ImageView
+
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,13 +89,12 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
         val btnCancel = findViewById<Button>(R.id.btn_PostCancel)
         btnCancel.setOnClickListener {
-            val idUserLog = Bundle()
-            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
             val cambiarActivity = Intent(
                 this,
                 MainActivity::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            cambiarActivity.putExtras(idUserLog)
+
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
@@ -107,7 +109,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun notaGuardada() {
-        val id_UserVP = intent.getStringExtra("idUserLog")
+        val id_UserVP = getCredenciales.idUserGuardado.toString()
 
 
         if (id_UserVP != null) {
@@ -181,10 +183,10 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 }
             })
         } else {
-            val email_User = intent.getStringExtra("emailUserLog")
+            val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
-                "Select * from notas where emailUser ='" + email_User.toString() + "' and status = 2",
+                "Select * from notas where emailUser ='$email_User' and status = 2",
                 null
             )
             if (c.moveToFirst()) {
@@ -216,13 +218,12 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
 
     override fun onSupportNavigateUp(): Boolean {
-        val idUserLog = Bundle()
-        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
         val cambiarActivity = Intent(
             this,
             MainActivity::class.java
         ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        cambiarActivity.putExtras(idUserLog)
+
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false
@@ -230,9 +231,9 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
     fun asignaFotoUsuario(menu: Menu) {
 
-        var miItem5: MenuItem = menu.findItem(R.id.user_profile)
+        val miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
-        var id_User = intent.getStringExtra("idUserLog")
+        val id_User = getCredenciales.idUserGuardado.toString()
         if (id_User != null) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
@@ -313,10 +314,10 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 }
             })
         } else {
-            var email_User = intent.getStringExtra("emailUserLog")
+            var email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
-                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                "Select * from usuarios where emailUser ='$email_User'",
                 null
             )
             if (c.moveToFirst()) {
@@ -359,16 +360,13 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         return when (item.itemId) {
             R.id.user_profile -> {
                 // Acción al presionar el botón
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val emailUserLog = Bundle()
-                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
+
+
                 val cambiarActivity = Intent(
                     this,
                     VerPerfil::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                cambiarActivity.putExtras(idUserLog)
-                cambiarActivity.putExtras(emailUserLog)
+
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 true
@@ -419,8 +417,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
     private fun savePost() {
         if (titlePost!!.text.isNotBlank() && descPost!!.text.isNotBlank()) {
-            var id_User = intent.getStringExtra("idUserLog")?.toInt()
-            val emailU = intent.getStringExtra("emailUserLog").toString()
+            val id_User = getCredenciales.idUserGuardado
+            val emailU = getCredenciales.emailGuardado
             val cambiarActivity = Intent(
                 this,
                 MainActivity::class.java
@@ -429,7 +427,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             val strEncodeImage: String
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
-                strEncodeImage = "data:image/png;base64," + encodedString
+                strEncodeImage = "data:image/png;base64,$encodedString"
             } else {
                 strEncodeImage = ""
             }
@@ -520,8 +518,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             }
                         })
 
-                        val idUserLog = Bundle()
-                        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
 //                        Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
 
                         val builder = AlertDialog.Builder(this@Post2)
@@ -529,7 +526,6 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                         builder.setTitle(getString(R.string.dialog_nota_guardada))
                         builder.setMessage(getString(R.string.dialog_nota_guardada_text))
                         builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                            cambiarActivity.putExtras(idUserLog)
                             startActivity(cambiarActivity)
                             finish()
                         }
@@ -550,10 +546,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     emailU,
                     2
                 )
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val emailUserLog = Bundle()
-                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
+
+
 //                Toast.makeText(this@Post2, "Guardado", Toast.LENGTH_LONG).show()
 
 
@@ -562,8 +556,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 builder.setTitle(getString(R.string.dialog_nota_guardada))
                 builder.setMessage(getString(R.string.dialog_nota_guardada_text))
                 builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                    cambiarActivity.putExtras(idUserLog)
-                    cambiarActivity.putExtras(emailUserLog)
+
                     startActivity(cambiarActivity)
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     finish()
@@ -635,7 +628,11 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
                 while (tamano > tamanoPermitido && calidad > 1) {
                     if (mostrarCargando) {
-                        Toast.makeText(this@Post2, getString(R.string.dialog_loading_image), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@Post2,
+                            getString(R.string.dialog_loading_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     mostrarCargando = false
 
@@ -722,8 +719,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
     private fun post() {
 
         if (titlePost!!.text.isNotBlank() && descPost!!.text.isNotBlank()) {
-            var id_User = intent.getStringExtra("idUserLog")?.toInt()
-            val emailU = intent.getStringExtra("emailUserLog").toString()
+            val id_User = getCredenciales.idUserGuardado
+            val emailU = getCredenciales.emailGuardado
             val cambiarActivity = Intent(
                 this,
                 MainActivity::class.java
@@ -732,7 +729,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             val strEncodeImage: String
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
-                strEncodeImage = "data:image/png;base64," + encodedString
+                strEncodeImage = "data:image/png;base64,$encodedString"
             } else if (ImgNota != null) {
                 strEncodeImage = ImgNota.toString()
             } else {
@@ -831,8 +828,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                             }
                         })
 
-                        val idUserLog = Bundle()
-                        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
 
 //                        Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
 
@@ -841,7 +837,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                         builder.setTitle(getString(R.string.dialog_publicado))
                         builder.setMessage(getString(R.string.dialog_publicado_text))
                         builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                            cambiarActivity.putExtras(idUserLog)
+
                             startActivity(cambiarActivity)
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                             finish()
@@ -862,10 +858,8 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     1
                 )
 
-                val idUserLog = Bundle()
-                idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-                val emailUserLog = Bundle()
-                emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
+
+
 //                Toast.makeText(this@Post2, "Publicado", Toast.LENGTH_LONG).show()
 
                 val builder = AlertDialog.Builder(this@Post2)
@@ -873,8 +867,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 builder.setTitle(getString(R.string.dialog_publicado))
                 builder.setMessage(getString(R.string.dialog_publicado_text))
                 builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                    cambiarActivity.putExtras(idUserLog)
-                    cambiarActivity.putExtras(emailUserLog)
+
                     startActivity(cambiarActivity)
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     finish()

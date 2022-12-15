@@ -73,16 +73,13 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         }*/
 
         btnCancel.setOnClickListener {
-            val idUserLog = Bundle()
-            idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
-            val emailUserLog = Bundle()
-            emailUserLog.putString("emailUserLog", intent.getStringExtra("emailUserLog"))
+
+
             val cambiarActivity = Intent(
                 this,
                 VerPerfil::class.java
             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            cambiarActivity.putExtras(idUserLog)
-            cambiarActivity.putExtras(emailUserLog)
+
             startActivity(cambiarActivity)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
@@ -90,7 +87,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun infoUserEditar() {
-        var id_User = intent.getStringExtra("idUserLog")
+        var id_User = getCredenciales.idUserGuardado.toString()
         if (id_User != null) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
@@ -174,10 +171,10 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 //            Toast.makeText(this, "Error de usuario", Toast.LENGTH_SHORT).show()
 
 
-            var email_User = intent.getStringExtra("emailUserLog")
+            var email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
-                "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                "Select * from usuarios where emailUser ='$email_User'",
                 null
             )
             if (c.moveToFirst()) {
@@ -378,7 +375,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
     private fun GuardarCambios() {
         if (nameUser!!.text.isNotBlank() && lastNameUser!!.text.isNotBlank() && emailUser!!.text.isNotBlank() && passUser!!.text.isNotBlank()) {
-            var id_User = intent.getStringExtra("idUserLog")?.toInt()
+            val id_User = getCredenciales.idUserGuardado
             val cambiarActivity = Intent(
                 this,
                 VerPerfil::class.java
@@ -386,7 +383,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             val strEncodeImage: String
             if (this.imgArray != null) {
                 val encodedString: String = Base64.getEncoder().encodeToString(this.imgArray)
-                strEncodeImage = "data:image/png;base64," + encodedString
+                strEncodeImage = "data:image/png;base64,$encodedString"
             } else {
                 strEncodeImage = ""
             }
@@ -425,8 +422,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     lastNameUser!!.text = ""
                     emailUser!!.text = ""
                     passUser!!.text = ""
-                    val idUserLog = Bundle()
-                    idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
 //                    Toast.makeText(this@EditarPerfil, "Guardado", Toast.LENGTH_LONG).show()
 
 //                    Dialogo.getInstance(this@EditarPerfil)
@@ -442,7 +438,6 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     builder.setTitle(getString(R.string.dialog_user_edited))
                     builder.setMessage(getString(R.string.dialog_user_edited_text))
                     builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                        cambiarActivity.putExtras(idUserLog)
                         startActivity(cambiarActivity)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         finish()
@@ -469,13 +464,11 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
     override fun onSupportNavigateUp(): Boolean {
 //                onBackPressed()
-        val idUserLog = Bundle()
-        idUserLog.putString("idUserLog", intent.getStringExtra("idUserLog"))
+
         val cambiarActivity = Intent(
             this,
             VerPerfil::class.java
         ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        cambiarActivity.putExtras(idUserLog)
         startActivity(cambiarActivity)
         overridePendingTransition(R.anim.from_left, R.anim.to_right)
         return false

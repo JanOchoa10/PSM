@@ -12,12 +12,10 @@ import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
+import com.blogee.*
 import com.blogee.activitys.ImagenCompleta
 import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Nota
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.item_publicacion.view.*
@@ -35,6 +33,9 @@ class PostsAdapter(
     lateinit var usuarioDBHelper: miSQLiteHelper
     private val listaPostsInicial = mutableListOf(listaPosts)
 
+    private val getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layout = LayoutInflater.from(mContext).inflate(R.layout.item_publicacion, parent, false)
 
@@ -49,14 +50,13 @@ class PostsAdapter(
 
                 usuarioDBHelper = miSQLiteHelper(mContext)
 
-                val myPreferences = PreferenceManager.getDefaultSharedPreferences(mContext)
 
-                var email_User = myPreferences.getString("emailLogged", "").toString()
+                val email_User = getCredenciales.emailGuardado
 
 
                 val db = usuarioDBHelper.readableDatabase
                 val c = db.rawQuery(
-                    "Select * from usuarios where emailUser ='" + email_User.toString() + "'",
+                    "Select * from usuarios where emailUser ='$email_User'",
                     null
                 )
                 if (c.moveToFirst()) {
@@ -75,7 +75,7 @@ class PostsAdapter(
                                 Resources.getSystem(),
                                 bitmap
                             )
-                        roundedBitmapWrapper.setCircular(true)
+                        roundedBitmapWrapper.isCircular = true
                         layout.imgPerfil!!.setImageDrawable(roundedBitmapWrapper)
                     }
 
@@ -118,7 +118,7 @@ class PostsAdapter(
                                     Resources.getSystem(),
                                     bitmap
                                 )
-                            roundedBitmapWrapper.setCircular(true)
+                            roundedBitmapWrapper.isCircular = true
                             layout.imgPerfil.setImageDrawable(roundedBitmapWrapper)
                         }
                     }
@@ -166,8 +166,19 @@ class PostsAdapter(
                     ImagenCompleta::class.java
                 ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-//                intent.putExtra("verNota", nota)
-                intent.putExtra("idDeMiNotaActualClave", nota.id_Nota)
+
+                setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                setCredenciales.passGuardado = getCredenciales.passGuardado
+
+                setCredenciales.setIdNotaGuardado(nota.id_Nota!!)
+                setCredenciales.setIdUserDeNota(nota.id_User!!)
+
+                val activo: Boolean = getCredenciales.getModoOscuro()
+                setCredenciales.setModoOscuro(activo)
+
+                UserApplication.prefs.saveCredenciales(setCredenciales)
+
                 startActivity(mContext, intent, null)
 
             }
