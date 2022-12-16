@@ -119,6 +119,22 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                     )
                     if (c.moveToFirst()) {
 
+                        val service3: Service =
+                            RestEngine.getRestEngine().create(Service::class.java)
+                        val result3: Call<String> = service3.deleteNotaG(item[0].id_User.toString())
+
+                        result3.enqueue(object : Callback<String> {
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                //Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
+                            }
+
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
+
+                            }
+                        })
+
                         do {
                             var strimage = c.getString(4).toString()
                             if (strimage == null)
