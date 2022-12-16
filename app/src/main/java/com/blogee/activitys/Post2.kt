@@ -121,13 +121,45 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             result.enqueue(object : Callback<List<NotaG>> {
                 override fun onFailure(call: Call<List<NotaG>>, t: Throwable) {
 //                    Toast.makeText(this@Post2, "Error al guardar", Toast.LENGTH_LONG).show()
-                    Dialogo.getInstance(this@Post2)
-                        .crearDialogoSinAccion(
-                            this@Post2,
-                            getString(R.string.dialog_error_guardar_nota),
-                            getString(R.string.dialog_error_guardar_nota_text),
-                            getString(R.string.dialog_aceptar)
-                        )
+                    val email_User = getCredenciales.emailGuardado
+                    val db = usuarioDBHelper.readableDatabase
+                    val c = db.rawQuery(
+                        "Select * from notas where emailUser ='$email_User' and status = 2",
+                        null
+                    )
+                    if (c.moveToFirst()) {
+                        var byteArray3: ByteArray? = null
+                        titlePost!!.text = c.getString(2).toString()
+                        descPost!!.text = c.getString(3).toString()
+                        if (c.getString(4).toString() != "") {
+                            ImgNota = c.getString(4).toString()
+                            val strImage: String =
+                                c.getString(4).toString()!!.replace("data:image/png;base64,", "")
+                            byteArray3 = Base64.getDecoder().decode(strImage)
+                            if (byteArray3 != null) {
+                                //Bitmap redondo
+                                val bitmap: Bitmap =
+                                    ImageUtilities.getBitMapFromByteArray(byteArray3!!)
+                                /*val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(
+                                        Resources.getSystem(),
+                                        bitmap
+                                    )
+                                roundedBitmapWrapper.setCircular(true)*/
+                                imageUI!!.setImageBitmap(bitmap)
+                            }
+                        }
+
+                    }else{
+                        Dialogo.getInstance(this@Post2)
+                            .crearDialogoSinAccion(
+                                this@Post2,
+                                getString(R.string.dialog_error_guardar_nota),
+                                getString(R.string.dialog_error_guardar_nota_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+                    }
+
                 }
 
                 override fun onResponse(
@@ -764,7 +796,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
 
                         val service2: Service =
                             RestEngine.getRestEngine().create(Service::class.java)
@@ -786,7 +818,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                                 call: Call<String>,
                                 response2: Response<String>
                             ) {
-                                //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
 
                                 val item = response2.body()
 

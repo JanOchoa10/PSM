@@ -97,7 +97,7 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
 
     fun deleteTablaNotas() {
         val db = this.writableDatabase
-        db.delete("notas", null, null)
+        db.delete("notas", "status != 2", null)
         db.close()
     }
 
