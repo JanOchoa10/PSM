@@ -4,11 +4,13 @@ package com.blogee.activitys
 //import com.blogee.databinding.ActivityMainBinding
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -112,7 +114,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         val id_UserVP = getCredenciales.idUserGuardado.toString()
 
 
-        if (id_UserVP != null) {
+        if (id_UserVP != null ) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<NotaG>> = service.getNotaGUser(id_UserVP)
 
@@ -234,7 +236,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         val miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
         val id_User = getCredenciales.idUserGuardado.toString()
-        if (id_User != null) {
+        if (id_User != null && (isConnectedWifi(this@Post2) || isConnectedMobile(this@Post2))) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_User)
@@ -433,7 +435,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
             }
 
             //Primero borramos la existente
-            if (id_User != null) {
+            if (id_User != null && (isConnectedWifi(this@Post2) || isConnectedMobile(this@Post2))) {
                 val service2: Service = RestEngine.getRestEngine().create(Service::class.java)
                 val result2: Call<String> = service2.deleteNotaG(id_User.toString())
                 result2.enqueue(object : Callback<String> {
@@ -736,7 +738,7 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                 strEncodeImage = ""
             }
 
-            if (id_User != null) {
+            if (id_User != null && (isConnectedWifi(this@Post2) || isConnectedMobile(this@Post2))) {
                 val nota = Nota(
                     0,
                     titlePost!!.text.toString(),
@@ -923,6 +925,20 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
         startActivityForResult(intent, IMAGE_PICK_CODE)
 
+    }
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
     }
 
 

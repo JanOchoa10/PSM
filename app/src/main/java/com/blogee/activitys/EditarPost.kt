@@ -2,11 +2,13 @@ package com.blogee.activitys
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -160,7 +162,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         var miItem5: MenuItem = menu.findItem(R.id.user_profile)
 
         var id_User = getCredenciales.idUserGuardado.toString()
-        if (id_User != null) {
+        if (id_User != null && (isConnectedWifi(this@EditarPost) || isConnectedMobile(this@EditarPost))) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_User)
@@ -652,5 +654,19 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
         //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
         startActivityForResult(intent, IMAGE_PICK_CODE)
 
+    }
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
     }
 }
