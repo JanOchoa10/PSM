@@ -114,51 +114,20 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
         val id_UserVP = getCredenciales.idUserGuardado.toString()
 
 
-        if (id_UserVP != null ) {
+        if (id_UserVP != null && (isConnectedWifi(this@Post2) || isConnectedMobile(this@Post2))) {
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<NotaG>> = service.getNotaGUser(id_UserVP)
 
             result.enqueue(object : Callback<List<NotaG>> {
                 override fun onFailure(call: Call<List<NotaG>>, t: Throwable) {
-//                    Toast.makeText(this@Post2, "Error al guardar", Toast.LENGTH_LONG).show()
-                    val email_User = getCredenciales.emailGuardado
-                    val db = usuarioDBHelper.readableDatabase
-                    val c = db.rawQuery(
-                        "Select * from notas where emailUser ='$email_User' and status = 2",
-                        null
-                    )
-                    if (c.moveToFirst()) {
-                        var byteArray3: ByteArray? = null
-                        titlePost!!.text = c.getString(2).toString()
-                        descPost!!.text = c.getString(3).toString()
-                        if (c.getString(4).toString() != "") {
-                            ImgNota = c.getString(4).toString()
-                            val strImage: String =
-                                c.getString(4).toString()!!.replace("data:image/png;base64,", "")
-                            byteArray3 = Base64.getDecoder().decode(strImage)
-                            if (byteArray3 != null) {
-                                //Bitmap redondo
-                                val bitmap: Bitmap =
-                                    ImageUtilities.getBitMapFromByteArray(byteArray3!!)
-                                /*val roundedBitmapWrapper: RoundedBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(
-                                        Resources.getSystem(),
-                                        bitmap
-                                    )
-                                roundedBitmapWrapper.setCircular(true)*/
-                                imageUI!!.setImageBitmap(bitmap)
-                            }
-                        }
 
-                    }else{
-                        Dialogo.getInstance(this@Post2)
-                            .crearDialogoSinAccion(
-                                this@Post2,
-                                getString(R.string.dialog_error_guardar_nota),
-                                getString(R.string.dialog_error_guardar_nota_text),
-                                getString(R.string.dialog_aceptar)
-                            )
-                    }
+                    Dialogo.getInstance(this@Post2)
+                        .crearDialogoSinAccion(
+                            this@Post2,
+                            getString(R.string.dialog_error_guardar_nota),
+                            getString(R.string.dialog_error_guardar_nota_text),
+                            getString(R.string.dialog_aceptar)
+                        )
 
                 }
 
@@ -209,14 +178,13 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
 
                         }
-                    } else {
-
                     }
 
 
                 }
             })
         } else {
+
             val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
             val c = db.rawQuery(
@@ -246,6 +214,14 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
                     }
                 }
 
+            }else{
+                Dialogo.getInstance(this@Post2)
+                    .crearDialogoSinAccion(
+                        this@Post2,
+                        getString(R.string.dialog_error_guardar_nota),
+                        getString(R.string.dialog_error_guardar_nota_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
         }
     }

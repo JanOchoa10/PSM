@@ -22,8 +22,8 @@ class PostsAdapter(
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val layout = LayoutInflater.from(mContext).inflate(R.layout.item_publicacion, parent, false)
 
+        val layout = LayoutInflater.from(mContext).inflate(R.layout.item_publicacion, parent, false)
         val nota = listaPosts[position]
 
         return if (nota.Image != "") {

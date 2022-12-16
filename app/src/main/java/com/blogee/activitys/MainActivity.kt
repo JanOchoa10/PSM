@@ -128,7 +128,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                 //Toast.makeText(this@Post2, "Error al publicar nota", Toast.LENGTH_LONG).show()
                             }
 
-                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                            override fun onResponse(
+                                call: Call<String>,
+                                response: Response<String>
+                            ) {
                                 //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
 
 
@@ -137,9 +140,10 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
                         do {
                             var strimage = c.getString(4).toString()
-                            if (strimage == null)
-                            if (strimage == null)
+
+                            if (strimage == null) {
                                 strimage = ""
+                            }
                             val nota = Nota(
                                 0,
                                 c.getString(2).toString(),
@@ -407,79 +411,79 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         var id_User = getCredenciales.idUserGuardado.toString()
         if (id_User != null && (isConnectedWifi(this@MainActivity) || isConnectedMobile(this@MainActivity))) {
 
-                val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-                val result: Call<List<Usuario>> = service.getUser(id_User)
-                //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
-                result.enqueue(object : Callback<List<Usuario>> {
-                    override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result: Call<List<Usuario>> = service.getUser(id_User)
+            //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
+            result.enqueue(object : Callback<List<Usuario>> {
+                override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
 //                    Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
-                        Dialogo.getInstance(this@MainActivity)
-                            .crearDialogoSinAccion(
-                                this@MainActivity,
-                                getString(R.string.dialog_error_de_usuario),
-                                getString(R.string.dialog_error_de_usuario_text),
-                                getString(R.string.dialog_aceptar)
-                            )
-                    }
+                    Dialogo.getInstance(this@MainActivity)
+                        .crearDialogoSinAccion(
+                            this@MainActivity,
+                            getString(R.string.dialog_error_de_usuario),
+                            getString(R.string.dialog_error_de_usuario_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+                }
 
-                    override fun onResponse(
-                        call: Call<List<Usuario>>,
-                        response: Response<List<Usuario>>
-                    ) {
-                        val item = response.body()
-                        if (item != null) {
-                            if (item.isEmpty()) {
+                override fun onResponse(
+                    call: Call<List<Usuario>>,
+                    response: Response<List<Usuario>>
+                ) {
+                    val item = response.body()
+                    if (item != null) {
+                        if (item.isEmpty()) {
 //                            Toast.makeText(
 //                                this@MainActivity,
 //                                "No tiene información",
 //                                Toast.LENGTH_LONG
 //                            ).show()
-                                Dialogo.getInstance(this@MainActivity)
-                                    .crearDialogoSinAccion(
-                                        this@MainActivity,
-                                        getString(R.string.dialog_error_de_usuario),
-                                        getString(R.string.dialog_error_de_usuario_text),
-                                        getString(R.string.dialog_aceptar)
-                                    )
-                            } else {
-                                var byteArray: ByteArray? = null
+                            Dialogo.getInstance(this@MainActivity)
+                                .crearDialogoSinAccion(
+                                    this@MainActivity,
+                                    getString(R.string.dialog_error_de_usuario),
+                                    getString(R.string.dialog_error_de_usuario_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+                        } else {
+                            var byteArray: ByteArray? = null
 //                            nameUser!!.text = item[0].Name
 //                            lastNameUser!!.text = item[0].LastName
 //                            emailUser!!.text = item[0].Email
 //                            passUser!!.text = item[0].Password
 
-                                val strImage: String =
-                                    item[0].Image!!.replace("data:image/png;base64,", "")
-                                byteArray = Base64.getDecoder().decode(strImage)
-                                if (byteArray != null) {
-                                    //Bitmap redondo
-                                    val bitmap: Bitmap =
-                                        ImageUtilities.getBitMapFromByteArray(byteArray!!)
-                                    val roundedBitmapWrapper: RoundedBitmapDrawable =
-                                        RoundedBitmapDrawableFactory.create(
-                                            Resources.getSystem(),
-                                            bitmap
-                                        )
-                                    roundedBitmapWrapper.setCircular(true)
+                            val strImage: String =
+                                item[0].Image!!.replace("data:image/png;base64,", "")
+                            byteArray = Base64.getDecoder().decode(strImage)
+                            if (byteArray != null) {
+                                //Bitmap redondo
+                                val bitmap: Bitmap =
+                                    ImageUtilities.getBitMapFromByteArray(byteArray!!)
+                                val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(
+                                        Resources.getSystem(),
+                                        bitmap
+                                    )
+                                roundedBitmapWrapper.setCircular(true)
 //                                imageUI!!.setImageDrawable(roundedBitmapWrapper)
-                                    miItem5.setIcon(roundedBitmapWrapper)
+                                miItem5.setIcon(roundedBitmapWrapper)
 
-                                }
                             }
-                        } else {
-//                        Toast.makeText(this@MainActivity, "Incorrectas", Toast.LENGTH_LONG).show()
-                            Dialogo.getInstance(this@MainActivity)
-                                .crearDialogoSinAccion(
-                                    this@MainActivity,
-                                    getString(R.string.dialog_no_login),
-                                    getString(R.string.dialog_credenciales_incorrectas_text),
-                                    getString(R.string.dialog_aceptar)
-                                )
                         }
-
-
+                    } else {
+//                        Toast.makeText(this@MainActivity, "Incorrectas", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@MainActivity)
+                            .crearDialogoSinAccion(
+                                this@MainActivity,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
-                })
+
+
+                }
+            })
         } else {
             val email_User = getCredenciales.emailGuardado
             val db = usuarioDBHelper.readableDatabase
