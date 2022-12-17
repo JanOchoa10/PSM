@@ -19,7 +19,7 @@ open class ModoOscuro : NotaInfo() {
 
 }
 
-open class NotaInfo {
+open class NotaInfo : NotasLocal() {
     private var idNotaGuardado: Int = 0
     private var idUserDeNota: Int = 0
 
@@ -37,6 +37,19 @@ open class NotaInfo {
 
     fun setIdUserDeNota(IDUser: Int) {
         this.idUserDeNota = IDUser
+    }
+
+}
+
+open class NotasLocal {
+    private var primeraVez: Boolean = true
+
+    fun getNotasLocal(): Boolean {
+        return primeraVez
+    }
+
+    fun setNotasLocal(Activo: Boolean) {
+        this.primeraVez = Activo
     }
 
 }

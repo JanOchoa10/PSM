@@ -22,6 +22,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.view.MenuItemCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
 import com.blogee.adapters.PostsAdapter
 import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Credenciales
@@ -104,13 +105,18 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 //                        getString(R.string.dialog_error_de_usuario_text),
 //                        getString(R.string.dialog_aceptar)
 //                    )
-                Dialogo.getInstance(this@MainActivity)
-                    .crearDialogoSinAccion(
-                        this@MainActivity,
-                        getString(R.string.dialog_conexion_sin_internet),
-                        getString(R.string.dialog_conexion_sin_internet_text),
-                        getString(R.string.dialog_aceptar)
-                    )
+
+                if(getCredenciales.getNotasLocal()) {
+                    Dialogo.getInstance(this@MainActivity)
+                        .crearDialogoSinAccion(
+                            this@MainActivity,
+                            getString(R.string.dialog_conexion_sin_internet),
+                            getString(R.string.dialog_conexion_sin_internet_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+
+                    desactivarMensajeLocal()
+                }
             }
 
             override fun onResponse(
@@ -804,6 +810,19 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
         }
         return false
+    }
+
+    private fun desactivarMensajeLocal(){
+        setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+        setCredenciales.emailGuardado = getCredenciales.emailGuardado
+        setCredenciales.passGuardado = getCredenciales.passGuardado
+
+
+        setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+
+        setCredenciales.setNotasLocal(false)
+
+        prefs.saveCredenciales(setCredenciales)
     }
 
 

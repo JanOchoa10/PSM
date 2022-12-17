@@ -46,6 +46,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
         usuarioDBHelper = miSQLiteHelper(this)
 
         editarPerfilUser()
+        activarMensajeLocal()
 
         val email: String = getCredenciales.emailGuardado
         val pass: String = getCredenciales.passGuardado
@@ -368,12 +369,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 val item = response.body()
                 if (item != null) {
                     if (item.isEmpty()) {
-//                        Toast.makeText(
-//                            this@Login,
-//                            "Credenciales Incorrectas",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-
                         Dialogo.getInstance(this@Login)
                             .crearDialogoSinAccion(
                                 this@Login,
@@ -388,19 +383,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             Toast.LENGTH_LONG
                         ).show()
 
-//                        val idUserLog = Bundle()
-//                        idUserLog.putString("idUserLog", item[0].id_User.toString())
-//                        val emailUserLog = Bundle()
-//                        emailUserLog.putString("emailUserLog", item[0].Email.toString())
-//                        cambiarActivity.putExtras(idUserLog)
-//                        cambiarActivity.putExtras(emailUserLog)
                         startActivity(cambiarActivity)
 //                            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         finish()
                     }
                 } else {
-//                    Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
                     Dialogo.getInstance(this@Login)
                         .crearDialogoSinAccion(
                             this@Login,
@@ -506,6 +494,20 @@ class Login : AppCompatActivity(), View.OnClickListener {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun activarMensajeLocal(){
+
+        setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+        setCredenciales.emailGuardado = getCredenciales.emailGuardado
+        setCredenciales.passGuardado = getCredenciales.passGuardado
+
+
+        setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+
+        setCredenciales.setNotasLocal(true)
+
+        prefs.saveCredenciales(setCredenciales)
     }
 
     private fun editarPerfilUser() {

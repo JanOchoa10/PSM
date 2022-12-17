@@ -23,6 +23,7 @@ class Prefs(val context: Context) {
         editor.putBoolean("userModoOscuro", credenciales.getModoOscuro())
         editor.putInt("idNotaActual", credenciales.getIdNotaGuardado())
         editor.putInt("idUserDeNotaActual", credenciales.getIdUserDeNota())
+        editor.putBoolean("mensajeLocal", credenciales.getNotasLocal())
         editor.apply()
     }
 
@@ -43,6 +44,7 @@ class Prefs(val context: Context) {
         val userModoOscuro: Boolean = managerPrefs.getBoolean("userModoOscuro", false)
         val idNotaActual: Int = managerPrefs.getInt("idNotaActual", 0)
         val idUserDeNotaActual: Int = managerPrefs.getInt("idUserDeNotaActual", 0)
+        val mensajeLocal: Boolean = managerPrefs.getBoolean("mensajeLocal", true)
 
         credential.idUserGuardado = idUserGuardado
         credential.emailGuardado = emailGuardado!!
@@ -50,6 +52,7 @@ class Prefs(val context: Context) {
         credential.setModoOscuro(userModoOscuro)
         credential.setIdNotaGuardado(idNotaActual)
         credential.setIdUserDeNota(idUserDeNotaActual)
+        credential.setNotasLocal(mensajeLocal)
 
         return credential
     }
