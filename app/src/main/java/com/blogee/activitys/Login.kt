@@ -41,6 +41,61 @@ class Login : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        usuarioDBHelper = miSQLiteHelper(this)
+
+        var email_User = getCredenciales.emailGuardado
+        val db = usuarioDBHelper.readableDatabase
+        val c = db.rawQuery(
+            "Select * from usuarios where emailUser ='$email_User'",
+            null
+        )
+        if (c.moveToFirst()) {
+            val user = Usuario(
+                getCredenciales.idUserGuardado,
+                c.getString(1).toString(),
+                c.getString(2).toString(),
+                c.getString(3).toString(),
+                c.getString(4).toString(),
+                c.getString(5).toString()
+            )
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result: Call<Int> = service.saveUser(user)
+
+            result.enqueue(object : Callback<Int> {
+                override fun onFailure(call: Call<Int>, t: Throwable) {
+//                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
+
+
+
+                    Dialogo.getInstance(this@Login)
+                        .crearDialogoSinAccion(
+                            this@Login,
+                            getString(R.string.dialog_user_no_register),
+                            getString(R.string.dialog_user_no_register_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+                }
+
+                override fun onResponse(call: Call<Int>, response: Response<Int>) {
+
+                    val builder = AlertDialog.Builder(this@Login)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_user_edited))
+                    builder.setMessage(getString(R.string.dialog_user_edited_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                        /*startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()*/
+                    }
+                    //builder.show()
+
+
+                }
+            })
+
+
+        }
+
 
         var email: String = getCredenciales.emailGuardado
         var pass: String = getCredenciales.passGuardado
@@ -49,6 +104,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
 //        myPassGlobal = pass
 
         if (email != "" && pass != "") {
+
             setContentView(R.layout.activity_loading)
             loginGuardado(email, pass)
 

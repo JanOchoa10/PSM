@@ -6,6 +6,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.blogee.models.Usuario
 
 class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", null, 5) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -58,6 +59,23 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         return r
     }
 
+    fun updateUser(user: Usuario, emailUser: String): Int {
+        val db = this.writableDatabase
+        val data = ContentValues()
+        data.put("nameUser", user.Name)
+        data.put("lastNameUser", user.LastName)
+        data.put("emailUser", user.Email)
+        data.put("passUser", user.Password)
+        data.put("image", user.Image)
+        val data2 = ContentValues()
+        data2.put("emailUser",user.Email)
+        db.update("notas", data2, "emailUser= '" + emailUser + "' ", null)
+        val success =
+            db.update("usuarios", data, "emailUser= '" + emailUser + "' ", null)
+        db.close()
+        return success
+    }
+
 
     fun addNota(
         title: String,
@@ -94,6 +112,8 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         db.close()
         return success
     }
+
+
 
     fun deleteTablaNotas() {
         val db = this.writableDatabase
