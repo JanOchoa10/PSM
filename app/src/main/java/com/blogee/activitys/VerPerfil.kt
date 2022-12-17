@@ -362,10 +362,8 @@ class VerPerfil : AppCompatActivity() {
 
 
     override fun onSupportNavigateUp(): Boolean {
-//        onBackPressed()
-
         val cambiarActivity = Intent(
-            this,
+            this@VerPerfil,
             MainActivity::class.java
         )
         startActivity(cambiarActivity)

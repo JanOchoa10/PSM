@@ -16,7 +16,6 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.*
 import android.widget.SearchView.OnQueryTextListener
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
@@ -42,17 +41,21 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     var abajo = false
 
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private val getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
+    private var getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
     private val setCredenciales: Credenciales = Credenciales()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        usuarioDBHelper = miSQLiteHelper(this)
         setContentView(R.layout.activity_main)
+
+        usuarioDBHelper = miSQLiteHelper(this)
         if (getCredenciales.idUserGuardado.toString() != null) {
             editarPerfilUser()
             publicarNotas()
+
+            // Cambia los datos viejos por los nuevos sin recargar el main
+            getCredenciales = UserApplication.prefs.getCredenciales()
 
         }
 //        textView.visibility = View.GONE
@@ -91,62 +94,6 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
 
         traerNotas()
-
-    }
-
-    private fun editarPerfilUser() {
-        var email_User = getCredenciales.emailGuardado
-        val db = usuarioDBHelper.readableDatabase
-        val c = db.rawQuery(
-            "Select * from usuarios where emailUser ='$email_User'",
-            null
-        )
-        if (c.moveToFirst()) {
-            val user = Usuario(
-                getCredenciales.idUserGuardado,
-                c.getString(1).toString(),
-                c.getString(2).toString(),
-                c.getString(3).toString(),
-                c.getString(4).toString(),
-                c.getString(5).toString()
-            )
-            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-            val result: Call<Int> = service.saveUser(user)
-
-            result.enqueue(object : Callback<Int> {
-                override fun onFailure(call: Call<Int>, t: Throwable) {
-//                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
-
-
-
-                    Dialogo.getInstance(this@MainActivity)
-                        .crearDialogoSinAccion(
-                            this@MainActivity,
-                            getString(R.string.dialog_user_no_register),
-                            getString(R.string.dialog_user_no_register_text),
-                            getString(R.string.dialog_aceptar)
-                        )
-                }
-
-                override fun onResponse(call: Call<Int>, response: Response<Int>) {
-
-                    val builder = AlertDialog.Builder(this@MainActivity)
-                    builder.setIcon(R.drawable.bluebird)
-                    builder.setTitle(getString(R.string.dialog_user_edited))
-                    builder.setMessage(getString(R.string.dialog_user_edited_text))
-                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
-                        /*startActivity(cambiarActivity)
-                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                        finish()*/
-                    }
-                   //builder.show()
-
-
-                }
-            })
-
-
-        }
 
     }
 
@@ -600,11 +547,12 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
             R.id.user_profile -> {
                 // Acción al presionar el botón
                 val cambiarActivity = Intent(
-                    this,
+                    this@MainActivity,
                     VerPerfil::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                )
                 startActivity(cambiarActivity)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -664,10 +612,57 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         return false
     }
 
-//    override fun onBackPressed() {
-////        super.onBackPressed()
-//        finishAffinity()
-//    }
+
+    private fun editarPerfilUser() {
+
+        val emailUserDB = getCredenciales.emailGuardado
+        val db = usuarioDBHelper.readableDatabase
+        val c = db.rawQuery(
+            "Select * from usuarios where emailUser ='$emailUserDB'",
+            null
+        )
+        if (c.moveToFirst()) {
+            val user = Usuario(
+                getCredenciales.idUserGuardado,
+                c.getString(1).toString(),
+                c.getString(2).toString(),
+                c.getString(3).toString(),
+                c.getString(4).toString(),
+                c.getString(5).toString()
+            )
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result: Call<Int> = service.saveUser(user)
+
+            result.enqueue(object : Callback<Int> {
+                override fun onFailure(call: Call<Int>, t: Throwable) {
+
+//                    Log.i("Blogge", "usuario no registrado")
+//                    Dialogo.getInstance(this@MainActivity)
+//                        .crearDialogoSinAccion(
+//                            this@MainActivity,
+//                            getString(R.string.dialog_user_no_register),
+//                            getString(R.string.dialog_user_no_register_text),
+//                            getString(R.string.dialog_aceptar)
+//                        )
+                }
+
+                override fun onResponse(call: Call<Int>, response: Response<Int>) {
+
+//                    Dialogo.getInstance(this@MainActivity).crearDialogoSinAccion(
+//                        this@MainActivity,
+//                        getString(R.string.dialog_user_edited),
+//                        getString(R.string.dialog_user_edited_text),
+//                        getString(R.string.dialog_aceptar)
+//                    )
+
+
+                }
+            })
+
+
+        }
+
+    }
 
 
 }

@@ -51,6 +51,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     private val getCredenciales: Credenciales = prefs.getCredenciales()
     private val setCredenciales: Credenciales = Credenciales()
 
+    @SuppressLint("Recycle")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editar_perfil)
@@ -74,15 +75,15 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         /*btnSaveChanges.setOnClickListener{
             onBackPressed()
         }*/
-        var email_User = getCredenciales.emailGuardado
+        val emailUser = getCredenciales.emailGuardado
         val db = usuarioDBHelper.readableDatabase
         val c = db.rawQuery(
-            "Select * from usuarios where emailUser ='$email_User'",
+            "Select * from usuarios where emailUser ='$emailUser'",
             null
         )
         if (c.moveToFirst()) {
 
-            imgArray2=c.getString(5).toString()
+            imgArray2 = c.getString(5).toString()
         }
 
 
@@ -102,7 +103,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
     private fun infoUserEditar() {
         val id_User = getCredenciales.idUserGuardado.toString()
-        if (id_User != null && (isConnectedWifi(this@EditarPerfil) || isConnectedMobile(this@EditarPerfil)) ) {
+        if (id_User != null && (isConnectedWifi(this@EditarPerfil) || isConnectedMobile(this@EditarPerfil))) {
 
             val service: Service = RestEngine.getRestEngine().create(Service::class.java)
             val result: Call<List<Usuario>> = service.getUser(id_User)
@@ -197,7 +198,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                 lastNameUser!!.text = c.getString(2).toString()
                 emailUser!!.text = c.getString(3).toString()
                 passUser!!.text = c.getString(4).toString()
-                imgArray2=c.getString(5).toString()
+                imgArray2 = c.getString(5).toString()
                 val strImage: String =
                     c.getString(5).toString().replace("data:image/png;base64,", "")
                 byteArray = Base64.getDecoder().decode(strImage)
@@ -422,8 +423,9 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             result.enqueue(object : Callback<Int> {
                 override fun onFailure(call: Call<Int>, t: Throwable) {
 //                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
-                    if(user.Image=="")
+                    if (user.Image == "") {
                         user.Image = imgArray2
+                    }
                     usuarioDBHelper.updateUser(user, getCredenciales.emailGuardado)
                     setCredenciales.emailGuardado = emailUser!!.text.toString()
                     setCredenciales.passGuardado = passUser!!.text.toString()
@@ -451,15 +453,17 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
 
-                    if(user.Image=="")
+                    if (user.Image == "") {
                         user.Image = imgArray2
+                    }
                     usuarioDBHelper.updateUser(user, getCredenciales.emailGuardado)
-                    setCredenciales.emailGuardado = emailUser!!.text.toString()
+
                     setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                    setCredenciales.emailGuardado = emailUser!!.text.toString()
                     setCredenciales.passGuardado = passUser!!.text.toString()
                     setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
-                    prefs.saveCredenciales(setCredenciales)
 
+                    prefs.saveCredenciales(setCredenciales)
 
 
                     val builder = AlertDialog.Builder(this@EditarPerfil)
