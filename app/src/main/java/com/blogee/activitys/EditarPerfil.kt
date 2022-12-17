@@ -46,6 +46,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
     var passUser: TextView? = null
     var imageUI: ImageView? = null
     var imgArray: ByteArray? = null
+    var imgArray2: String? = null
 
     private val getCredenciales: Credenciales = prefs.getCredenciales()
     private val setCredenciales: Credenciales = Credenciales()
@@ -73,6 +74,17 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
         /*btnSaveChanges.setOnClickListener{
             onBackPressed()
         }*/
+        var email_User = getCredenciales.emailGuardado
+        val db = usuarioDBHelper.readableDatabase
+        val c = db.rawQuery(
+            "Select * from usuarios where emailUser ='$email_User'",
+            null
+        )
+        if (c.moveToFirst()) {
+
+            imgArray2=c.getString(5).toString()
+        }
+
 
         btnCancel.setOnClickListener {
 
@@ -185,6 +197,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                 lastNameUser!!.text = c.getString(2).toString()
                 emailUser!!.text = c.getString(3).toString()
                 passUser!!.text = c.getString(4).toString()
+                imgArray2=c.getString(5).toString()
                 val strImage: String =
                     c.getString(5).toString().replace("data:image/png;base64,", "")
                 byteArray = Base64.getDecoder().decode(strImage)
@@ -409,31 +422,45 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
             result.enqueue(object : Callback<Int> {
                 override fun onFailure(call: Call<Int>, t: Throwable) {
 //                    Toast.makeText(this@EditarPerfil, "Error", Toast.LENGTH_LONG).show()
-                    Dialogo.getInstance(this@EditarPerfil)
+                    if(user.Image=="")
+                        user.Image = imgArray2
+                    usuarioDBHelper.updateUser(user, getCredenciales.emailGuardado)
+                    setCredenciales.emailGuardado = emailUser!!.text.toString()
+                    setCredenciales.passGuardado = passUser!!.text.toString()
+                    setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                    setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+                    prefs.saveCredenciales(setCredenciales)
+                    /*Dialogo.getInstance(this@EditarPerfil)
                         .crearDialogoSinAccion(
                             this@EditarPerfil,
                             getString(R.string.dialog_user_no_register),
                             getString(R.string.dialog_user_no_register_text),
                             getString(R.string.dialog_aceptar)
-                        )
+                        )*/
+                    val builder = AlertDialog.Builder(this@EditarPerfil)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_user_edited))
+                    builder.setMessage(getString(R.string.dialog_user_edited_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                        startActivity(cambiarActivity)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()
+                    }
+                    builder.show()
                 }
 
                 override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                    nameUser!!.text = ""
-                    lastNameUser!!.text = ""
-                    emailUser!!.text = ""
-                    passUser!!.text = ""
 
-//                    Toast.makeText(this@EditarPerfil, "Guardado", Toast.LENGTH_LONG).show()
+                    if(user.Image=="")
+                        user.Image = imgArray2
+                    usuarioDBHelper.updateUser(user, getCredenciales.emailGuardado)
+                    setCredenciales.emailGuardado = emailUser!!.text.toString()
+                    setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                    setCredenciales.passGuardado = passUser!!.text.toString()
+                    setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+                    prefs.saveCredenciales(setCredenciales)
 
-//                    Dialogo.getInstance(this@EditarPerfil)
-//                        .crearDialogoSinAccion(
-//                            this@EditarPerfil,
-//                            getString(R.string.dialog_user_register),
-//                            getString(R.string.dialog_user_register_text),
-//                            getString(R.string.dialog_aceptar)
-//                        )
+
 
                     val builder = AlertDialog.Builder(this@EditarPerfil)
                     builder.setIcon(R.drawable.bluebird)
