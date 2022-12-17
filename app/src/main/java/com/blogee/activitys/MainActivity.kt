@@ -16,6 +16,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.*
 import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     var abajo = false
 
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private var getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
+    private var getCredenciales: Credenciales = prefs.getCredenciales()
     private val setCredenciales: Credenciales = Credenciales()
 
 
@@ -106,16 +107,18 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 //                        getString(R.string.dialog_aceptar)
 //                    )
 
-                if(getCredenciales.getNotasLocal()) {
-                    Dialogo.getInstance(this@MainActivity)
-                        .crearDialogoSinAccion(
-                            this@MainActivity,
-                            getString(R.string.dialog_conexion_sin_internet),
-                            getString(R.string.dialog_conexion_sin_internet_text),
-                            getString(R.string.dialog_aceptar)
-                        )
+                if (getCredenciales.getNotasLocal()) {
 
-                    desactivarMensajeLocal()
+                    val builder = AlertDialog.Builder(this@MainActivity)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle( getString(R.string.dialog_conexion_sin_internet))
+                    builder.setMessage(getString(R.string.dialog_conexion_sin_internet_text))
+                    builder.setPositiveButton( getString(R.string.dialog_aceptar)){ dialog, which ->
+                        desactivarMensajeLocal()
+                    }
+                    builder.show()
+
+
                 }
             }
 
@@ -812,7 +815,7 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         return false
     }
 
-    private fun desactivarMensajeLocal(){
+    private fun desactivarMensajeLocal() {
         setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
         setCredenciales.emailGuardado = getCredenciales.emailGuardado
         setCredenciales.passGuardado = getCredenciales.passGuardado
@@ -823,6 +826,8 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
         setCredenciales.setNotasLocal(false)
 
         prefs.saveCredenciales(setCredenciales)
+
+        getCredenciales = prefs.getCredenciales()
     }
 
 

@@ -353,6 +353,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
 //                    intent.putExtra("soloPerfil", true)
 
                     startActivity(intent)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                    finish()
 
                 }
                 builder.show()
