@@ -58,19 +58,12 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
             getCredenciales = UserApplication.prefs.getCredenciales()
 
         }
-//        textView.visibility = View.GONE
-
-//        title = "KotlinApp"
         swipeRefreshLayout = findViewById(R.id.swipe)
-//        textView = findViewById(R.id.textView)
         swipeRefreshLayout.setOnRefreshListener {
             //Ejecutamos código
-//            number++
-//            textView.text = " Total number = $number"
             if (getCredenciales.idUserGuardado.toString() != null) {
                 editarPerfilUser()
                 publicarNotas()
-
             }
 
             traerNotas()
@@ -104,12 +97,18 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
 
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-//                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
+//                Dialogo.getInstance(this@MainActivity)
+//                    .crearDialogoSinAccion(
+//                        this@MainActivity,
+//                        getString(R.string.dialog_error_de_usuario),
+//                        getString(R.string.dialog_error_de_usuario_text),
+//                        getString(R.string.dialog_aceptar)
+//                    )
                 Dialogo.getInstance(this@MainActivity)
                     .crearDialogoSinAccion(
                         this@MainActivity,
-                        getString(R.string.dialog_error_de_usuario),
-                        getString(R.string.dialog_error_de_usuario_text),
+                        getString(R.string.dialog_conexion_sin_internet),
+                        getString(R.string.dialog_conexion_sin_internet_text),
                         getString(R.string.dialog_aceptar)
                     )
             }
@@ -209,36 +208,266 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
     var listaPosts: MutableList<Nota> = mutableListOf()
 
     fun traerNotas() {
+        var maxNotasSinInternet = 10
 
-        val service: Service = RestEngine.getRestEngine().create(Service::class.java)
-        val result: Call<List<Nota>> = service.getNotas()
+        if (isConnectedWifi(this@MainActivity) || isConnectedMobile(this@MainActivity)) {
 
-        result.enqueue(object : Callback<List<Nota>> {
-            override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
+
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result: Call<List<Nota>> = service.getNotas()
+
+            result.enqueue(object : Callback<List<Nota>> {
+                override fun onFailure(call: Call<List<Nota>>, t: Throwable) {
 //                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_LONG).show()
-                Dialogo.getInstance(this@MainActivity)
-                    .crearDialogoSinAccion(
-                        this@MainActivity,
-                        getString(R.string.dialog_error_de_notas),
-                        getString(R.string.dialog_error_de_notas_text),
-                        getString(R.string.dialog_aceptar)
-                    )
-            }
+                    Dialogo.getInstance(this@MainActivity)
+                        .crearDialogoSinAccion(
+                            this@MainActivity,
+                            getString(R.string.dialog_error_de_notas),
+                            getString(R.string.dialog_error_de_notas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
+                }
 
-            override fun onResponse(
-                call: Call<List<Nota>>,
-                response: Response<List<Nota>>
-            ) {
+                override fun onResponse(
+                    call: Call<List<Nota>>,
+                    response: Response<List<Nota>>
+                ) {
 
-                val arrayPosts = response.body()
-                if (arrayPosts != null) {
-                    if (arrayPosts.isEmpty()) {
+                    val arrayPosts = response.body()
+                    if (arrayPosts != null) {
+                        if (arrayPosts.isEmpty()) {
 //                        Toast.makeText(
 //                            this@MainActivity,
 //                            "No tiene notas",
 //                            Toast.LENGTH_LONG
 //                        ).show()
 
+                            Dialogo.getInstance(this@MainActivity)
+                                .crearDialogoSinAccion(
+                                    this@MainActivity,
+                                    getString(R.string.dialog_no_tiene_notas),
+                                    getString(R.string.dialog_no_tiene_notas_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+                        } else {
+                            //      Visibilidad del texto cuando no hay publicaciones
+                            val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
+                            textoInicial.visibility = View.GONE
+
+                            listaPosts.clear()
+                            usuarioDBHelper.deleteTablaNotas()
+                            usuarioDBHelper.deleteTablaNotasSinInternet()
+
+
+                            for (item in arrayPosts) {
+                                listaPosts.add(
+                                    Nota(
+                                        item.id_Nota,
+                                        item.Title,
+                                        item.Description,
+                                        item.id_User,
+                                        item.Image
+                                    )
+                                )
+
+                                if (maxNotasSinInternet > 0) {
+                                    maxNotasSinInternet--
+
+                                    val service: Service =
+                                        RestEngine.getRestEngine().create(Service::class.java)
+                                    val result: Call<List<Usuario>> =
+                                        service.getUser(item.id_User.toString())
+
+                                    result.enqueue(object : Callback<List<Usuario>> {
+                                        override fun onFailure(
+                                            call: Call<List<Usuario>>,
+                                            t: Throwable
+                                        ) {
+                                            Dialogo.getInstance(this@MainActivity)
+                                                .crearDialogoSinAccion(
+                                                    this@MainActivity,
+                                                    getString(R.string.dialog_error_de_usuario),
+                                                    getString(R.string.dialog_error_de_usuario_text),
+                                                    getString(R.string.dialog_aceptar)
+                                                )
+                                        }
+
+                                        override fun onResponse(
+                                            call: Call<List<Usuario>>,
+                                            response: Response<List<Usuario>>
+                                        ) {
+                                            val itemR = response.body()
+                                            if (itemR != null) {
+                                                if (itemR.isEmpty()) {
+                                                    Dialogo.getInstance(this@MainActivity)
+                                                        .crearDialogoSinAccion(
+                                                            this@MainActivity,
+                                                            getString(R.string.dialog_error_de_usuario),
+                                                            getString(R.string.dialog_error_de_usuario_text),
+                                                            getString(R.string.dialog_aceptar)
+                                                        )
+                                                } else {
+
+
+                                                    usuarioDBHelper.addNotaParaLocal(
+                                                        itemR[0].Name.toString(),
+                                                        itemR[0].Image.toString(),
+                                                        item.Title.toString(),
+                                                        item.Description.toString(),
+                                                        item.Image.toString(),
+                                                    )
+
+
+                                                }
+                                            } else {
+                                                Dialogo.getInstance(this@MainActivity)
+                                                    .crearDialogoSinAccion(
+                                                        this@MainActivity,
+                                                        getString(R.string.dialog_no_login),
+                                                        getString(R.string.dialog_credenciales_incorrectas_text),
+                                                        getString(R.string.dialog_aceptar)
+                                                    )
+                                            }
+
+
+                                        }
+                                    })
+
+
+                                }
+
+                                if (item.id_User == getCredenciales.idUserGuardado) {
+                                    usuarioDBHelper.addNota(
+                                        item.Title.toString(),
+                                        item.Description.toString(),
+                                        item.Image.toString(),
+                                        getCredenciales.emailGuardado,
+                                        0
+                                    )
+                                }
+
+                            }
+
+
+                            // Elementos dentro del listview
+                            val lvPost = findViewById<ListView>(R.id.lvPosts)
+
+                            val adaptador: PostsAdapter? =
+                                PostsAdapter(this@MainActivity, listaPosts)
+                            lvPost.adapter = adaptador
+
+                            lvPost.setOnItemClickListener { parent, view, position, id ->
+
+                                if (isConnectedWifi(this@MainActivity) || isConnectedMobile(this@MainActivity)) {
+
+                                    val notaActual: Nota =
+                                        parent.getItemAtPosition(position) as Nota
+
+                                    val intent = Intent(
+                                        this@MainActivity,
+                                        DetallesNota::class.java
+                                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+                                    setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                                    setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                                    setCredenciales.passGuardado = getCredenciales.passGuardado
+
+                                    setCredenciales.setIdNotaGuardado(notaActual.id_Nota!!)
+                                    setCredenciales.setIdUserDeNota(notaActual.id_User!!)
+
+                                    val activo: Boolean = getCredenciales.getModoOscuro()
+                                    setCredenciales.setModoOscuro(activo)
+
+                                    UserApplication.prefs.saveCredenciales(setCredenciales)
+
+                                    startActivity(intent)
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                                } else {
+                                    Dialogo.getInstance(this@MainActivity)
+                                        .crearDialogoSinAccion(
+                                            this@MainActivity,
+                                            getString(R.string.dialog_sin_internet),
+                                            getString(R.string.dialog_sin_internet_text),
+                                            getString(R.string.dialog_aceptar)
+                                        )
+                                }
+                            }
+
+
+                            lvPost.setOnScrollListener(object : AbsListView.OnScrollListener {
+                                private var lastFirstVisibleItem = 0
+                                override fun onScrollStateChanged(
+                                    view: AbsListView,
+                                    scrollState: Int
+                                ) {
+                                }
+
+                                override fun onScroll(
+                                    view: AbsListView,
+                                    firstVisibleItem: Int,
+                                    visibleItemCount: Int,
+                                    totalItemCount: Int
+                                ) {
+
+                                    if (firstVisibleItem == 0) {
+
+                                        if (abajo) {
+                                            fab_new_post.animate().translationY(0F)
+                                                .setInterpolator(LinearInterpolator()).duration =
+                                                200 // Cambiar al tiempo deseado
+                                            abajo = false
+                                        }
+
+                                    } else {
+
+                                        if (lastFirstVisibleItem < firstVisibleItem) {
+//                                    Toast.makeText(
+//                                        applicationContext, "Scrolling down the listView",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+                                            if (!animando) {
+                                                animando = true
+
+                                                fab_new_post.animate().translationY(
+                                                    fab_new_post.height +
+                                                            resources.getDimension(R.dimen.fab_margin)
+                                                )
+                                                    .setInterpolator(LinearInterpolator()).duration =
+                                                    200 // Cambiar al tiempo deseado
+                                                Handler().postDelayed({
+                                                    //doSomethingHere()
+                                                    animando = false
+                                                    abajo = true
+                                                }, 200)
+                                            }
+
+                                        }
+                                        if (lastFirstVisibleItem > firstVisibleItem) {
+//                                    Toast.makeText(
+//                                        applicationContext, "Scrolling up the listView",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+                                            if (!animando) {
+                                                animando = true
+                                                fab_new_post.animate().translationY(0F)
+                                                    .setInterpolator(LinearInterpolator()).duration =
+                                                    200 // Cambiar al tiempo deseado
+                                                Handler().postDelayed({
+                                                    //doSomethingHere()
+                                                    animando = false
+                                                    abajo = false
+                                                }, 200)
+                                            }
+                                        }
+                                    }
+                                    lastFirstVisibleItem = firstVisibleItem
+                                }
+
+                            })
+
+                        }
+                    } else {
+//                    Toast.makeText(this@MainActivity, "No hay notas", Toast.LENGTH_LONG).show()
                         Dialogo.getInstance(this@MainActivity)
                             .crearDialogoSinAccion(
                                 this@MainActivity,
@@ -246,156 +475,121 @@ class MainActivity : AppCompatActivity(), OnQueryTextListener {
                                 getString(R.string.dialog_no_tiene_notas_text),
                                 getString(R.string.dialog_aceptar)
                             )
+                    }
+                }
+            })
+        } else {
+//            val email_User = getCredenciales.emailGuardado
+            listaPosts.clear()
+            val db = usuarioDBHelper.readableDatabase
+            val c = db.rawQuery(
+                "Select * from notasSinInternet",
+                null
+            )
+
+            if (c.moveToFirst()) {
+                val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
+                textoInicial.visibility = View.GONE
+                do {
+                    listaPosts.add(
+                        Nota(
+                            c.getInt(0),
+                            c.getString(3),
+                            c.getString(4),
+                            null,
+                            c.getString(5)
+                        )
+                    )
+                } while (c.moveToNext())
+            }
+            val adaptador = PostsAdapter(this@MainActivity, listaPosts)
+
+            // Elementos dentro del listview
+            val lvPost = findViewById<ListView>(R.id.lvPosts)
+
+            lvPost.adapter = adaptador
+
+            lvPost.setOnItemClickListener { parent, view, position, id ->
+                Dialogo.getInstance(this@MainActivity)
+                    .crearDialogoSinAccion(
+                        this@MainActivity,
+                        getString(R.string.dialog_sin_internet),
+                        getString(R.string.dialog_sin_internet_text),
+                        getString(R.string.dialog_aceptar)
+                    )
+            }
+
+            lvPost.setOnScrollListener(object : AbsListView.OnScrollListener {
+                private var lastFirstVisibleItem = 0
+                override fun onScrollStateChanged(
+                    view: AbsListView,
+                    scrollState: Int
+                ) {
+                }
+
+                override fun onScroll(
+                    view: AbsListView,
+                    firstVisibleItem: Int,
+                    visibleItemCount: Int,
+                    totalItemCount: Int
+                ) {
+
+                    if (firstVisibleItem == 0) {
+
+                        if (abajo) {
+                            fab_new_post.animate().translationY(0F)
+                                .setInterpolator(LinearInterpolator()).duration =
+                                200 // Cambiar al tiempo deseado
+                            abajo = false
+                        }
+
                     } else {
-                        //      Visibilidad del texto cuando no hay publicaciones
-                        val textoInicial = findViewById<TextView>(R.id.txtNoNotas)
-                        textoInicial.visibility = View.GONE
 
-                        listaPosts.clear()
-                        usuarioDBHelper.deleteTablaNotas()
-                        for (item in arrayPosts) {
-                            listaPosts.add(
-                                Nota(
-                                    item.id_Nota,
-                                    item.Title,
-                                    item.Description,
-                                    item.id_User,
-                                    item.Image
-                                )
-                            )
-
-
-                            if (item.id_User == getCredenciales.idUserGuardado) {
-                                usuarioDBHelper.addNota(
-                                    item.Title.toString(),
-                                    item.Description.toString(),
-                                    item.Image.toString(),
-                                    getCredenciales.emailGuardado,
-                                    0
-                                )
-                            }
-
-                        }
-
-
-                        // Elementos dentro del listview
-                        val lvPost = findViewById<ListView>(R.id.lvPosts)
-
-                        val adaptador: PostsAdapter? = PostsAdapter(this@MainActivity, listaPosts)
-                        lvPost.adapter = adaptador
-
-                        lvPost.setOnItemClickListener { parent, view, position, id ->
-
-
-                            val notaActual: Nota =
-                                parent.getItemAtPosition(position) as Nota
-
-                            val intent = Intent(
-                                this@MainActivity,
-                                DetallesNota::class.java
-                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
-                            setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
-                            setCredenciales.emailGuardado = getCredenciales.emailGuardado
-                            setCredenciales.passGuardado = getCredenciales.passGuardado
-
-                            setCredenciales.setIdNotaGuardado(notaActual.id_Nota!!)
-                            setCredenciales.setIdUserDeNota(notaActual.id_User!!)
-
-                            val activo: Boolean = getCredenciales.getModoOscuro()
-                            setCredenciales.setModoOscuro(activo)
-
-                            UserApplication.prefs.saveCredenciales(setCredenciales)
-
-                            startActivity(intent)
-                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                        }
-
-
-                        lvPost.setOnScrollListener(object : AbsListView.OnScrollListener {
-                            private var lastFirstVisibleItem = 0
-                            override fun onScrollStateChanged(
-                                view: AbsListView,
-                                scrollState: Int
-                            ) {
-                            }
-
-                            override fun onScroll(
-                                view: AbsListView,
-                                firstVisibleItem: Int,
-                                visibleItemCount: Int,
-                                totalItemCount: Int
-                            ) {
-
-                                if (firstVisibleItem == 0) {
-
-                                    if (abajo) {
-                                        fab_new_post.animate().translationY(0F)
-                                            .setInterpolator(LinearInterpolator()).duration =
-                                            200 // Cambiar al tiempo deseado
-                                        abajo = false
-                                    }
-
-                                } else {
-
-                                    if (lastFirstVisibleItem < firstVisibleItem) {
+                        if (lastFirstVisibleItem < firstVisibleItem) {
 //                                    Toast.makeText(
 //                                        applicationContext, "Scrolling down the listView",
 //                                        Toast.LENGTH_SHORT
 //                                    ).show()
-                                        if (!animando) {
-                                            animando = true
+                            if (!animando) {
+                                animando = true
 
-                                            fab_new_post.animate().translationY(
-                                                fab_new_post.height +
-                                                        resources.getDimension(R.dimen.fab_margin)
-                                            )
-                                                .setInterpolator(LinearInterpolator()).duration =
-                                                200 // Cambiar al tiempo deseado
-                                            Handler().postDelayed({
-                                                //doSomethingHere()
-                                                animando = false
-                                                abajo = true
-                                            }, 200)
-                                        }
+                                fab_new_post.animate().translationY(
+                                    fab_new_post.height +
+                                            resources.getDimension(R.dimen.fab_margin)
+                                )
+                                    .setInterpolator(LinearInterpolator()).duration =
+                                    200 // Cambiar al tiempo deseado
+                                Handler().postDelayed({
+                                    //doSomethingHere()
+                                    animando = false
+                                    abajo = true
+                                }, 200)
+                            }
 
-                                    }
-                                    if (lastFirstVisibleItem > firstVisibleItem) {
+                        }
+                        if (lastFirstVisibleItem > firstVisibleItem) {
 //                                    Toast.makeText(
 //                                        applicationContext, "Scrolling up the listView",
 //                                        Toast.LENGTH_SHORT
 //                                    ).show()
-                                        if (!animando) {
-                                            animando = true
-                                            fab_new_post.animate().translationY(0F)
-                                                .setInterpolator(LinearInterpolator()).duration =
-                                                200 // Cambiar al tiempo deseado
-                                            Handler().postDelayed({
-                                                //doSomethingHere()
-                                                animando = false
-                                                abajo = false
-                                            }, 200)
-                                        }
-                                    }
-                                }
-                                lastFirstVisibleItem = firstVisibleItem
+                            if (!animando) {
+                                animando = true
+                                fab_new_post.animate().translationY(0F)
+                                    .setInterpolator(LinearInterpolator()).duration =
+                                    200 // Cambiar al tiempo deseado
+                                Handler().postDelayed({
+                                    //doSomethingHere()
+                                    animando = false
+                                    abajo = false
+                                }, 200)
                             }
-
-                        })
-
+                        }
                     }
-                } else {
-//                    Toast.makeText(this@MainActivity, "No hay notas", Toast.LENGTH_LONG).show()
-                    Dialogo.getInstance(this@MainActivity)
-                        .crearDialogoSinAccion(
-                            this@MainActivity,
-                            getString(R.string.dialog_no_tiene_notas),
-                            getString(R.string.dialog_no_tiene_notas_text),
-                            getString(R.string.dialog_aceptar)
-                        )
+                    lastFirstVisibleItem = firstVisibleItem
                 }
-            }
-        })
+
+            })
+        }
     }
 
     fun isConnectedWifi(context: Context): Boolean {

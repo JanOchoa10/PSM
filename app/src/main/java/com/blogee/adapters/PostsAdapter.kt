@@ -27,7 +27,7 @@ class PostsAdapter(
         val nota = listaPosts[position]
 
         return if (nota.Image != "") {
-            WithThumbnailListItemView(NotaViewModel(nota), layout).render()
+            WithThumbnailListItemView(NotaViewModel(nota), layout, mContext).render()
         } else {
             JustTextListItemView(NotaViewModel(nota), layout).render()
         }

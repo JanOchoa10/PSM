@@ -100,4 +100,6 @@
     <string name="dialog_correo_usado">Correo registrado</string>
     <string name="dialog_correo_usado_text">El correo que desea registrar ya está registrado, inicie sesión para acceder a su cuenta.</string>
     <string name="txt_no_information_exists">No existe información</string>
+    <string name="dialog_conexion_sin_internet">Conexión sin internet</string>
+    <string name="dialog_conexion_sin_internet_text">¡Bienvenido a la conexión sin internet!\n\nSin conexión puedes:\n- Publicar y guardar notas.\n- Ver top 10 notas más recientes.\n- Ver tu perfil y editar tus datos.</string>
 </resources>

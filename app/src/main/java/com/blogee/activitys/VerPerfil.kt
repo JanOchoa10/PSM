@@ -267,29 +267,40 @@ class VerPerfil : AppCompatActivity() {
                             lvPost.adapter = adaptador
 
                             lvPost.setOnItemClickListener { parent, view, position, id ->
-                                val notaActual: Nota =
-                                    parent.getItemAtPosition(position) as Nota
+
+                                if (isConnectedWifi(this@VerPerfil) || isConnectedMobile(this@VerPerfil)) {
+                                    val notaActual: Nota =
+                                        parent.getItemAtPosition(position) as Nota
 
 
-                                val intent = Intent(
-                                    this@VerPerfil,
-                                    DetallesNota::class.java
-                                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                    val intent = Intent(
+                                        this@VerPerfil,
+                                        DetallesNota::class.java
+                                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
-                                setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
-                                setCredenciales.emailGuardado = getCredenciales.emailGuardado
-                                setCredenciales.passGuardado = getCredenciales.passGuardado
+                                    setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                                    setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                                    setCredenciales.passGuardado = getCredenciales.passGuardado
 
-                                setCredenciales.setIdNotaGuardado(notaActual.id_Nota!!)
-                                setCredenciales.setIdUserDeNota(notaActual.id_User!!)
+                                    setCredenciales.setIdNotaGuardado(notaActual.id_Nota!!)
+                                    setCredenciales.setIdUserDeNota(notaActual.id_User!!)
 
-                                val activo: Boolean = getCredenciales.getModoOscuro()
-                                setCredenciales.setModoOscuro(activo)
+                                    val activo: Boolean = getCredenciales.getModoOscuro()
+                                    setCredenciales.setModoOscuro(activo)
 
-                                prefs.saveCredenciales(setCredenciales)
+                                    prefs.saveCredenciales(setCredenciales)
 
-                                startActivity(intent)
-                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                                    startActivity(intent)
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                                } else {
+                                    Dialogo.getInstance(this@VerPerfil)
+                                        .crearDialogoSinAccion(
+                                            this@VerPerfil,
+                                            getString(R.string.dialog_sin_internet),
+                                            getString(R.string.dialog_sin_internet_text),
+                                            getString(R.string.dialog_aceptar)
+                                        )
+                                }
                             }
 
                         }
@@ -340,20 +351,13 @@ class VerPerfil : AppCompatActivity() {
             lvPost.adapter = adaptador
 
             lvPost.setOnItemClickListener { parent, view, position, id ->
-                val notaActual: Nota =
-                    parent.getItemAtPosition(position) as Nota
-
-
-                val intent = Intent(
-                    this@VerPerfil,
-                    DetallesNota::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
-//                intent.putExtra("idDeMiNotaActualClave", notaActual.id_Nota)
-//                intent.putExtra("idDeMiUsuarioDeNotaActualClave", notaActual.id_User)
-
-                startActivity(intent)
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                Dialogo.getInstance(this@VerPerfil)
+                    .crearDialogoSinAccion(
+                        this@VerPerfil,
+                        getString(R.string.dialog_sin_internet),
+                        getString(R.string.dialog_sin_internet_text),
+                        getString(R.string.dialog_aceptar)
+                    )
             }
 
         }

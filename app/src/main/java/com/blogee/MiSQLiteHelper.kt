@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.blogee.models.Usuario
 
-class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", null, 5) {
+class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", null, 6) {
     override fun onCreate(db: SQLiteDatabase?) {
         val ordenCreacion = "Create Table usuarios" +
                 "(idUser Integer Primary Key Autoincrement, nameUser Text, lastNameUser Text ,emailUser Text, passUser Text, image Blob)"
@@ -14,7 +14,9 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         val ordenCreacion2 = "Create Table notas" +
                 "(idNota Integer Primary Key Autoincrement, emailUser Text, title Text ,description Text, image Blob, status Integer)"
         db.execSQL(ordenCreacion2)
-
+        val ordenCreacion3 = "Create Table notasSinInternet" +
+                "(idNota Integer Primary Key Autoincrement, nombre Text, fotoPerfil Blob, title Text ,description Text, image Blob)"
+        db.execSQL(ordenCreacion3)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -22,6 +24,8 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
         db!!.execSQL(ordenBorrado)
         val ordenBorrado2 = "Drop Table If Exists notas"
         db.execSQL(ordenBorrado2)
+        val ordenBorrado3 = "Drop Table If Exists notasSinInternet"
+        db.execSQL(ordenBorrado3)
         onCreate(db)
     }
 
@@ -113,6 +117,31 @@ class miSQLiteHelper(context: Context) : SQLiteOpenHelper(context, "Blogee.db", 
     fun deleteTablaNotas() {
         val db = this.writableDatabase
         db.delete("notas", "status != 2", null)
+        db.close()
+    }
+
+    fun addNotaParaLocal(
+        nombre: String,
+        fotoPerfil: String,
+        title: String,
+        description: String,
+        image: String
+    ): Long {
+        val db = this.writableDatabase
+        val data = ContentValues()
+        data.put("nombre", nombre)
+        data.put("fotoPerfil", fotoPerfil)
+        data.put("title", title)
+        data.put("description", description)
+        data.put("image", image)
+        val success = db.insert("notasSinInternet", null, data)
+        db.close()
+        return success
+    }
+
+    fun deleteTablaNotasSinInternet() {
+        val db = this.writableDatabase
+        db.delete("notasSinInternet", null, null)
         db.close()
     }
 

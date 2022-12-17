@@ -5,18 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import com.blogee.ImageUtilities
-import com.blogee.RestEngine
-import com.blogee.Service
-import com.blogee.UserApplication
+import com.blogee.*
 import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Credenciales
 import com.blogee.models.Nota
@@ -58,11 +57,29 @@ interface IViewModel {
 }
 
 // CONCRECIONES
-class WithThumbnailListItemView(viewModel: IViewModel, override val layout: View) :
+class WithThumbnailListItemView(
+    viewModel: IViewModel,
+    override val layout: View,
+    private val mContext: Context
+) :
     ListItemView(viewModel) {
 
     private val getCredenciales: Credenciales = UserApplication.prefs.getCredenciales()
     private val setCredenciales: Credenciales = Credenciales()
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
+    }
 
     override fun render(): View {
 
@@ -96,24 +113,35 @@ class WithThumbnailListItemView(viewModel: IViewModel, override val layout: View
 
         layout.imgNota.setOnClickListener {
 
-            val intent = Intent(
-                layout.context,
-                ImagenCompleta::class.java
-            ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            if (isConnectedWifi(layout.context) || isConnectedMobile(layout.context)) {
 
-            setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
-            setCredenciales.emailGuardado = getCredenciales.emailGuardado
-            setCredenciales.passGuardado = getCredenciales.passGuardado
+                val intent = Intent(
+                    layout.context,
+                    ImagenCompleta::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            setCredenciales.setIdNotaGuardado(this.viewModel.idNota())
-            setCredenciales.setIdUserDeNota(this.viewModel.idUserNota())
+                setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                setCredenciales.passGuardado = getCredenciales.passGuardado
 
-            val activo: Boolean = getCredenciales.getModoOscuro()
-            setCredenciales.setModoOscuro(activo)
+                setCredenciales.setIdNotaGuardado(this.viewModel.idNota())
+                setCredenciales.setIdUserDeNota(this.viewModel.idUserNota())
 
-            UserApplication.prefs.saveCredenciales(setCredenciales)
+                val activo: Boolean = getCredenciales.getModoOscuro()
+                setCredenciales.setModoOscuro(activo)
 
-            startActivity(layout.context, intent, null)
+                UserApplication.prefs.saveCredenciales(setCredenciales)
+
+                startActivity(layout.context, intent, null)
+            } else {
+                Dialogo.getInstance(mContext)
+                    .crearDialogoSinAccion(
+                        mContext,
+                        mContext.getString(R.string.dialog_sin_internet),
+                        mContext.getString(R.string.dialog_sin_internet_text),
+                        mContext.getString(R.string.dialog_aceptar)
+                    )
+            }
 
         }
 
@@ -183,39 +211,67 @@ class NotaViewModel : IViewModel {
             @SuppressLint("Recycle")
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
 
-                usuarioDBHelper = miSQLiteHelper(context)
+                if (nota.id_User == null) {
 
+                    val idNotaDeNota = nota.id_Nota
 
-                val emailUser = getCredenciales.emailGuardado
+                    usuarioDBHelper = miSQLiteHelper(context)
+                    val db = usuarioDBHelper.readableDatabase
+                    val c = db.rawQuery(
+                        "Select * from notasSinInternet where idNota = '$idNotaDeNota'",
+                        null
+                    )
+                    if (c.moveToFirst()) {
+                        val byteArray5: ByteArray?
+                        nombre.text = c.getString(1).toString()
 
-
-                val db = usuarioDBHelper.readableDatabase
-                val c = db.rawQuery(
-                    "Select * from usuarios where emailUser ='$emailUser'",
-                    null
-                )
-                if (c.moveToFirst()) {
-                    val byteArray5: ByteArray?
-                    nombre.text = c.getString(1).toString()
-
-                    val strImage: String =
-                        c.getString(5).toString().replace("data:image/png;base64,", "")
-                    byteArray5 = Base64.getDecoder().decode(strImage)
-                    if (byteArray5 != null) {
-                        //Bitmap redondo
-                        val bitmap: Bitmap =
-                            ImageUtilities.getBitMapFromByteArray(byteArray5)
-                        val roundedBitmapWrapper: RoundedBitmapDrawable =
-                            RoundedBitmapDrawableFactory.create(
-                                Resources.getSystem(),
-                                bitmap
-                            )
-                        roundedBitmapWrapper.isCircular = true
-                        imgPerfil.setImageDrawable(roundedBitmapWrapper)
+                        val strImage: String =
+                            c.getString(2).toString().replace("data:image/png;base64,", "")
+                        byteArray5 = Base64.getDecoder().decode(strImage)
+                        if (byteArray5 != null) {
+                            //Bitmap redondo
+                            val bitmap: Bitmap =
+                                ImageUtilities.getBitMapFromByteArray(byteArray5)
+                            val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                    Resources.getSystem(),
+                                    bitmap
+                                )
+                            roundedBitmapWrapper.isCircular = true
+                            imgPerfil.setImageDrawable(roundedBitmapWrapper)
+                        }
                     }
 
-                }
+                } else {
 
+                    usuarioDBHelper = miSQLiteHelper(context)
+                    val emailUser = getCredenciales.emailGuardado
+                    val db = usuarioDBHelper.readableDatabase
+                    val c = db.rawQuery(
+                        "Select * from usuarios where emailUser ='$emailUser'",
+                        null
+                    )
+                    if (c.moveToFirst()) {
+                        val byteArray5: ByteArray?
+                        nombre.text = c.getString(1).toString()
+
+                        val strImage: String =
+                            c.getString(5).toString().replace("data:image/png;base64,", "")
+                        byteArray5 = Base64.getDecoder().decode(strImage)
+                        if (byteArray5 != null) {
+                            //Bitmap redondo
+                            val bitmap: Bitmap =
+                                ImageUtilities.getBitMapFromByteArray(byteArray5)
+                            val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                    Resources.getSystem(),
+                                    bitmap
+                                )
+                            roundedBitmapWrapper.isCircular = true
+                            imgPerfil.setImageDrawable(roundedBitmapWrapper)
+                        }
+                    }
+                }
 
             }
 
@@ -226,11 +282,12 @@ class NotaViewModel : IViewModel {
                 val item = response.body()
                 if (item != null) {
                     if (item.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "No tiene información del adaptador",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        // Reiniciamos para evitar que de error
+                        // el adaptador por recuperar el acceso a internet
+                        val reinicioPorInternet = Intent(context, MainActivity::class.java)
+                        startActivity(context, reinicioPorInternet, null)
+
+
                     } else {
 
                         val byteArray2: ByteArray?
@@ -254,11 +311,9 @@ class NotaViewModel : IViewModel {
                         }
                     }
                 } else {
-                    Toast.makeText(
-                        context,
-                        "Credenciales del usuario incorrectas en el adaptador",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    // Credenciales incorrectas
+                    val reinicioPorInternet = Intent(context, MainActivity::class.java)
+                    startActivity(context, reinicioPorInternet, null)
                 }
 
 
