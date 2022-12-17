@@ -599,6 +599,7 @@ class EditarPost : AppCompatActivity(), View.OnClickListener {
 
                         val activo: Boolean = getCredenciales.getModoOscuro()
                         setCredenciales.setModoOscuro(activo)
+                        setCredenciales.setFiltro(getCredenciales.getFiltro())
 
                         prefs.saveCredenciales(setCredenciales)
 

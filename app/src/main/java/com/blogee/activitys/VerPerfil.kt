@@ -287,7 +287,7 @@ class VerPerfil : AppCompatActivity() {
 
                                     val activo: Boolean = getCredenciales.getModoOscuro()
                                     setCredenciales.setModoOscuro(activo)
-
+                                    setCredenciales.setFiltro(getCredenciales.getFiltro())
                                     prefs.saveCredenciales(setCredenciales)
 
                                     startActivity(intent)

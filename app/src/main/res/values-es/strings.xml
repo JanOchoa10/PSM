@@ -102,4 +102,10 @@
     <string name="txt_no_information_exists">No existe información</string>
     <string name="dialog_conexion_sin_internet">Conexión sin internet</string>
     <string name="dialog_conexion_sin_internet_text">¡Bienvenido a la conexión sin internet!\n\nSin conexión puedes:\n- Publicar y guardar notas.\n- Ver top 10 notas más recientes.\n- Ver tu perfil y editar tus datos.</string>
+    <string name="filter_list">Filtrar notas</string>
+    <string name="search_bar">Buscar</string>
+    <string name="filtro_selecciona_filtro">Selecciona un filtro</string>
+    <string name="filtro_notas_sin_foto">Notas sin foto</string>
+    <string name="filtro_ninguno">Ninguno</string>
+    <string name="filtro_notas_con_foto">Notas con foto</string>
 </resources>

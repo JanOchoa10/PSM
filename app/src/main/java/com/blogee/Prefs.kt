@@ -24,6 +24,7 @@ class Prefs(val context: Context) {
         editor.putInt("idNotaActual", credenciales.getIdNotaGuardado())
         editor.putInt("idUserDeNotaActual", credenciales.getIdUserDeNota())
         editor.putBoolean("mensajeLocal", credenciales.getNotasLocal())
+        editor.putInt("miFiltro", credenciales.getFiltro())
         editor.apply()
     }
 
@@ -45,6 +46,7 @@ class Prefs(val context: Context) {
         val idNotaActual: Int = managerPrefs.getInt("idNotaActual", 0)
         val idUserDeNotaActual: Int = managerPrefs.getInt("idUserDeNotaActual", 0)
         val mensajeLocal: Boolean = managerPrefs.getBoolean("mensajeLocal", false)
+        val miFiltro: Int = managerPrefs.getInt("miFiltro", 0)
 
         credential.idUserGuardado = idUserGuardado
         credential.emailGuardado = emailGuardado!!
@@ -53,6 +55,7 @@ class Prefs(val context: Context) {
         credential.setIdNotaGuardado(idNotaActual)
         credential.setIdUserDeNota(idUserDeNotaActual)
         credential.setNotasLocal(mensajeLocal)
+        credential.setFiltro(miFiltro)
 
         return credential
     }

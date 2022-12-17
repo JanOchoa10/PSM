@@ -32,6 +32,7 @@ class Dialogo private constructor(context: Context) {
     ) {
         val builder = AlertDialog.Builder(mContext)
         builder.setIcon(R.drawable.bluebird)
+        builder.setCancelable(false)
         builder.setTitle(title)
         builder.setMessage(message)
         builder.setPositiveButton(textPositiveButton, null)

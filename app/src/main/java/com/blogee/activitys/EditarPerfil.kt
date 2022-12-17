@@ -431,6 +431,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     setCredenciales.passGuardado = passUser!!.text.toString()
                     setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
                     setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+                    setCredenciales.setFiltro(getCredenciales.getFiltro())
                     prefs.saveCredenciales(setCredenciales)
                     /*Dialogo.getInstance(this@EditarPerfil)
                         .crearDialogoSinAccion(
@@ -462,7 +463,7 @@ class EditarPerfil : AppCompatActivity(), View.OnClickListener {
                     setCredenciales.emailGuardado = emailUser!!.text.toString()
                     setCredenciales.passGuardado = passUser!!.text.toString()
                     setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
-
+                    setCredenciales.setFiltro(getCredenciales.getFiltro())
                     prefs.saveCredenciales(setCredenciales)
 
 
