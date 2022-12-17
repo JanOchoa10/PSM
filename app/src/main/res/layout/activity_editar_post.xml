@@ -35,7 +35,7 @@
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="MissingConstraints" />
+                    tools:ignore="MissingConstraints"/>
 
                 <Button
                     android:id="@+id/btn_cancel"
@@ -53,7 +53,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btn_save" />
+                    app:layout_constraintTop_toBottomOf="@+id/btn_delete"
+                    />
 
 
                 <Button
@@ -99,7 +100,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
 
                 <Button
-                    android:id="@+id/btn_save"
+                    android:id="@+id/btn_delete"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -115,7 +116,7 @@
 
                 <ImageView
                     android:id="@+id/imageView4"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="24dp"
@@ -157,7 +158,8 @@
                     android:textColorHint="#80FFFFFF"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lbName" />
+                    app:layout_constraintTop_toBottomOf="@+id/lbName"
+                    android:maxLength="50"/>
 
                 <TextView
                     android:id="@+id/lbLastName"
@@ -188,7 +190,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lbLastName" />
+                    app:layout_constraintTop_toBottomOf="@+id/lbLastName"
+                    android:maxLength="255"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

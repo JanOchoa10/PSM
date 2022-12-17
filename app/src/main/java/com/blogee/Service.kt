@@ -1,14 +1,18 @@
 package com.blogee
 
+
 import com.blogee.models.Nota
+import com.blogee.models.NotaG
 import com.blogee.models.Usuario
+
+
 import retrofit2.Call
 import retrofit2.http.*
 
 //Retrofi usa una interface para hacer la petición hacia el servidor
 interface Service {
 
-    //Servicios para consumir el Album
+    //Servicios para consumir
     @GET("User/Users")
     fun getUsers(): Call<List<Usuario>>
 
@@ -24,9 +28,6 @@ interface Service {
     @POST("User/Save")
     fun saveUser(@Body userData: Usuario): Call<Int>
 
-    @Headers("Content-Type: application/json")
-    @POST("User/Update")
-    fun saveEditUser(@Body userData: Usuario): Call<Int>
 
 
     //Notas
@@ -34,10 +35,28 @@ interface Service {
     @POST("Nota/Save")
     fun saveNota(@Body userData: Nota): Call<Int>
 
-    //Servicios para consumir el Album
+    @Headers("Content-Type: application/json")
+    @POST("Nota/SaveG")
+    fun saveNotaG(@Body userData: NotaG):Call<Int>
+
+
+
     @GET("Nota/Notas")
     fun getNotas(): Call<List<Nota>>
 
     @GET("Nota/Notas/{id}")
     fun getNotaUser(@Path("id") id: String?): Call<List<Nota>>
+
+    @GET("Nota/NotaP/{id}")
+    fun getNota(@Path("id") id: String?): Call<List<Nota>>
+
+    @GET("Nota/DeleteNotaG/{id}")
+    fun deleteNotaG(@Path("id") id: String?): Call<String>
+
+    @GET("Nota/DeleteNota/{id}")
+    fun deleteNota(@Path("id") id: String?): Call<String>
+
+    @GET("Nota/NotaG/{id}")
+    fun getNotaGUser(@Path("id") id: String?): Call<List<NotaG>>
+
 }

@@ -51,6 +51,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/editText_PostTitle"
                     tools:ignore="MissingConstraints" />
 
+
                 <EditText
                     android:id="@+id/editText_PostDescrip"
                     android:layout_width="0dp"
@@ -63,9 +64,10 @@
                     android:textColor="#FFFFFF"
                     android:textColorHint="#80FFFFFF"
                     app:layout_constraintEnd_toEndOf="@+id/editText_PostTitle"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="@+id/editText_PostTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/lbLastName" />
-
+                    app:layout_constraintTop_toBottomOf="@+id/lbLastName"
+                    android:maxLength="255"/>
 
                 <Button
                     android:id="@+id/btn_PostPost"
@@ -145,6 +147,21 @@
                     app:layout_constraintStart_toEndOf="@+id/btn_PostUpImages"
                     app:layout_constraintTop_toBottomOf="@+id/editText_PostDescrip" />
 
+                <Button
+                    android:id="@+id/btn_EliminarImg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/anim_button"
+                    android:text="@string/delete_images"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_PostUpImages" />
+
                 <EditText
                     android:id="@+id/editText_PostTitle"
                     android:layout_width="0dp"
@@ -161,7 +178,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lbName" />
+                    app:layout_constraintTop_toBottomOf="@+id/lbName"
+                    android:maxLength="50"/>
 
                 <ImageView
                     android:id="@+id/imageView3"
@@ -174,10 +192,10 @@
                     android:adjustViewBounds="true"
                     app:layout_constraintBottom_toTopOf="@+id/btn_PostPost"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.497"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btn_PostUpImages"
-                    app:layout_constraintVertical_bias="1.0"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_EliminarImg"
+                    app:layout_constraintVertical_bias="0.0"
                     tools:srcCompat="@tools:sample/avatars" />
 
 

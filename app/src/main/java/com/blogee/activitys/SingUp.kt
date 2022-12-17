@@ -1,19 +1,26 @@
 package com.blogee.activitys
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.RoundedBitmapDrawable
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.util.PatternsCompat
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
-import com.blogee.miSQLiteHelper
+import com.blogee.*
+import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Usuario
 import retrofit2.Call
 import retrofit2.Callback
@@ -21,6 +28,7 @@ import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.regex.Pattern
+
 
 class SingUp : AppCompatActivity(), View.OnClickListener {
     lateinit var usuarioDBHelper: miSQLiteHelper
@@ -74,25 +82,41 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         // ser 1,2,3
         //Lo importante es ser congruente en su uso
         //image pick code
-        private val IMAGE_PICK_CODE = 1000;
+        private const val IMAGE_PICK_CODE = 1000
 
         //Permission code
-        private val PERMISSION_CODE = 1001;
+        private const val PERMISSION_CODE = 1001
 
         //camera code
-        private val CAMERA_CODE = 1002;
+        private const val CAMERA_CODE = 1002
     }
 
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.btnCamera -> openCamera()
+            R.id.btnCamera -> abrirDialogo()
             R.id.button -> validate()
         }
     }
 
 
-    private fun openCamera() {
+    private fun abrirDialogo() {
+        val builder = AlertDialog.Builder(this@SingUp)
+        builder.setIcon(R.drawable.bluebird)
+        builder.setTitle("Agregar avatar")
+        builder.setMessage("¿Deseas agregar tu avatar desde la galería o tomar una foto?")
+        builder.setPositiveButton("Galería") { dialog, which ->
+            changeImage()
+        }
+        builder.setNeutralButton("Cancelar", null)
+        builder.setNegativeButton("Cámara") { dialog, which ->
+            openCamera()
+        }
+        builder.show()
+    }
+
+
+    fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_CODE)
     }
@@ -116,6 +140,113 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                 val bitmap = (imageUI!!.getDrawable() as BitmapDrawable).bitmap
             }
 
+            if (requestcode == IMAGE_PICK_CODE) {
+                this.imageUI!!.setImageURI(data?.data)
+                var bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                var baos = ByteArrayOutputStream()
+
+
+                var calidad = 80
+                bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+                imgArray = baos.toByteArray()
+
+
+                var strEncodeImage2: String
+                var encodedString2: String = Base64.getEncoder().encodeToString(this.imgArray)
+                strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                val tamanoPermitido = 16777215
+                var tamano = strEncodeImage2.count()
+
+                var mostrarCargando = true
+                var entroAWhile = false
+
+                while (tamano > tamanoPermitido && calidad > 1) {
+                    if (mostrarCargando) {
+                        Toast.makeText(
+                            this@SingUp,
+                            getString(R.string.dialog_loading_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
+//                        Snackbar.make(View(this@SingUp), "My Message", Snackbar.LENGTH_SHORT).show()
+                    }
+                    mostrarCargando = false
+
+                    calidad -= 1
+                    if (!mostrarCargando && calidad % 40 == 0) {
+                        mostrarCargando = true
+                    }
+
+
+                    bitmap = (imageUI!!.drawable as BitmapDrawable).bitmap
+                    baos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+//                    bitmap.scale(80,80,true).compress(Bitmap.CompressFormat.JPEG, calidad, baos)
+
+                    imgArray = baos.toByteArray()
+
+                    encodedString2 = Base64.getEncoder().encodeToString(this.imgArray)
+                    strEncodeImage2 = "data:image/png;base64," + encodedString2
+
+                    tamano = strEncodeImage2.count()
+
+                    entroAWhile = true
+
+                }
+
+//                this.imageUI!!.setImageURI(baos)
+
+                if (tamano > tamanoPermitido) {
+//                    Toast.makeText(
+//                        this@SingUp,
+//                        "Imagen demasiado grande, intente con otra imagen",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+                    val builder = AlertDialog.Builder(this@SingUp)
+                    builder.setIcon(R.drawable.bluebird)
+                    builder.setTitle(getString(R.string.dialog_imagen_no_cargada))
+                    builder.setMessage(getString(R.string.dialog_imagen_no_cargada_text))
+                    builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+
+                    }
+                    builder.show()
+
+                    this.imageUI!!.setImageURI(null)
+                    baos = ByteArrayOutputStream()
+                    imgArray = baos.toByteArray()
+                } else if (entroAWhile) {
+
+
+//                    Toast.makeText(
+//                        this@Post2,
+//                        "Entro al while",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+
+//                    this.imageUI!!.setImageURI(null)
+
+                    if (strEncodeImage2 != "") {
+                        var byteArray: ByteArray? = null
+                        val strImage: String =
+                            strEncodeImage2.replace("data:image/png;base64,", "")
+                        byteArray = Base64.getDecoder().decode(strImage)
+                        var bitmap: Bitmap? = null
+                        if (byteArray != null) {
+                            bitmap =
+                                ImageUtilities.getBitMapFromByteArray(byteArray)
+                            val roundedBitmapWrapper: RoundedBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                    Resources.getSystem(),
+                                    bitmap
+                                )
+                            this.imageUI!!.setImageDrawable(roundedBitmapWrapper)
+                        }
+
+                    }
+                }
+
+            }
+
         }
     }
 
@@ -123,7 +254,15 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
     private fun saveUser() {
 
         if (this.imgArray == null) {
-            Toast.makeText(this@SingUp, "Por favor ingresa una imagen", Toast.LENGTH_LONG).show()
+            val builder = AlertDialog.Builder(this@SingUp)
+            builder.setIcon(R.drawable.bluebird)
+            builder.setTitle(getString(R.string.dialog_imagen_no_cargada))
+            builder.setMessage(getString(R.string.dialog_ingresa_imagen_text))
+            builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+
+            }
+            builder.show()
+//            Toast.makeText(this@SingUp, "Por favor ingresa una imagen", Toast.LENGTH_LONG).show()
         } else {
             if (nameUser!!.text.isNotBlank() && lastNameUser!!.text.isNotBlank() && emailUser!!.text.isNotBlank() && passUser!!.text.isNotBlank()) {
 
@@ -151,31 +290,85 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
 
                 result.enqueue(object : Callback<Int> {
                     override fun onFailure(call: Call<Int>, t: Throwable) {
-                        Toast.makeText(this@SingUp, "Error", Toast.LENGTH_LONG).show()
+
+                        if (isConnectedWifi(this@SingUp) || isConnectedMobile(this@SingUp)) {
+                            Dialogo.getInstance(this@SingUp)
+                                .crearDialogoSinAccion(
+                                    this@SingUp,
+                                    getString(R.string.dialog_correo_usado),
+                                    getString(R.string.dialog_correo_usado_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
+                        } else {
+                            Dialogo.getInstance(this@SingUp)
+                                .crearDialogoSinAccion(
+                                    this@SingUp,
+                                    getString(R.string.dialog_sin_internet),
+                                    getString(R.string.dialog_requiere_conexion),
+                                    getString(R.string.dialog_aceptar)
+                                )
+                        }
+
+
+//                        }
                     }
 
                     override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                        //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
-                        nameUser!!.text = ""
-                        lastNameUser!!.text = ""
-                        emailUser!!.text = ""
-                        passUser!!.text = ""
-                        Toast.makeText(this@SingUp, "Guardado", Toast.LENGTH_LONG).show()
-                        startActivity(cambiarActivity)
-                        overridePendingTransition(R.anim.from_left, R.anim.to_right)
-                        finish()
+
+                        val builder = AlertDialog.Builder(this@SingUp)
+                        builder.setIcon(R.drawable.bluebird)
+                        builder.setTitle(getString(R.string.dialog_user_register))
+                        builder.setMessage(getString(R.string.dialog_user_register_text))
+                        builder.setPositiveButton(getString(R.string.dialog_aceptar)) { dialog, which ->
+                            startActivity(cambiarActivity)
+                            overridePendingTransition(R.anim.from_left, R.anim.to_right)
+                            finish()
+                        }
+                        builder.show()
+                        usuarioDBHelper.addUsuario(
+                            nameUser!!.text.toString(),
+                            lastNameUser!!.text.toString(),
+                            emailUser!!.text.toString(),
+                            passUser!!.text.toString(),
+                            strEncodeImage
+                        )
+
                     }
                 })
 
 
             } else {
-                Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+
+                Dialogo.getInstance(this@SingUp)
+                    .crearDialogoSinAccion(
+                        this@SingUp,
+                        getString(R.string.dialog_datos_faltantes),
+                        getString(R.string.dialog_datos_faltantes_text),
+                        getString(R.string.dialog_aceptar)
+                    )
+
+
             }
 
 
         }
 
 
+    }
+
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
+
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
     }
 
     val caracteresEspeciales = "[:punct:]"
@@ -205,7 +398,7 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
                     + "(?=.*[0-9])"         // Al menos un digito
                     + "(?=.*[a-z])"         // Al menos una minuscula
                     + "(?=.*[A-Z])"         // Al menos una mayuscula
-                    + "(?=.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
+//                    + "(?=.*[" + caracteresEspeciales + "])"    // Al menos un caracter especial
                     + "(?=\\S+$)"           // No espacios en blanco
                     + ".{8,50}"               // Al menos 8 caracteres
                     + "$"
@@ -313,6 +506,42 @@ class SingUp : AppCompatActivity(), View.OnClickListener {
         }
 
         saveUser()
+    }
+
+    fun changeImage() {
+        //check runtime permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var boolDo = false
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED
+            ) {
+                //permission denied
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                //show popup to request runtime permission
+                requestPermissions(permissions, PERMISSION_CODE)
+            } else {
+                //permission already granted
+                boolDo = true
+
+            }
+
+            if (boolDo) {
+                pickImageFromGallery()
+            }
+
+        }
+
+    }
+
+    private fun pickImageFromGallery() {
+        //Abrir la galería
+        val intent = Intent()
+        intent.action = Intent.ACTION_PICK
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.type = "image/*"
+        //startActivityForResult(Intent.createChooser(intent,"Selecciona"), IMAGE_PICK_CODE)
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+
     }
 
 }

@@ -1,27 +1,28 @@
 package com.blogee.activitys
 
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.util.PatternsCompat
-import androidx.core.view.MenuItemCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.blogee.R
-import com.blogee.RestEngine
-import com.blogee.Service
-import com.blogee.miSQLiteHelper
+import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
+import com.blogee.local.miSQLiteHelper
+import com.blogee.models.Credenciales
 import com.blogee.models.Usuario
 import kotlinx.android.synthetic.main.activity_loading.*
 import retrofit2.Call
@@ -35,16 +36,23 @@ class Login : AppCompatActivity(), View.OnClickListener {
     var emailUser: TextView? = null
     var passUser: TextView? = null
 
+    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private val setCredenciales: Credenciales = Credenciales()
 
+    @SuppressLint("Recycle")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val myPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        usuarioDBHelper = miSQLiteHelper(this)
 
-        var email: String = myPreferences.getString("emailLogged", "").toString()
-        var pass: String = myPreferences.getString("passLogged", "").toString()
+        editarPerfilUser()
+        activarMensajeLocal()
+
+        val email: String = getCredenciales.emailGuardado
+        val pass: String = getCredenciales.passGuardado
 
         if (email != "" && pass != "") {
+
             setContentView(R.layout.activity_loading)
             loginGuardado(email, pass)
 
@@ -57,14 +65,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                 finish()
             }
-            var swipeRefreshLayout2: SwipeRefreshLayout = findViewById(R.id.swipe)
-//        textView = findViewById(R.id.textView)
+            val swipeRefreshLayout2: SwipeRefreshLayout = findViewById(R.id.swipe)
             swipeRefreshLayout2.setOnRefreshListener {
-                //Ejecutamos código
-//            number++
-//            textView.text = " Total number = $number"
-
-//                traerNotas()
 
                 val cambiarActivity = Intent(
                     this,
@@ -80,7 +82,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
             }
 
         } else {
-
 
             setContentView(R.layout.activity_login)
             supportActionBar?.hide()
@@ -107,17 +108,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
             }
         }
 
+        val activo: Boolean = getCredenciales.getModoOscuro()
 
-        val f: Int = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
-
-        if (f == 0) {
-            //imageViewCM.setImageResource(R.drawable.ic_filter_hdr_white_24dp);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        if (activo) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
-            if (f == 1) {
-                // imageViewCM.setImageResource(R.drawable.ic_filter_hdr_black_24dp);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
@@ -127,8 +123,22 @@ class Login : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun login() {
+    fun isConnectedWifi(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI
+    }
 
+    fun isConnectedMobile(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_MOBILE
+    }
+
+
+    private fun login() {
 
         if (emailUser!!.text.isNotBlank() && passUser!!.text.isNotBlank()) {
             val cambiarActivity = Intent(
@@ -152,13 +162,44 @@ class Login : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this,"Hasta aquí bien",Toast.LENGTH_SHORT).show()
             result.enqueue(object : Callback<List<Usuario>> {
                 override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
-                    Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
 
                     // Se ejecuta cada 5 segundos o 5000 milisegundos
                     // Vuelve a intentar conectarse
-                    Handler().postDelayed(Runnable {
+                    /*Handler().postDelayed(Runnable {
                         login()
-                    }, 5000)
+                    }, 5000)*/
+//                    if (usuarioDBHelper.getUsuario(
+//                            emailUser!!.text.toString(),
+//                            passUser!!.text.toString()
+//                        ) == 1
+//                    ) {
+////                        val emailUserLog = Bundle()
+////                        emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
+////                        cambiarActivity.putExtras(emailUserLog)
+//                        startActivity(cambiarActivity)
+//                        overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
+//                        finish()
+//                    } else {
+
+                    if (isConnectedWifi(this@Login) || isConnectedMobile(this@Login)) {
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+                    } else {
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_sin_internet),
+                                getString(R.string.dialog_sin_internet_text),
+                                getString(R.string.dialog_aceptar)
+                            )
+                    }
+//                    }
 
                 }
 
@@ -166,53 +207,100 @@ class Login : AppCompatActivity(), View.OnClickListener {
                     call: Call<List<Usuario>>,
                     response: Response<List<Usuario>>
                 ) {
-                    //usuarioDBHelper.addUsuario(nameUser!!.text.toString(),lastNameUser!!.text.toString(),emailUser!!.text.toString(),passUser!!.text.toString())
+
 
                     val item = response.body()
                     if (item != null) {
                         if (item.isEmpty()) {
-                            Toast.makeText(
-                                this@Login,
-                                "Credenciales Incorrectas",
-                                Toast.LENGTH_LONG
-                            ).show()
+//                            Toast.makeText(
+//                                this@Login,
+//                                "Credenciales Incorrectas",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+                            Dialogo.getInstance(this@Login)
+                                .crearDialogoSinAccion(
+                                    this@Login,
+                                    getString(R.string.dialog_no_login),
+                                    getString(R.string.dialog_credenciales_incorrectas_text),
+                                    getString(R.string.dialog_aceptar)
+                                )
                         } else {
                             Toast.makeText(
                                 this@Login,
-                                "Bienvenido " + item[0].Name,
+                                getString(R.string.dialog_welcome) + " " + item[0].Name,
                                 Toast.LENGTH_LONG
                             ).show()
-                            val idUserLog = Bundle()
 
-                            idUserLog.putString("idUserLog", item[0].id_User.toString())
 
-                            val myPreferences =
-                                PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                            val myEditor = myPreferences.edit()
-//                            val f = myPreferences.getInt(getString(R.string.modo_oscuro), 0)
-                            myEditor.putString("emailLogged", emailUser!!.text.toString())
-                            myEditor.putString("passLogged", passUser!!.text.toString())
+                            if (usuarioDBHelper.getUsuario(
+                                    emailUser!!.text.toString(),
+                                    passUser!!.text.toString()
+                                ) == 0
+                            )
+                                usuarioDBHelper.addUsuario(
+                                    item[0].Name.toString(),
+                                    item[0].LastName.toString(),
+                                    emailUser!!.text.toString(),
+                                    passUser!!.text.toString(),
+                                    item[0].Image.toString()
+                                )
 
-                            myEditor.apply()
+//                            val idUserLog = Bundle()
+
+//                            idUserLog.putString("idUserLog", item[0].id_User.toString())
+//                            val emailUserLog = Bundle()
+//                            emailUserLog.putString("emailUserLog", emailUser!!.text.toString())
+
+
+                            setCredenciales.idUserGuardado = item[0].id_User!!
+                            setCredenciales.emailGuardado = emailUser!!.text.toString()
+                            setCredenciales.passGuardado = passUser!!.text.toString()
+                            val activo: Boolean = getCredenciales.getModoOscuro()
+                            setCredenciales.setModoOscuro(activo)
+                            //ESTAMOS GRABANDO
+                            prefs.saveCredenciales(setCredenciales)
+
+
+//                            myEditor.putString("idUserLogeado", item[0].id_User.toString())
+//                            myEditor.putString("emailLogged", emailUser!!.text.toString())
+//                            myEditor.putString("passLogged", passUser!!.text.toString())
+//
+//                            myEditor.apply()
 
 
                             emailUser!!.text = ""
                             passUser!!.text = ""
 
-                            cambiarActivity.putExtras(idUserLog)
+//                            cambiarActivity.putExtras(idUserLog)
+//                            cambiarActivity.putExtras(emailUserLog)
                             startActivity(cambiarActivity)
                             overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                             finish()
+
                         }
                     } else {
-                        Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+//                        Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     }
 
 
                 }
             })
         } else {
-            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Ingresa todos los datos", Toast.LENGTH_SHORT).show()
+            Dialogo.getInstance(this@Login)
+                .crearDialogoSinAccion(
+                    this@Login,
+                    getString(R.string.dialog_datos_faltantes),
+                    getString(R.string.dialog_datos_faltantes_text),
+                    getString(R.string.dialog_aceptar)
+                )
         }
 
     }
@@ -242,13 +330,35 @@ class Login : AppCompatActivity(), View.OnClickListener {
         result.enqueue(object : Callback<List<Usuario>> {
             override fun onFailure(call: Call<List<Usuario>>, t: Throwable) {
 //                    setContentView(R.layout.activity_login)
-                Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@Login, "Sin conexión a Internet", Toast.LENGTH_LONG).show()
 
-                // Se ejecuta cada 5 segundos o 5000 milisegundos
-                // Vuelve a intentar conectarse
-                Handler().postDelayed(Runnable {
-                    loginGuardado(email, pass)
-                }, 5000)
+                val builder = AlertDialog.Builder(this@Login)
+                builder.setIcon(R.drawable.bluebird)
+                builder.setTitle(getString(R.string.dialog_sin_internet))
+                builder.setMessage(getString(R.string.dialog_sin_internet_text))
+                builder.setPositiveButton(getString(R.string.dialog_reintentar)) { dialog, which ->
+                    // Se ejecuta cada 5 segundos o 5000 milisegundos
+                    // Vuelve a intentar conectarse
+                    Handler().postDelayed(Runnable {
+                        loginGuardado(email, pass)
+                    }, 5000)
+                }
+                builder.setNeutralButton(getString(R.string.dialog_sin_conexion)) { dialog, which ->
+                    val intent = Intent(this@Login, MainActivity::class.java)
+
+//                    val emailUserLog = Bundle()
+//                    emailUserLog.putString("emailUserLog", email)
+//                    intent.putExtras(emailUserLog)
+
+//                    intent.putExtra("soloPerfil", true)
+
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                    finish()
+
+                }
+                builder.show()
+
 
             }
 
@@ -261,29 +371,33 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 val item = response.body()
                 if (item != null) {
                     if (item.isEmpty()) {
-                        Toast.makeText(
-                            this@Login,
-                            "Credenciales Incorrectas",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Dialogo.getInstance(this@Login)
+                            .crearDialogoSinAccion(
+                                this@Login,
+                                getString(R.string.dialog_no_login),
+                                getString(R.string.dialog_credenciales_incorrectas_text),
+                                getString(R.string.dialog_aceptar)
+                            )
                     } else {
                         Toast.makeText(
                             this@Login,
-                            "Bienvenido " + item[0].Name,
+                            getString(R.string.dialog_welcome) + " " + item[0].Name,
                             Toast.LENGTH_LONG
                         ).show()
-                        val idUserLog = Bundle()
 
-                        idUserLog.putString("idUserLog", item[0].id_User.toString())
-
-                        cambiarActivity.putExtras(idUserLog)
                         startActivity(cambiarActivity)
 //                            overridePendingTransition(R.anim.to_left, R.anim.from_rigth)
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                         finish()
                     }
                 } else {
-                    Toast.makeText(this@Login, "Incorrectas", Toast.LENGTH_LONG).show()
+                    Dialogo.getInstance(this@Login)
+                        .crearDialogoSinAccion(
+                            this@Login,
+                            getString(R.string.dialog_no_login),
+                            getString(R.string.dialog_credenciales_incorrectas_text),
+                            getString(R.string.dialog_aceptar)
+                        )
                 }
 
 
@@ -293,47 +407,6 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     }
 
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.app_menu_main, menu)
-
-//        asignaFotoUsuario(menu)
-
-        val searchItem = menu.findItem(R.id.app_bar_search)
-        val searchView: SearchView = MenuItemCompat.getActionView(searchItem) as SearchView
-        //permite modificar el hint que el EditText muestra por defecto
-        //permite modificar el hint que el EditText muestra por defecto
-        searchView.queryHint = "Buscar"
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener() {
-//            fun onQueryTextSubmit(query: String?): Boolean {
-//                Toast.makeText(this@MainActivity, R.string.submitted, Toast.LENGTH_SHORT).show()
-//                //se oculta el EditText
-//                searchView.setQuery("", false)
-//                searchView.setIconified(true)
-//                return true
-//            }
-//
-//            fun onQueryTextChange(newText: String?): Boolean {
-//                textView.setText(newText)
-//                return true
-//            }
-//        })
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        return when (item.itemId) {
-            R.id.user_profile -> {
-                // Acción al presionar el botón
-                //Sin acción por ser temporal
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
 //    override fun onBackPressed() {
 //        finishAffinity()
@@ -388,23 +461,104 @@ class Login : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun validate() {
-//        val result = arrayOf(validateEmail(), validatePassword())
-//
-//        if (false in result) {
-//            return
-//        }
 
         if (!validateEmail()) {
             return
         }
 
-//        if (!validatePassword()) {
-//            return
-//        }
-
         login()
-//        Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.app_menu_main, menu)
+
+        val searchItem = menu.findItem(R.id.app_bar_search)
+        searchItem.isVisible = false
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.user_profile -> {
+                // Acción al presionar el botón
+
+                val cambiarActivity = Intent(
+                    this,
+                    Login::class.java
+                )
+                startActivity(cambiarActivity)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun activarMensajeLocal(){
+
+        setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+        setCredenciales.emailGuardado = getCredenciales.emailGuardado
+        setCredenciales.passGuardado = getCredenciales.passGuardado
+
+
+        setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+
+        setCredenciales.setNotasLocal(true)
+
+        prefs.saveCredenciales(setCredenciales)
+    }
+
+    private fun editarPerfilUser() {
+        val emailUserDB = getCredenciales.emailGuardado
+        val db = usuarioDBHelper.readableDatabase
+        val c = db.rawQuery(
+            "Select * from usuarios where emailUser ='$emailUserDB'",
+            null
+        )
+        if (c.moveToFirst()) {
+            val user = Usuario(
+                getCredenciales.idUserGuardado,
+                c.getString(1).toString(),
+                c.getString(2).toString(),
+                c.getString(3).toString(),
+                c.getString(4).toString(),
+                c.getString(5).toString()
+            )
+            val service: Service = RestEngine.getRestEngine().create(Service::class.java)
+            val result: Call<Int> = service.saveUser(user)
+
+            result.enqueue(object : Callback<Int> {
+                override fun onFailure(call: Call<Int>, t: Throwable) {
+
+//                    Dialogo.getInstance(this@Login)
+//                        .crearDialogoSinAccion(
+//                            this@Login,
+//                            getString(R.string.dialog_user_no_register),
+//                            getString(R.string.dialog_user_no_register_text),
+//                            getString(R.string.dialog_aceptar)
+//                        )
+                }
+
+                override fun onResponse(call: Call<Int>, response: Response<Int>) {
+
+//                    Dialogo.getInstance(this@Login).crearDialogoSinAccion(
+//                        this@Login,
+//                        getString(R.string.dialog_user_edited),
+//                        getString(R.string.dialog_user_edited_text),
+//                        getString(R.string.dialog_aceptar)
+//                    )
+
+
+                }
+            })
+
+
+        }
+
+    }
 
 }
