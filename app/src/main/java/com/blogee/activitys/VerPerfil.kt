@@ -36,7 +36,7 @@ class VerPerfil : AppCompatActivity() {
     var imageUI: ImageView? = null
     var imgArray: ByteArray? = null
 
-    private val getCredenciales: Credenciales = prefs.getCredenciales()
+    private var getCredenciales: Credenciales = prefs.getCredenciales()
     private val setCredenciales: Credenciales = Credenciales()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -248,15 +248,44 @@ class VerPerfil : AppCompatActivity() {
                             textoInicial.visibility = View.GONE
 
                             for (item in arrayPosts) {
-                                listaPosts.add(
-                                    Nota(
-                                        item.id_Nota,
-                                        item.Title,
-                                        item.Description,
-                                        item.id_User,
-                                        item.Image
+
+                                if (getCredenciales.getFiltro() == 0) {
+                                    listaPosts.add(
+                                        Nota(
+                                            item.id_Nota,
+                                            item.Title,
+                                            item.Description,
+                                            item.id_User,
+                                            item.Image
+                                        )
                                     )
-                                )
+                                } else if (getCredenciales.getFiltro() == 1) {
+                                    if (item.Image == "") {
+                                        listaPosts.add(
+                                            Nota(
+                                                item.id_Nota,
+                                                item.Title,
+                                                item.Description,
+                                                item.id_User,
+                                                item.Image
+                                            )
+                                        )
+                                    }
+                                } else if (getCredenciales.getFiltro() == 2) {
+                                    if (item.Image != "") {
+                                        listaPosts.add(
+                                            Nota(
+                                                item.id_Nota,
+                                                item.Title,
+                                                item.Description,
+                                                item.id_User,
+                                                item.Image
+                                            )
+                                        )
+                                    }
+                                }
+
+
                             }
 
                             val adaptador = PostsAdapter(this@VerPerfil, listaPosts)
@@ -410,6 +439,47 @@ class VerPerfil : AppCompatActivity() {
                 builder.setNegativeButton(getString(R.string.dialog_no), null)
                 builder.show()
 
+                true
+            }
+
+            R.id.filter_list -> {
+                var checkedItem = getCredenciales.getFiltro()
+                lateinit var dialog: AlertDialog
+
+                // Initialize an array of colors
+                val filtros = arrayOf(
+                    getString(R.string.filtro_ninguno),
+                    getString(R.string.filtro_notas_sin_foto),
+                    getString(R.string.filtro_notas_con_foto)
+                )
+
+                val builder = AlertDialog.Builder(this@VerPerfil)
+                builder.setTitle(getString(R.string.filtro_selecciona_filtro))
+                builder.setSingleChoiceItems(filtros, checkedItem) { _, which ->
+                    checkedItem = which
+                }
+                builder.setPositiveButton(getString(R.string.dialog_aceptar)) { _, _ ->
+                    if (checkedItem != -1) {
+                        val selected = filtros[checkedItem]
+
+                        setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                        setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                        setCredenciales.passGuardado = getCredenciales.passGuardado
+                        setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+
+                        setCredenciales.setFiltro(checkedItem)
+                        prefs.saveCredenciales(setCredenciales)
+                        getCredenciales = prefs.getCredenciales()
+
+                        val reiniciar = Intent(this@VerPerfil, VerPerfil::class.java)
+                        startActivity(reiniciar)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()
+                    }
+                }
+                builder.setNeutralButton(getString(R.string.cancel), null)
+                dialog = builder.create()
+                dialog.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)

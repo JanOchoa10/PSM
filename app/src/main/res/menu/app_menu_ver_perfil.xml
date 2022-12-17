@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
+<menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -7,6 +7,13 @@
         android:title="@string/user_profile"
         android:icon="@mipmap/ic_launcher"
         app:showAsAction="always|withText"/-->
+
+    <item
+        android:id="@+id/filter_list"
+        android:icon="@drawable/ic_baseline_filter_list_24"
+        android:title="@string/filter_list"
+        app:showAsAction="always|withText"
+        tools:ignore="AlwaysShowAction" />
 
     <item android:id="@+id/log_out"
         android:title="@string/log_out"
