@@ -155,13 +155,13 @@ class WithThumbnailListItemView(
 
                 startActivity(layout.context, intent, null)
 
-                Dialogo.getInstance(mContext)
-                    .crearDialogoSinAccion(
-                        mContext,
-                        mContext.getString(R.string.dialog_sin_internet),
-                        mContext.getString(R.string.dialog_sin_internet_text),
-                        mContext.getString(R.string.dialog_aceptar)
-                    )
+//                Dialogo.getInstance(mContext)
+//                    .crearDialogoSinAccion(
+//                        mContext,
+//                        mContext.getString(R.string.dialog_sin_internet),
+//                        mContext.getString(R.string.dialog_sin_internet_text),
+//                        mContext.getString(R.string.dialog_aceptar)
+//                    )
             }
 
         }

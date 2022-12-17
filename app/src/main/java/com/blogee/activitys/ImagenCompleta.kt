@@ -148,6 +148,33 @@ class ImagenCompleta : AppCompatActivity() {
                     roundedBitmapWrapper.isCircular = false
                     imagenFullScreen.setImageDrawable(roundedBitmapWrapper)
                 }
+            } else {
+                usuarioDBHelper = miSQLiteHelper(this@ImagenCompleta)
+                val db = usuarioDBHelper.readableDatabase
+                val c = db.rawQuery(
+                    "Select * from notas where idNota = '$numeroNota'",
+                    null
+                )
+                if (c.moveToFirst()) {
+                    val byteArray5: ByteArray?
+//                nombre.text = c.getString(1).toString()
+
+                    val strImage: String =
+                        c.getString(4).toString().replace("data:image/png;base64,", "")
+                    byteArray5 = Base64.getDecoder().decode(strImage)
+                    if (byteArray5 != null) {
+                        //Bitmap redondo
+                        val bitmap: Bitmap =
+                            ImageUtilities.getBitMapFromByteArray(byteArray5)
+                        val roundedBitmapWrapper: RoundedBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(
+                                Resources.getSystem(),
+                                bitmap
+                            )
+                        roundedBitmapWrapper.isCircular = false
+                        imagenFullScreen.setImageDrawable(roundedBitmapWrapper)
+                    }
+                }
             }
 
         }
