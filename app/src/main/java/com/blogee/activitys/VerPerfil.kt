@@ -390,13 +390,11 @@ class VerPerfil : AppCompatActivity() {
                 builder.setIcon(R.drawable.bluebird)
                 builder.setTitle(getString(R.string.dialog_cerrar_sesion))
                 builder.setPositiveButton(getString(R.string.dialog_yes)) { dialog, which ->
-
                     setCredenciales.emailGuardado = ""
                     setCredenciales.passGuardado = ""
                     val activo: Boolean = getCredenciales.getModoOscuro()
                     setCredenciales.setModoOscuro(activo)
                     prefs.saveCredenciales(setCredenciales)
-
 
                     val cambiarActivity = Intent(
                         this,
@@ -409,17 +407,8 @@ class VerPerfil : AppCompatActivity() {
                 builder.setNegativeButton(getString(R.string.dialog_no), null)
                 builder.show()
 
-
                 true
             }
-            /**R.id.create_new -> {
-            //newGame()
-            true
-            }
-            R.id.open -> {
-            //showHelp()
-            true
-            }*/
             else -> super.onOptionsItemSelected(item)
         }
     }
