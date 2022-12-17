@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.blogee.*
+import com.blogee.UserApplication.Companion.prefs
 import com.blogee.local.miSQLiteHelper
 import com.blogee.models.Credenciales
 import com.blogee.models.Nota
@@ -134,6 +135,26 @@ class WithThumbnailListItemView(
 
                 startActivity(layout.context, intent, null)
             } else {
+
+                val intent = Intent(
+                    layout.context,
+                    ImagenCompleta::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
+                setCredenciales.emailGuardado = getCredenciales.emailGuardado
+                setCredenciales.passGuardado = getCredenciales.passGuardado
+
+                setCredenciales.setIdNotaGuardado(this.viewModel.idNota())
+                setCredenciales.setNotasLocal(false)
+//                setCredenciales.setIdUserDeNota(this.viewModel.idUserNota())
+
+                setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
+
+                prefs.saveCredenciales(setCredenciales)
+
+                startActivity(layout.context, intent, null)
+
                 Dialogo.getInstance(mContext)
                     .crearDialogoSinAccion(
                         mContext,

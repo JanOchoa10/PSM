@@ -42,7 +42,7 @@ open class NotaInfo : NotasLocal() {
 }
 
 open class NotasLocal {
-    private var primeraVez: Boolean = true
+    private var primeraVez: Boolean = false
 
     fun getNotasLocal(): Boolean {
         return primeraVez

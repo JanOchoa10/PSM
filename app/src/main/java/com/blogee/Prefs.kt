@@ -44,7 +44,7 @@ class Prefs(val context: Context) {
         val userModoOscuro: Boolean = managerPrefs.getBoolean("userModoOscuro", false)
         val idNotaActual: Int = managerPrefs.getInt("idNotaActual", 0)
         val idUserDeNotaActual: Int = managerPrefs.getInt("idUserDeNotaActual", 0)
-        val mensajeLocal: Boolean = managerPrefs.getBoolean("mensajeLocal", true)
+        val mensajeLocal: Boolean = managerPrefs.getBoolean("mensajeLocal", false)
 
         credential.idUserGuardado = idUserGuardado
         credential.emailGuardado = emailGuardado!!
