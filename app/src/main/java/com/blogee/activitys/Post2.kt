@@ -355,12 +355,12 @@ class Post2 : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.app_menu_main, menu)
+        inflater.inflate(R.menu.app_menu_solo_perfil, menu)
 
         asignaFotoUsuario(menu)
 
-        val searchItem = menu.findItem(R.id.app_bar_search)
-        searchItem.isVisible = false
+//        val searchItem = menu.findItem(R.id.app_bar_search)
+//        searchItem.isVisible = false
 
         return true
     }

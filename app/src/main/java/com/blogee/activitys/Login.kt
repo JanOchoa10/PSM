@@ -257,6 +257,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
                             setCredenciales.passGuardado = passUser!!.text.toString()
                             val activo: Boolean = getCredenciales.getModoOscuro()
                             setCredenciales.setModoOscuro(activo)
+                            setCredenciales.setFiltro(getCredenciales.getFiltro())
                             //ESTAMOS GRABANDO
                             prefs.saveCredenciales(setCredenciales)
 
@@ -471,10 +472,10 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.app_menu_main, menu)
-
-        val searchItem = menu.findItem(R.id.app_bar_search)
-        searchItem.isVisible = false
+        inflater.inflate(R.menu.app_menu_solo_perfil, menu)
+//
+//        val searchItem = menu.findItem(R.id.app_bar_search)
+//        searchItem.isVisible = false
 
         return true
     }
@@ -498,17 +499,14 @@ class Login : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun activarMensajeLocal(){
+    private fun activarMensajeLocal() {
 
         setCredenciales.idUserGuardado = getCredenciales.idUserGuardado
         setCredenciales.emailGuardado = getCredenciales.emailGuardado
         setCredenciales.passGuardado = getCredenciales.passGuardado
-
-
         setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
-
         setCredenciales.setNotasLocal(true)
-
+        setCredenciales.setFiltro(getCredenciales.getFiltro())
         prefs.saveCredenciales(setCredenciales)
     }
 

@@ -130,8 +130,9 @@ class WithThumbnailListItemView(
 
                 val activo: Boolean = getCredenciales.getModoOscuro()
                 setCredenciales.setModoOscuro(activo)
+                setCredenciales.setFiltro(getCredenciales.getFiltro())
 
-                UserApplication.prefs.saveCredenciales(setCredenciales)
+                prefs.saveCredenciales(setCredenciales)
 
                 startActivity(layout.context, intent, null)
             } else {
@@ -147,10 +148,8 @@ class WithThumbnailListItemView(
 
                 setCredenciales.setIdNotaGuardado(this.viewModel.idNota())
                 setCredenciales.setNotasLocal(false)
-//                setCredenciales.setIdUserDeNota(this.viewModel.idUserNota())
-
                 setCredenciales.setModoOscuro(getCredenciales.getModoOscuro())
-
+                setCredenciales.setFiltro(getCredenciales.getFiltro())
                 prefs.saveCredenciales(setCredenciales)
 
                 startActivity(layout.context, intent, null)

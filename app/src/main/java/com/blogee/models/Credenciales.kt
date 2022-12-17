@@ -41,7 +41,7 @@ open class NotaInfo : NotasLocal() {
 
 }
 
-open class NotasLocal {
+open class NotasLocal : Filtro() {
     private var primeraVez: Boolean = false
 
     fun getNotasLocal(): Boolean {
@@ -50,6 +50,19 @@ open class NotasLocal {
 
     fun setNotasLocal(Activo: Boolean) {
         this.primeraVez = Activo
+    }
+
+}
+
+open class Filtro {
+    private var filtro: Int = 0
+
+    fun getFiltro(): Int {
+        return filtro
+    }
+
+    fun setFiltro(filtro: Int) {
+        this.filtro = filtro
     }
 
 }
